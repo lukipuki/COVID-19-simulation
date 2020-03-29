@@ -43,13 +43,13 @@ TEST(Stats, GeneratesAgeAccordingToPopulation) {
   std::random_device rd;
   std::mt19937 gen(rd());
   constexpr uint32_t kIterations = 1 << 20;
-  std::vector<double> occurences(population_age.size(), 0.0);
+  std::vector<double> occurences(kDecadesCount, 0.0);
   for (uint32_t i = 0; i < kIterations; ++i) {
     occurences[generate_age(&gen)] += 1;
   }
   for (auto& occurence : occurences) occurence /= kIterations;
-  for (uint32_t i = 0; i < population_age.size(); ++i) {
-    EXPECT_NEAR(occurences[i], population_age[i], 0.001);
+  for (uint32_t i = 0; i < kDecadesCount; ++i) {
+    EXPECT_NEAR(occurences[i], kPopulationAge[i], 0.001);
   }
 }
 

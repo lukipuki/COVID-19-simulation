@@ -13,7 +13,9 @@ const std::vector<uint32_t> positive = {0,  0,  0, 0,  1,  2,  2, 2,  0,  3,  11
                                         11, 25, 8, 19, 13, 41, 7, 19, 12, 10, 43, 23, 22, 22};
 constexpr uint32_t kRestrictionDay = 11;  // 0-indexed March 12th
 // constexpr uint32_t kRestrictionDay = 10;  // For power law
-constexpr double kPowerLawExponent = 1.15;
+constexpr double kGamma2 = 1.04;
+constexpr double kPowerLawExponent = 1.30;
+constexpr double kPowerLawDecay = 35;
 constexpr uint32_t kSymptomsLength = 28;
 
 struct SimulationResult {
@@ -22,6 +24,34 @@ struct SimulationResult {
   double error;
 };
 
+class ExponentialGrowth {
+ public:
+  static auto GenerateNewValues(double last, uint32_t count) -> std::vector<double> {
+    std::vector<double> result{last * kGamma2};
+    for (int i = 1; i < count; ++i) {
+      result.push_back(result.back() * kGamma2);
+    }
+    return result;
+  }
+};
+
+class PowerLawGrowth {
+ public:
+  static auto GenerateNewValues(double last, uint32_t count) -> std::vector<double> {
+    std::vector<double> values;
+    for (int i = 1; i <= count + 1; ++i) {
+      double val = std::pow(i, kPowerLawExponent) * exp(-i / kPowerLawDecay);
+      values.push_back(val);
+    }
+    std::vector<double> result;
+    for (int i = 1; i <= count; ++i) {
+      result.push_back(last * (values[i] - values[i - 1]));
+    }
+    return result;
+  }
+};
+
+template <typename Growth>
 class Simulator {
  public:
   Simulator(uint32_t tmax)
@@ -84,13 +114,8 @@ class Simulator {
       deltas.push_back(deltas.back() * gamma1);
     }
     double base = deltas.back();
-    // for (uint32_t i = 1; i <= tmax_ - t0_; ++i) {
-    //   double diff = std::pow(i, kPowerLawExponent) - std::pow(i - 1, kPowerLawExponent);
-    //   deltas.push_back(base * diff);
-    // }
-    for (uint32_t i = t0_; i < tmax_; ++i) {
-      deltas.push_back(deltas.back() * gamma2);
-    }
+    std::vector<double> next_part = Growth::GenerateNewValues(base, tmax_ - t0_);
+    std::copy(next_part.begin(), next_part.end(), std::back_inserter(deltas));
 
     std::vector<uint32_t> infected;
     for (uint32_t i = 0; i < deltas.size(); ++i) {
@@ -119,8 +144,9 @@ int main() {
   constexpr uint32_t kIterations = 50;
   std::cout << "prefix_length optimal_b0 best_error" << std::endl;
 #pragma omp parallel for shared(positive, tested, bs)
-  for (uint32_t prefix_length = 3; prefix_length < 10; ++prefix_length) {
-    Simulator simulator(positive.size() + prefix_length);
+  for (uint32_t prefix_length = 2; prefix_length < 9; ++prefix_length) {
+    Simulator<ExponentialGrowth> simulator(positive.size() + prefix_length);
+    // Simulator<PowerLawGrowth> simulator(positive.size() + prefix_length);
     uint32_t optimal_b0 = -1;
     double best = 1e10;
     for (uint32_t b0 = 60; b0 <= 200; b0 += 3) {

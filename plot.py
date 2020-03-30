@@ -17,7 +17,7 @@ layout = go.Layout(
     xaxis=dict(
         type='log',
         autorange=True,
-        title='Days since 10th case'
+        title=r'$\text{Days since the 10}^\mathrm{th}\text{ case}$ '
     ),
     yaxis=dict(
         type='log',
@@ -44,7 +44,7 @@ figure.add_trace(
         x=x,
         y=y_polynomial,
         mode='lines',
-        name="Power law fit: $10 \cdot t^{1.19}$",
+        name=r'$\text{Power law fit: }10 \cdot t^{1.19}$',
         line={'width': 3},
     )
 )

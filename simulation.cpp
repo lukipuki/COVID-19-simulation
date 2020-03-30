@@ -19,8 +19,9 @@ constexpr double kPowerLawDecay = 35;
 constexpr uint32_t kSymptomsLength = 28;
 
 struct SimulationResult {
-  SimulationResult() : cases{}, error{0} {}
+  SimulationResult() : cases{}, error{0}, dead_count{} {}
   std::vector<uint32_t> cases;
+  std::vector<uint32_t> dead_count;
   double error;
 };
 
@@ -79,6 +80,11 @@ class Simulator {
         auto age = generate_age(&gen_);
         auto symptoms = beta_distribution(1, bs[age], &gen_);
         persons.emplace_back(symptoms, std::ceil(symptoms * kSymptomsLength + uniform(gen_)), day);
+        if (persons.back().DateOfDeath().has_value()) {
+          uint32_t date = *persons.back().DateOfDeath();
+          if (result.dead_count.size() <= date) result.dead_count.resize(date + 1);
+          ++result.dead_count[date];
+        }
       }
 
       assert(day < tested_.size());
@@ -142,25 +148,28 @@ int main() {
   assert(tested.size() == positive.size());
 
   constexpr uint32_t kIterations = 50;
-  std::cout << "prefix_length optimal_b0 best_error" << std::endl;
+  std::cout << "prefix_length optimal_b0 dead_count best_error" << std::endl;
 #pragma omp parallel for shared(positive, tested, bs)
   for (uint32_t prefix_length = 2; prefix_length < 9; ++prefix_length) {
     Simulator<ExponentialGrowth> simulator(positive.size() + prefix_length);
     // Simulator<PowerLawGrowth> simulator(positive.size() + prefix_length);
-    uint32_t optimal_b0 = -1;
+    uint32_t optimal_b0 = -1, optimal_dead_count;
     double best = 1e10;
     for (uint32_t b0 = 60; b0 <= 200; b0 += 3) {
-      double sum_error = 0;
+      double sum_error = 0, dead_count = 0;
       for (uint32_t i = 0; i < kIterations; ++i) {
         auto result = simulator.Simulate(b0);
         sum_error += result.error;
+        dead_count += std::accumulate(result.dead_count.begin(), result.dead_count.end(), 0);
       }
       sum_error /= kIterations;
+      dead_count /= kIterations;
       if (sum_error < best) {
         best = sum_error;
         optimal_b0 = b0;
+        optimal_dead_count = dead_count;
       }
     }
-    std::cout << prefix_length << " " << optimal_b0 << " " << best << std::endl;
+    std::cout << prefix_length << " " << optimal_b0 << " " << optimal_dead_count << " " << best << std::endl;
   }
 }

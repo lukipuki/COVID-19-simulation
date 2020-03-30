@@ -6,7 +6,7 @@ import numpy as np
 
 
 positive = [0,  0,  0, 0,  1,  2,  2, 2,  0,  3,  11, 11, 12, 17,
-            11, 25, 8, 19, 13, 41, 7, 19, 12, 10, 43, 23, 22]
+            11, 25, 8, 19, 13, 41, 7, 19, 12, 10, 43, 23, 22, 22]
 accumulated = list(itertools.accumulate(positive))
 accumulated = accumulated[9:]
 

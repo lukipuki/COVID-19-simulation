@@ -92,9 +92,8 @@ class Simulator {
       deltas.push_back(deltas.back() * gamma2);
     }
 
-    std::vector<uint32_t> infected = {1};
-    // TODO: The i+1 is here, because the day numbering goes too far, I think
-    for (uint32_t i = 0; i + 1 < deltas.size(); ++i) {
+    std::vector<uint32_t> infected;
+    for (uint32_t i = 0; i < deltas.size(); ++i) {
       std::poisson_distribution<> possion(deltas[i]);
       infected.push_back(possion(gen_));
     }
@@ -119,6 +118,7 @@ int main() {
 
   constexpr uint32_t kIterations = 50;
   std::cout << "prefix_length optimal_b0 best_error" << std::endl;
+#pragma omp parallel for shared(positive, tested, bs)
   for (uint32_t prefix_length = 3; prefix_length < 10; ++prefix_length) {
     Simulator simulator(positive.size() + prefix_length);
     uint32_t optimal_b0 = -1;

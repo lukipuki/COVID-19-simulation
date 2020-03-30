@@ -3,8 +3,11 @@ project(covid19_simulation)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS On)
 
+find_package(OpenMP )
+
 add_executable(simulation simulation.cpp)
 target_compile_features(simulation PRIVATE cxx_std_17)
+target_link_libraries(simulation PRIVATE $<$<BOOL:${OpenMP_FOUND}>:OpenMP::OpenMP_CXX>)
 
 enable_testing()
 find_package(GTest REQUIRED)

@@ -9,8 +9,8 @@ std::vector<double> bs;
 const std::vector<uint32_t> tested = {37,  32,  38,  50,  49,  64,  72,  69,  116, 99,
                                       35,  118, 197, 228, 148, 293, 217, 283, 354, 399,
                                       235, 432, 464, 325, 912, 747, 720, 401, 688};
-const std::vector<uint32_t> positive = {0,  0,  0, 0,  1,  2,  2, 2,  0,  3,  11, 11, 12, 17,
-                                        11, 25, 8, 19, 13, 41, 7, 19, 12, 10, 43, 23, 22, 22, 27};
+const std::vector<uint32_t> positive = {0,  0, 0,  0,  1,  2, 2,  2,  0,  3,  11, 11, 12, 17, 11,
+                                        25, 8, 19, 13, 41, 7, 19, 12, 10, 43, 23, 22, 22, 27};
 constexpr uint32_t kRestrictionDay = 11;  // 0-indexed March 12th
 // constexpr uint32_t kRestrictionDay = 10;  // For power law
 constexpr double kGamma2 = 1.04;
@@ -19,8 +19,10 @@ constexpr double kPowerLawDecay = 35;
 constexpr uint32_t kSymptomsLength = 28;
 
 struct SimulationResult {
-  SimulationResult() : cases{}, error{0}, dead_count{} {}
-  std::vector<uint32_t> cases;
+  explicit SimulationResult(const std::vector<uint32_t>& infected)
+      : daily_positive{}, daily_infected{infected}, error{0}, dead_count{} {}
+  std::vector<uint32_t> daily_positive;
+  std::vector<uint32_t> daily_infected;
   std::vector<uint32_t> dead_count;
   double error;
 };
@@ -72,7 +74,8 @@ class Simulator {
     std::vector<uint32_t> infected = GenerateInfected(gamma1, gamma2);
     std::vector<Person> persons;
     std::uniform_int_distribution<> uniform(0, 14);
-    SimulationResult result;
+
+    SimulationResult result(infected);
     result.error = 0;
     int32_t cumulative_positive = 0;
     for (uint32_t day = 0; day < infected.size(); ++day) {
@@ -95,8 +98,8 @@ class Simulator {
           persons.begin(), persons.end(),
           [day, threshold](const Person& ca) { return ca.CurrentSymptoms(day) < threshold; });
 
+      result.daily_positive.push_back(persons.end() - iter);
       cumulative_positive += persons.end() - iter;
-      result.cases.push_back(cumulative_positive);
       if (positive_[day] > 0) {
         result.error += std::pow(cumulative_positive - static_cast<int32_t>(positive_[day]), 2) /
                         positive_[day];
@@ -170,6 +173,7 @@ int main() {
         optimal_dead_count = dead_count;
       }
     }
-    std::cout << prefix_length << " " << optimal_b0 << " " << optimal_dead_count << " " << best << std::endl;
+    std::cout << prefix_length << " " << optimal_b0 << " " << optimal_dead_count << " " << best
+              << std::endl;
   }
 }

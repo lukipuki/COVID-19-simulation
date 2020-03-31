@@ -8,9 +8,9 @@
 std::vector<double> bs;
 const std::vector<uint32_t> tested = {37,  32,  38,  50,  49,  64,  72,  69,  116, 99,
                                       35,  118, 197, 228, 148, 293, 217, 283, 354, 399,
-                                      235, 432, 464, 325, 912, 747, 720, 401};
+                                      235, 432, 464, 325, 912, 747, 720, 401, 688};
 const std::vector<uint32_t> positive = {0,  0,  0, 0,  1,  2,  2, 2,  0,  3,  11, 11, 12, 17,
-                                        11, 25, 8, 19, 13, 41, 7, 19, 12, 10, 43, 23, 22, 22};
+                                        11, 25, 8, 19, 13, 41, 7, 19, 12, 10, 43, 23, 22, 22, 27};
 constexpr uint32_t kRestrictionDay = 11;  // 0-indexed March 12th
 // constexpr uint32_t kRestrictionDay = 10;  // For power law
 constexpr double kGamma2 = 1.04;

@@ -3,15 +3,18 @@ from plotly import offline
 import plotly.graph_objs as go
 import itertools
 import numpy as np
+from datetime import datetime, timedelta
 
 
 positive = [0,  0,  0, 0,  1,  2,  2, 2,  0,  3,  11, 11, 12, 17,
-            11, 25, 8, 19, 13, 41, 7, 19, 12, 10, 43, 23, 22, 22]
-accumulated = list(itertools.accumulate(positive))
-accumulated = accumulated[9:]
+            11, 25, 8, 19, 13, 41, 7, 19, 12, 10, 43, 23, 22, 22, 27]
+accumulated = list(filter(lambda c: c >= 10, itertools.accumulate(positive)))
+# date_list = [datetime(2020, 3, 11) + timedelta(days=d) for d in range(len(accumulated))]
 
 x = np.arange(1, len(accumulated) + 1)
 y_polynomial = 10 * (x ** 1.19)
+# To add exponential decay, do something like this
+# y_polynomial = 10 * (x ** 1.3) * np.exp(-x / 40)
 
 layout = go.Layout(
     xaxis=dict(

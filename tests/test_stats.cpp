@@ -9,16 +9,17 @@ TEST(Stats, CalculatesB) {
   std::random_device rd;
   std::mt19937 gen(rd());
 
-  std::vector<double> ds = {0.02, 0.1, 0.3};
+  std::array<double, 9> kDeathProbabilities = {0.002, 0.002, 0.002, 0.002, 0.004,
+                                               0.013, 0.036, 0.08,  0.148};
   constexpr uint32_t kIterations = 1 << 16;
-  for (double d : ds) {
-    double b = calculate_b(d);
+  for (uint32_t index : {1, 5, 8}) {
+    double b = bs[index];
     double sum = 0;
     for (uint32_t i = 0; i < kIterations; ++i) {
       sum += static_cast<double>(beta_distribution(1, b, &gen) > 0.5);
     }
     double result = sum / kIterations;
-    EXPECT_NEAR(d, result, 0.05);
+    EXPECT_NEAR(kDeathProbabilities[index], result, 0.05);
   }
 }
 
@@ -76,6 +77,6 @@ TEST(Stats, GeneratesAccordingToPoisson) {
 
   for (uint32_t z = 0; z <= kPairSum; ++z) {
     EXPECT_NEAR(std::exp(log_distance_probability(z, kPairSum - z)),
-                probabilities[z] * probabilities[kPairSum - z], 0.00005);
+                probabilities[z] * probabilities[kPairSum - z], 0.0001);
   }
 }

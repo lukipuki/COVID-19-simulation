@@ -8,7 +8,6 @@
 #include "person.h"
 #include "stats.h"
 
-std::vector<double> bs;
 constexpr uint32_t kRestrictionDay = 11;  // 0-indexed March 12th
 // constexpr uint32_t kRestrictionDay = 10;  // For power law
 constexpr double kGamma1 = 1.25;
@@ -53,7 +52,8 @@ class Simulator {
       for (uint32_t i = 0; i < infected[day]; ++i) {
         auto age = generate_age(&random_generator_);
         auto symptoms = beta_distribution(1, bs[age], &random_generator_);
-        persons.emplace_back(symptoms, std::ceil(symptoms * kSymptomsLength + uniform(random_generator_)), day);
+        persons.emplace_back(
+            symptoms, std::ceil(symptoms * kSymptomsLength + uniform(random_generator_)), day);
         if (persons.back().DateOfDeath().has_value()) {
           uint32_t date = *persons.back().DateOfDeath();
           if (result.dead_count.size() <= date) result.dead_count.resize(date + 1);
@@ -119,8 +119,6 @@ int main(int argc, char* argv[]) {
     tested.push_back(node["tested"].as<uint32_t>());
   }
 
-  std::transform(kDeathProbabilities, kDeathProbabilities + kDecadesCount, std::back_inserter(bs),
-                 calculate_b);
   assert(tested.size() == positive.size());
 
   auto generator = ExponentialGenerator(kGamma1, kGamma2);
@@ -147,7 +145,7 @@ int main(int argc, char* argv[]) {
         optimal_dead_count = dead_count;
       }
     }
-    std::cout << prefix_length << " " << optimal_b0 << " " << optimal_dead_count << " "
-      << best << std::endl;
+    std::cout << prefix_length << " " << optimal_b0 << " " << optimal_dead_count << " " << best
+              << std::endl;
   }
 }

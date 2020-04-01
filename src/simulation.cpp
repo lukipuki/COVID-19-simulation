@@ -2,16 +2,18 @@
 #include <cassert>
 #include <iostream>
 
+#include "yaml-cpp/yaml.h"
+
+#include "generators.h"
 #include "person.h"
 #include "stats.h"
-#include "yaml-cpp/yaml.h"
 
 std::vector<double> bs;
 constexpr uint32_t kRestrictionDay = 11;  // 0-indexed March 12th
 // constexpr uint32_t kRestrictionDay = 10;  // For power law
+constexpr double kGamma1 = 1.25;
 constexpr double kGamma2 = 1.04;
 constexpr double kPowerLawExponent = 1.30;
-constexpr double kPowerLawDecay = 35;
 constexpr uint32_t kSymptomsLength = 28;
 
 struct SimulationResult {
@@ -23,34 +25,6 @@ struct SimulationResult {
   double error;
 };
 
-class ExponentialGrowth {
- public:
-  static auto GenerateNewValues(double last, uint32_t count) -> std::vector<double> {
-    std::vector<double> result{last * kGamma2};
-    for (int i = 1; i < count; ++i) {
-      result.push_back(result.back() * kGamma2);
-    }
-    return result;
-  }
-};
-
-class PowerLawGrowth {
- public:
-  static auto GenerateNewValues(double last, uint32_t count) -> std::vector<double> {
-    std::vector<double> values;
-    for (int i = 1; i <= count + 1; ++i) {
-      double val = std::pow(i, kPowerLawExponent) * exp(-i / kPowerLawDecay);
-      values.push_back(val);
-    }
-    std::vector<double> result;
-    for (int i = 1; i <= count; ++i) {
-      result.push_back(last * (values[i] - values[i - 1]));
-    }
-    return result;
-  }
-};
-
-template <typename Growth>
 class Simulator {
  public:
   Simulator(uint32_t prefix_length, const std::vector<uint32_t>& positive,
@@ -60,15 +34,15 @@ class Simulator {
         positive_(prefix_length + 1, 0),
         t0_{kRestrictionDay + prefix_length + 1},
         rd_{},
-        gen_(rd_()) {
+        random_generator_(rd_()) {
     std::copy(tested.begin(), tested.end(), std::back_inserter(tested_));
     std::copy(positive.begin(), positive.end(), std::back_inserter(positive_));
     std::partial_sum(positive_.begin(), positive_.end(), positive_.begin());
   }
 
-  auto Simulate(double beta0) -> SimulationResult {
+  auto Simulate(double beta0, const GeneratorInterface& generator) -> SimulationResult {
     constexpr double gamma1 = 1.25, gamma2 = 1.04;
-    std::vector<uint32_t> infected = GenerateInfected(gamma1, gamma2);
+    std::vector<uint32_t> infected = GenerateInfected(generator);
     std::vector<Person> persons;
     std::uniform_int_distribution<> uniform(0, 14);
 
@@ -77,9 +51,9 @@ class Simulator {
     int32_t cumulative_positive = 0;
     for (uint32_t day = 0; day < infected.size(); ++day) {
       for (uint32_t i = 0; i < infected[day]; ++i) {
-        auto age = generate_age(&gen_);
-        auto symptoms = beta_distribution(1, bs[age], &gen_);
-        persons.emplace_back(symptoms, std::ceil(symptoms * kSymptomsLength + uniform(gen_)), day);
+        auto age = generate_age(&random_generator_);
+        auto symptoms = beta_distribution(1, bs[age], &random_generator_);
+        persons.emplace_back(symptoms, std::ceil(symptoms * kSymptomsLength + uniform(random_generator_)), day);
         if (persons.back().DateOfDeath().has_value()) {
           uint32_t date = *persons.back().DateOfDeath();
           if (result.dead_count.size() <= date) result.dead_count.resize(date + 1);
@@ -114,19 +88,11 @@ class Simulator {
   }
 
  private:
-  auto GenerateInfected(double gamma1, double gamma2) -> std::vector<uint32_t> {
-    std::vector<double> deltas = {1.0};
-    for (uint32_t i = 0; i < t0_; ++i) {
-      deltas.push_back(deltas.back() * gamma1);
-    }
-    double base = deltas.back();
-    std::vector<double> next_part = Growth::GenerateNewValues(base, tmax_ - t0_);
-    std::copy(next_part.begin(), next_part.end(), std::back_inserter(deltas));
-
+  auto GenerateInfected(const GeneratorInterface& generator) -> std::vector<uint32_t> {
     std::vector<uint32_t> infected;
-    for (uint32_t i = 0; i < deltas.size(); ++i) {
-      std::poisson_distribution<> possion(deltas[i]);
-      infected.push_back(possion(gen_));
+    for (double mean : generator.CreateDeltas(t0_, tested_.size())) {
+      std::poisson_distribution<> possion(mean);
+      infected.push_back(possion(random_generator_));
     }
     return infected;
   }
@@ -139,7 +105,7 @@ class Simulator {
   std::vector<uint32_t> positive_;
 
   std::random_device rd_;
-  std::mt19937 gen_;
+  std::mt19937 random_generator_;
 };
 
 int main(int argc, char* argv[]) {
@@ -159,18 +125,19 @@ int main(int argc, char* argv[]) {
                  calculate_b);
   assert(tested.size() == positive.size());
 
+  auto generator = ExponentialGenerator(kGamma1, kGamma2);
   constexpr uint32_t kIterations = 4;
   std::cout << "prefix_length optimal_b0 dead_count best_error" << std::endl;
 #pragma omp parallel for shared(positive, tested, bs)
   for (uint32_t prefix_length = 2; prefix_length < 9; ++prefix_length) {
-    Simulator<ExponentialGrowth> simulator(prefix_length, positive, tested);
-    // Simulator<PowerLawGrowth> simulator(prefix_length, positive, tested);
+    Simulator simulator(prefix_length, positive, tested);
+    // Simulator simulator(prefix_length, positive, tested);
     uint32_t optimal_b0 = -1, optimal_dead_count;
     double best = 1e10;
     for (uint32_t b0 = 60; b0 <= 200; b0 += 3) {
       double sum_error = 0, dead_count = 0;
       for (uint32_t i = 0; i < kIterations; ++i) {
-        auto result = simulator.Simulate(b0);
+        auto result = simulator.Simulate(b0, generator);
         sum_error += result.error;
         dead_count += std::accumulate(result.dead_count.begin(), result.dead_count.end(), 0);
       }

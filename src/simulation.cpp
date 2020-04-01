@@ -72,12 +72,10 @@ class Simulator {
       result.daily_positive.push_back(persons.end() - iter);
       cumulative_positive += persons.end() - iter;
       if (positive_[day] > 0) {
-        result.error += std::pow(cumulative_positive - static_cast<int32_t>(positive_[day]), 2) /
-                        positive_[day];
+        result.error -= log_distance_probability(cumulative_positive, positive_[day]);
 
         // std::cout << day << " " << cumulative_positive << " " << positive_[day] << " "
-        //           << std::pow(cumulative_positive - static_cast<int32_t>(positive_[day]), 2) /
-        //                  positive_[day]
+        //           << log_distance_probability(cumulative_positive, positive_[day])
         //           << std::endl;
       }
 
@@ -91,8 +89,8 @@ class Simulator {
   auto GenerateInfected(const GeneratorInterface& generator) -> std::vector<uint32_t> {
     std::vector<uint32_t> infected;
     for (double mean : generator.CreateDeltas(t0_, tested_.size())) {
-      std::poisson_distribution<> possion(mean);
-      infected.push_back(possion(random_generator_));
+      std::poisson_distribution<> poisson(mean);
+      infected.push_back(poisson(random_generator_));
     }
     return infected;
   }
@@ -126,7 +124,7 @@ int main(int argc, char* argv[]) {
   assert(tested.size() == positive.size());
 
   auto generator = ExponentialGenerator(kGamma1, kGamma2);
-  constexpr uint32_t kIterations = 4;
+  constexpr uint32_t kIterations = 50;
   std::cout << "prefix_length optimal_b0 dead_count best_error" << std::endl;
 #pragma omp parallel for shared(positive, tested, bs)
   for (uint32_t prefix_length = 2; prefix_length < 9; ++prefix_length) {
@@ -149,7 +147,7 @@ int main(int argc, char* argv[]) {
         optimal_dead_count = dead_count;
       }
     }
-    std::cout << prefix_length << " " << optimal_b0 << " " << optimal_dead_count << " " << best
-              << std::endl;
+    std::cout << prefix_length << " " << optimal_b0 << " " << optimal_dead_count << " "
+      << best << std::endl;
   }
 }

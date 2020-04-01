@@ -7,7 +7,8 @@
 // Population of Slovakia
 constexpr uint32_t kPopulationSize = 5450000;
 // Death probabilities by decade of life
-constexpr double kDeathProbabilities[] = {0.002, 0.002, 0.002, 0.002, 0.004, 0.013, 0.036, 0.08, 0.148};
+constexpr double kDeathProbabilities[] = {0.002, 0.002, 0.002, 0.002, 0.004,
+                                          0.013, 0.036, 0.08,  0.148};
 constexpr uint32_t kDecadesCount = 9;
 constexpr double kPopulationAge[] = {0.11, 0.10, 0.12, 0.16, 0.15, 0.13, 0.13, 0.07, 0.03};
 const double kLog2 = std::log(2);
@@ -35,4 +36,25 @@ auto generate_age(std::mt19937* generator) -> uint32_t {
     sum += kPopulationAge[res];
   }
   return res;
+}
+
+template <uint32_t N>
+constexpr std::array<double, N> generate_log_factorials() {
+  std::array<double, N> ret{};
+  ret[0] = 0;
+  for (int i = 1; i < N; i++) {
+    ret[i] = ret[i - 1] + log(i);
+  }
+  return ret;
+}
+
+constexpr uint32_t kFactorialLength = 5000;
+constexpr std::array<double, kFactorialLength> log_factorials =
+    generate_log_factorials<kFactorialLength>();
+
+auto log_distance_probability(uint32_t z, uint32_t c) -> double {
+  double lambda = (z + c) / 2.;
+  double positive = (z + c) * log(lambda);
+  double negative = z + c + log_factorials[z] + log_factorials[c];
+  return positive - negative;
 }

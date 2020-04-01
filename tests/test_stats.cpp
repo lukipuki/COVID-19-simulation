@@ -53,3 +53,29 @@ TEST(Stats, GeneratesAgeAccordingToPopulation) {
   }
 }
 
+TEST(Stats, GeneratesAccordingToPoisson) {
+  std::random_device rd;
+  std::mt19937 gen(rd());
+
+  constexpr uint32_t kIterations = 1 << 23;
+  constexpr uint32_t kSentinel = 1 << 20;
+  std::vector<uint32_t> occurences(kSentinel, 0);
+  constexpr uint32_t kPairSum = 22;
+  for (uint32_t i = 0; i < kIterations; ++i) {
+    std::poisson_distribution<> poisson(kPairSum / 2.0);
+    uint32_t generated = poisson(gen);
+    if (generated < kSentinel) {
+      ++occurences[generated];
+    }
+  }
+
+  std::vector<double> probabilities(kSentinel, 0);
+  for (uint32_t i = 0; i < kSentinel; ++i) {
+    probabilities[i] = occurences[i] / static_cast<double>(kIterations);
+  }
+
+  for (uint32_t z = 0; z <= kPairSum; ++z) {
+    EXPECT_NEAR(std::exp(log_distance_probability(z, kPairSum - z)),
+                probabilities[z] * probabilities[kPairSum - z], 0.00005);
+  }
+}

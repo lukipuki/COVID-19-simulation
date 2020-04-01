@@ -12,7 +12,7 @@ prefix_length = 9
 accumulated = list(itertools.accumulate(positive))[prefix_length:]
 
 x = np.arange(1, len(accumulated) + 10)
-y_power_law = 10 * x ** 1.20
+y_power_law = 10 * x ** 1.21
 
 # To add exponential decay, do something like this instead:
 # x = np.arange(1, len(accumulated) + 50)
@@ -56,7 +56,7 @@ figure.add_trace(
         mode='lines',
         # name=r'$\text{Power law fit: } t^{6.23} / 1.125^t \cdot 0.000019$',
         name=r'$\text{Power law fit: } 10 \cdot t^{1.2}$',
-        line={'width': 3},
+        line={'dash': 'dash', 'width': 2},
     )
 )
 

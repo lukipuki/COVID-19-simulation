@@ -4,13 +4,9 @@
 
 #include "person.h"
 #include "stats.h"
+#include "yaml-cpp/yaml.h"
 
 std::vector<double> bs;
-const std::vector<uint32_t> tested = {37,  32,  38,  50,  49,  64,  72,  69,  116, 99,
-                                      35,  118, 197, 228, 148, 293, 217, 283, 354, 399,
-                                      235, 432, 464, 325, 912, 747, 720, 401, 688, 877};
-const std::vector<uint32_t> positive = {0,  0, 0,  0,  1,  2, 2,  2,  0,  3,  11, 11, 12, 17, 11,
-                                        25, 8, 19, 13, 41, 7, 19, 12, 10, 43, 23, 22, 22, 27, 37};
 constexpr uint32_t kRestrictionDay = 11;  // 0-indexed March 12th
 // constexpr uint32_t kRestrictionDay = 10;  // For power law
 constexpr double kGamma2 = 1.04;
@@ -57,11 +53,12 @@ class PowerLawGrowth {
 template <typename Growth>
 class Simulator {
  public:
-  Simulator(uint32_t tmax)
-      : tmax_{tmax},
-        tested_(static_cast<uint32_t>(tmax - tested.size() + 1), 0),
-        positive_(tested_.size(), 0),
-        t0_{static_cast<uint32_t>(kRestrictionDay + tmax - positive.size())},
+  Simulator(uint32_t prefix_length, const std::vector<uint32_t>& positive,
+            const std::vector<uint32_t>& tested)
+      : tmax_{prefix_length + static_cast<uint32_t>(positive.size())},
+        tested_(prefix_length + 1, 0),
+        positive_(prefix_length + 1, 0),
+        t0_{kRestrictionDay + prefix_length + 1},
         rd_{},
         gen_(rd_()) {
     std::copy(tested.begin(), tested.end(), std::back_inserter(tested_));
@@ -145,17 +142,29 @@ class Simulator {
   std::mt19937 gen_;
 };
 
-int main() {
+int main(int argc, char* argv[]) {
+  if (argc <= 1) {
+    std::cout << "You need to supply a YAML file with data" << std::endl;
+    exit(1);
+  }
+
+  std::vector<uint32_t> tested;
+  std::vector<uint32_t> positive;
+  for (const auto& node : YAML::LoadFile(argv[1])) {
+    positive.push_back(node["positive"].as<uint32_t>());
+    tested.push_back(node["tested"].as<uint32_t>());
+  }
+
   std::transform(kDeathProbabilities, kDeathProbabilities + kDecadesCount, std::back_inserter(bs),
                  calculate_b);
   assert(tested.size() == positive.size());
 
-  constexpr uint32_t kIterations = 50;
+  constexpr uint32_t kIterations = 4;
   std::cout << "prefix_length optimal_b0 dead_count best_error" << std::endl;
 #pragma omp parallel for shared(positive, tested, bs)
   for (uint32_t prefix_length = 2; prefix_length < 9; ++prefix_length) {
-    Simulator<ExponentialGrowth> simulator(positive.size() + prefix_length);
-    // Simulator<PowerLawGrowth> simulator(positive.size() + prefix_length);
+    Simulator<ExponentialGrowth> simulator(prefix_length, positive, tested);
+    // Simulator<PowerLawGrowth> simulator(prefix_length, positive, tested);
     uint32_t optimal_b0 = -1, optimal_dead_count;
     double best = 1e10;
     for (uint32_t b0 = 60; b0 <= 200; b0 += 3) {

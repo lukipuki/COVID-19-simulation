@@ -13,7 +13,8 @@ class COVID19Simulation(ConanFile):
         "url": "auto"
     }
 
-    build_requires = "gtest/1.10.0"
+    build_requires = "gtest/1.8.1"
+    requires = "yaml-cpp/0.6.3"
 
     def build(self):
         cmake = CMake(self)

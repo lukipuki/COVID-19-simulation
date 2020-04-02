@@ -88,3 +88,6 @@
 - date: '2020-03-31'
   positive: 37
   tested: 887
+- date: '2020-04-01'
+  positive: 26
+  tested: 1191

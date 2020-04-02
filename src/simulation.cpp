@@ -10,6 +10,7 @@
 #include "result.h"
 #include "stats.h"
 
+constexpr uint32_t kExtraDays = 10; // Extra simulated days of infections
 constexpr uint32_t kRestrictionDay = 11;  // 0-indexed March 12th
 // constexpr uint32_t kRestrictionDay = 10;  // For power law
 constexpr double kGamma1 = 1.25;
@@ -21,8 +22,7 @@ class Simulator {
  public:
   Simulator(uint32_t prefix_length, const std::vector<uint32_t>& positive,
             const std::vector<uint32_t>& tested)
-      : tmax_{prefix_length + static_cast<uint32_t>(positive.size())},
-        tested_(prefix_length + 1, 0),
+      : tested_(prefix_length + 1, 0),
         positive_(prefix_length + 1, 0),
         t0_{kRestrictionDay + prefix_length + 1},
         rd_{},
@@ -41,7 +41,7 @@ class Simulator {
     SimulationResult result(infected);
     result.error = 0;
     int32_t cumulative_positive = 0;
-    for (uint32_t day = 0; day < infected.size(); ++day) {
+    for (uint32_t day = 0; day < positive_.size(); ++day) {
       for (uint32_t i = 0; i < infected[day]; ++i) {
         auto age = generate_age(&random_generator_);
         auto symptoms = beta_distribution(1, bs[age], &random_generator_);
@@ -80,14 +80,13 @@ class Simulator {
  private:
   auto GenerateInfected(const GeneratorInterface& generator) -> std::vector<uint32_t> {
     std::vector<uint32_t> infected;
-    for (double mean : generator.CreateDeltas(t0_, tested_.size())) {
+    for (double mean : generator.CreateDeltas(t0_, tested_.size() + kExtraDays)) {
       std::poisson_distribution<> poisson(mean);
       infected.push_back(poisson(random_generator_));
     }
     return infected;
   }
 
-  uint32_t tmax_;
   uint32_t t0_;
 
   std::vector<uint32_t> tested_;
@@ -116,7 +115,7 @@ int main(int argc, char* argv[]) {
   constexpr uint32_t kIterations = 50;
   std::cout << "prefix_length optimal_b0 dead_count best_error" << std::endl;
   std::vector<YAML::Node> nodes;
-#pragma omp parallel for shared(positive, tested, bs)
+#pragma omp parallel for shared(positive, tested)
   for (uint32_t prefix_length = 2; prefix_length < 9; ++prefix_length) {
     Simulator simulator(prefix_length, positive, tested);
     // Simulator simulator(prefix_length, positive, tested);

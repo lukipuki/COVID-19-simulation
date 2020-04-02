@@ -1,11 +1,13 @@
 #include <algorithm>
 #include <cassert>
+#include <fstream>
 #include <iostream>
 
 #include "yaml-cpp/yaml.h"
 
 #include "generators.h"
 #include "person.h"
+#include "result.h"
 #include "stats.h"
 
 constexpr uint32_t kRestrictionDay = 11;  // 0-indexed March 12th
@@ -14,15 +16,6 @@ constexpr double kGamma1 = 1.25;
 constexpr double kGamma2 = 1.04;
 constexpr double kPowerLawExponent = 1.30;
 constexpr uint32_t kSymptomsLength = 28;
-
-struct SimulationResult {
-  explicit SimulationResult(const std::vector<uint32_t>& infected)
-      : daily_positive{}, daily_infected{infected}, error{0}, dead_count{} {}
-  std::vector<uint32_t> daily_positive;
-  std::vector<uint32_t> daily_infected;
-  std::vector<uint32_t> dead_count;
-  double error;
-};
 
 class Simulator {
  public:
@@ -71,9 +64,8 @@ class Simulator {
 
       result.daily_positive.push_back(persons.end() - iter);
       cumulative_positive += persons.end() - iter;
-      if (positive_[day] > 0) {
+      if (cumulative_positive + positive_[day] > 0) {
         result.error -= log_distance_probability(cumulative_positive, positive_[day]);
-
         // std::cout << day << " " << cumulative_positive << " " << positive_[day] << " "
         //           << log_distance_probability(cumulative_positive, positive_[day])
         //           << std::endl;
@@ -118,12 +110,12 @@ int main(int argc, char* argv[]) {
     positive.push_back(node["positive"].as<uint32_t>());
     tested.push_back(node["tested"].as<uint32_t>());
   }
-
   assert(tested.size() == positive.size());
 
   auto generator = ExponentialGenerator(kGamma1, kGamma2);
   constexpr uint32_t kIterations = 50;
   std::cout << "prefix_length optimal_b0 dead_count best_error" << std::endl;
+  std::vector<YAML::Node> nodes;
 #pragma omp parallel for shared(positive, tested, bs)
   for (uint32_t prefix_length = 2; prefix_length < 9; ++prefix_length) {
     Simulator simulator(prefix_length, positive, tested);
@@ -131,12 +123,18 @@ int main(int argc, char* argv[]) {
     uint32_t optimal_b0 = -1, optimal_dead_count;
     double best = 1e10;
     for (uint32_t b0 = 60; b0 <= 200; b0 += 3) {
+      YAML::Node node;
+      node["params"]["prefix_length"] = prefix_length;
+      node["params"]["b0"] = b0;
+      node["params"]["gamma2"] = kGamma2;
       double sum_error = 0, dead_count = 0;
       for (uint32_t i = 0; i < kIterations; ++i) {
         auto result = simulator.Simulate(b0, generator);
         sum_error += result.error;
         dead_count += std::accumulate(result.dead_count.begin(), result.dead_count.end(), 0);
+        node["results"].push_back(result.Serialize());
       }
+      nodes.push_back(node);
       sum_error /= kIterations;
       dead_count /= kIterations;
       if (sum_error < best) {
@@ -148,4 +146,22 @@ int main(int argc, char* argv[]) {
     std::cout << prefix_length << " " << optimal_b0 << " " << optimal_dead_count << " " << best
               << std::endl;
   }
+
+  YAML::Emitter yaml_out;
+  yaml_out << YAML::BeginSeq;
+  for (const auto& node : nodes) {
+    yaml_out << YAML::BeginMap;
+    yaml_out << YAML::Key << "params" << YAML::Value << node["params"];
+    yaml_out << YAML::Key << "results";
+    yaml_out << YAML::Value << YAML::BeginSeq;
+    for (const auto& result : node["results"]) {
+      yaml_out << YAML::Flow << result;
+    }
+    yaml_out << YAML::EndSeq;
+    yaml_out << YAML::EndMap;
+  }
+  yaml_out << YAML::EndSeq;
+
+  std::ofstream results_yaml("results.yaml");
+  results_yaml << yaml_out.c_str() << std::endl;
 }

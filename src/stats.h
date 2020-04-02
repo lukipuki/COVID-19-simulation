@@ -63,6 +63,7 @@ constexpr std::array<double, kFactorialLength> log_factorials =
 
 // Logarithm of the probability used in the distance function.
 auto log_distance_probability(uint32_t z, uint32_t c) -> double {
+  assert(z + c > 0);
   assert(z < kFactorialLength);
   assert(c < kFactorialLength);
   double positive = (z + c) * std::log((z + c) / 2.);

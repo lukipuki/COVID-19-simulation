@@ -6,6 +6,7 @@ import itertools
 import numpy as np
 import plotly.graph_objs as go
 import yaml
+from yaml import CLoader as Loader
 
 
 parser = argparse.ArgumentParser(description='COVID-19 visualization for Slovakia')
@@ -27,7 +28,7 @@ with open(args.data, 'r') as stream:
 
 with open(args.simulated, 'r') as stream:
     try:
-        data = yaml.safe_load(stream)
+        data = yaml.load(stream, Loader=Loader)
         for group in data:
             if group["params"]["b0"] == 168 and group["params"]["prefix_length"] == prefix_length:
                 daily_positive = [result["daily_positive"] for result in group["results"]]

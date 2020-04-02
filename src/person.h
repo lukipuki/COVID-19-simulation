@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <optional>
+#include <vector>
 
 constexpr double kDeathThreshold = 0.5;
 
@@ -24,12 +25,12 @@ class Person {
     }
   }
 
-  double CurrentSymptoms(uint32_t date) const {
+  auto CurrentSymptoms(uint32_t date) const -> double {
     if (date < start_date_ || date >= start_date_ + symptoms_.size()) return 0;
     return symptoms_[date - start_date_];
   }
 
-  std::optional<uint32_t> DateOfDeath() const { return date_of_death_; }
+  auto DateOfDeath() const -> std::optional<uint32_t> { return date_of_death_; }
 
  private:
   State state_;

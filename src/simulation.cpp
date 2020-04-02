@@ -10,9 +10,9 @@
 #include "result.h"
 #include "stats.h"
 
-constexpr uint32_t kExtraDays = 10; // Extra simulated days of infections
+constexpr uint32_t kExtraDays = 10;       // Extra simulated days of infections
 constexpr uint32_t kRestrictionDay = 11;  // 0-indexed March 12th
-// constexpr uint32_t kRestrictionDay = 10;  // For power law
+// constexpr uint32_t kRestrictionDay = 9;  // For power law
 constexpr double kGamma1 = 1.25;
 constexpr double kGamma2 = 1.04;
 constexpr double kPowerLawExponent = 1.30;
@@ -22,9 +22,9 @@ class Simulator {
  public:
   Simulator(uint32_t prefix_length, const std::vector<uint32_t>& positive,
             const std::vector<uint32_t>& tested)
-      : tested_(prefix_length + 1, 0),
-        positive_(prefix_length + 1, 0),
-        t0_{kRestrictionDay + prefix_length + 1},
+      : tested_(prefix_length, 0),
+        positive_(prefix_length, 0),
+        t0_{kRestrictionDay + prefix_length},
         rd_{},
         random_generator_(rd_()) {
     std::copy(tested.begin(), tested.end(), std::back_inserter(tested_));
@@ -112,11 +112,12 @@ int main(int argc, char* argv[]) {
   assert(tested.size() == positive.size());
 
   auto generator = ExponentialGenerator(kGamma1, kGamma2);
+  // auto generator = PowerLawGenerator(kGamma1, kPowerLawExponent);
   constexpr uint32_t kIterations = 50;
   std::cout << "prefix_length optimal_b0 dead_count best_error" << std::endl;
   std::vector<YAML::Node> nodes;
 #pragma omp parallel for shared(positive, tested)
-  for (uint32_t prefix_length = 2; prefix_length < 9; ++prefix_length) {
+  for (uint32_t prefix_length = 2; prefix_length < 6; ++prefix_length) {
     Simulator simulator(prefix_length, positive, tested);
     // Simulator simulator(prefix_length, positive, tested);
     uint32_t optimal_b0 = -1, optimal_dead_count;
@@ -126,6 +127,8 @@ int main(int argc, char* argv[]) {
       node["params"]["prefix_length"] = prefix_length;
       node["params"]["b0"] = b0;
       node["params"]["gamma2"] = kGamma2;
+      node["params"]["deltas"] = generator.CreateDeltas(prefix_length + kRestrictionDay,
+                                                        prefix_length + tested.size() + kExtraDays);
       double sum_error = 0, dead_count = 0;
       for (uint32_t i = 0; i < kIterations; ++i) {
         auto result = simulator.Simulate(b0, generator);
@@ -150,7 +153,16 @@ int main(int argc, char* argv[]) {
   yaml_out << YAML::BeginSeq;
   for (const auto& node : nodes) {
     yaml_out << YAML::BeginMap;
-    yaml_out << YAML::Key << "params" << YAML::Value << node["params"];
+    yaml_out << YAML::Key << "params" << YAML::Value;
+    {
+      yaml_out << YAML::BeginMap;
+      yaml_out << YAML::Key << "b0" << YAML::Value << node["params"]["b0"].as<uint32_t>();
+      yaml_out << YAML::Key << "gamma2" << YAML::Value << node["params"]["gamma2"];
+      yaml_out << YAML::Key << "prefix_length" << YAML::Value << node["params"]["prefix_length"];
+      yaml_out << YAML::Key << "deltas" << YAML::Value << YAML::Flow << node["params"]["deltas"];
+      yaml_out << YAML::EndMap;
+    }
+
     yaml_out << YAML::Key << "results";
     yaml_out << YAML::Value << YAML::BeginSeq;
     for (const auto& result : node["results"]) {

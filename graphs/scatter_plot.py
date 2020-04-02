@@ -20,15 +20,15 @@ parser.add_argument('simulated',
                     help=f"YAML file with simulation results")
 args = parser.parse_args()
 
-prefix_length = 3
+prefix_length = 4
 
 with open(args.data, 'r') as stream:
     try:
         data = yaml.safe_load(stream)
-        positive = [0] * (prefix_length + 1) + [
+        positive = [0] * prefix_length + [
             point['positive'] for point in data
         ]
-        date_list = ['2020-03-01'] * (prefix_length + 1) + [
+        date_list = ['2020-03-01'] * prefix_length + [
             point['date'] for point in data
         ]
     except yaml.YAMLError as exc:
@@ -38,8 +38,7 @@ with open(args.simulated, 'r') as stream:
     try:
         data = yaml.load(stream, Loader=Loader)
         for group in data:
-            if group["params"]["b0"] == 168 and group["params"][
-                    "prefix_length"] == prefix_length:
+            if group["params"]["b0"] == 168 and group["params"]["prefix_length"] == prefix_length:
                 daily_positive = [
                     result["daily_positive"] for result in group["results"]
                 ]
@@ -51,6 +50,7 @@ with open(args.simulated, 'r') as stream:
                     range(len(result["daily_positive"]))
                     for result in group["results"]
                 ]
+                deltas = group["params"]["deltas"]
 
                 daily_positive, daily_infected, days = map(
                     lambda v: list(chain.from_iterable(v)),
@@ -80,6 +80,14 @@ figure.add_trace(
         text=date_list,
         mode='lines',
         name=r'Real data',
+    ))
+
+figure.add_trace(
+    go.Scatter(
+        x=list(range(len(positive))),
+        y=deltas,
+        mode='lines',
+        name='Expected infected',
     ))
 
 # offline.plot(figure, filename='graph.html')

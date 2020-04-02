@@ -48,7 +48,8 @@ class PowerLawGenerator : public GeneratorInterface {
     t0 = std::min(t0, count - 1);
     std::vector<double> values;
     for (int i = 1; i <= count + 1; ++i) {
-      double val = std::pow(i, power_law_exponent_) * exp(-i / kPowerLawDecay);
+      // double val = std::pow(i, power_law_exponent_) * exp(-i / kPowerLawDecay);
+      double val = std::pow(i, power_law_exponent_);
       values.push_back(val);
     }
     std::vector<double> result = ExponentialPrefix(gamma1_, t0);

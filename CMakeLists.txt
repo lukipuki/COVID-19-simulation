@@ -3,12 +3,12 @@ project(covid19_simulation)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS On)
 
-find_package(OpenMP)
-find_package(yaml-cpp REQUIRED)
-
 if(EXISTS ${CMAKE_BINARY_DIR}/conan_paths.cmake)
   include(${CMAKE_BINARY_DIR}/conan_paths.cmake)
 endif()
+
+find_package(OpenMP)
+find_package(yaml-cpp REQUIRED)
 
 add_executable(simulation src/simulation.cpp)
 target_compile_features(simulation PRIVATE cxx_std_17)

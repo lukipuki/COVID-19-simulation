@@ -5,12 +5,8 @@ import yaml
 from sys import stdin
 from datetime import datetime, timedelta
 
-
 parser = argparse.ArgumentParser(description='COVID-19 data downloader')
-parser.add_argument('country',
-                    metavar='country',
-                    type=str,
-                    help=f"Country")
+parser.add_argument('country', metavar='country', type=str, help=f"Country")
 args = parser.parse_args()
 
 
@@ -30,7 +26,6 @@ for typ in ["deaths", "recovered", "confirmed"]:
     rows = table.loc[table["Country/Region"] == "Italy"]
     data[typ] = diff(rows.iloc[:, 4:].values.tolist()[0])
 
-
 positive = data["confirmed"]
 recovered = data["recovered"]
 dead = data["deaths"]
@@ -41,7 +36,6 @@ dates = [(start_day + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(len
 points = []
 for c, r, d, t in zip(positive, recovered, dead, dates):
     points.append({'positive': c, 'recovered': r, 'dead': d, 'date': t})
-
 
 with open("data.yaml", 'w') as f:
     yaml.dump(points, f, default_flow_style=False)

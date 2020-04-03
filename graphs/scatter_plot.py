@@ -39,6 +39,8 @@ with open(args.simulated, 'r') as stream:
         data = yaml.load(stream, Loader=Loader)
         best_error, best_b0 = 1e10, None
         for group in data:
+            if "results" not in group:
+                continue
             if group["params"]["prefix_length"] == prefix_length and sum(result["error"] for result in group["results"]) < best_error:
                 results = group["results"]
                 best_error = sum(result["error"] for result in results)

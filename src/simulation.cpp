@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cassert>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 
 #include "yaml-cpp/yaml.h"
@@ -17,6 +18,10 @@ constexpr double kGamma1 = 1.25;
 constexpr double kGamma2 = 1.04;
 constexpr double kPowerLawExponent = 1.30;
 constexpr uint32_t kSymptomsLength = 28;
+
+// Only serialize good parameters, scoring below kScoreThreshold
+constexpr double kScoreThreshold = 230;
+
 
 class Simulator {
  public:
@@ -117,7 +122,7 @@ int main(int argc, char* argv[]) {
   std::cout << "prefix_length optimal_b0 dead_count best_error" << std::endl;
   std::vector<YAML::Node> nodes;
 #pragma omp parallel for shared(positive, tested)
-  for (uint32_t prefix_length = 2; prefix_length < 6; ++prefix_length) {
+  for (uint32_t prefix_length = 2; prefix_length < 10; ++prefix_length) {
     Simulator simulator(prefix_length, positive, tested);
     // Simulator simulator(prefix_length, positive, tested);
     uint32_t optimal_b0 = -1, optimal_dead_count;
@@ -130,13 +135,14 @@ int main(int argc, char* argv[]) {
       node["params"]["deltas"] = generator.CreateDeltas(prefix_length + kRestrictionDay,
                                                         prefix_length + tested.size() + kExtraDays);
       double sum_error = 0, dead_count = 0;
+      std::vector<SimulationResult> results;
       for (uint32_t i = 0; i < kIterations; ++i) {
         auto result = simulator.Simulate(b0, generator);
         sum_error += result.error;
         dead_count += std::accumulate(result.dead_count.begin(), result.dead_count.end(), 0);
-        node["results"].push_back(result.Serialize());
+        results.push_back(result);
       }
-      nodes.push_back(node);
+
       sum_error /= kIterations;
       dead_count /= kIterations;
       if (sum_error < best) {
@@ -144,32 +150,26 @@ int main(int argc, char* argv[]) {
         optimal_b0 = b0;
         optimal_dead_count = dead_count;
       }
+
+      if (sum_error < kScoreThreshold) {
+        for (const auto& result : results) {
+          node["results"].push_back(result.Serialize());
+        }
+      } else {
+        node["result_abbrev"]["error"] = sum_error;
+        node["result_abbrev"]["dead_count"] = dead_count;
+      }
+      nodes.push_back(node);
     }
-    std::cout << prefix_length << " " << optimal_b0 << " " << optimal_dead_count << " " << best
-              << std::endl;
+
+    std::cout << std::setw(2) << prefix_length << std::setw(4) << optimal_b0 << std::setw(3)
+              << optimal_dead_count << std::setw(9) << best << std::endl;
   }
 
   YAML::Emitter yaml_out;
   yaml_out << YAML::BeginSeq;
   for (const auto& node : nodes) {
-    yaml_out << YAML::BeginMap;
-    yaml_out << YAML::Key << "params" << YAML::Value;
-    {
-      yaml_out << YAML::BeginMap;
-      yaml_out << YAML::Key << "b0" << YAML::Value << node["params"]["b0"].as<uint32_t>();
-      yaml_out << YAML::Key << "gamma2" << YAML::Value << node["params"]["gamma2"];
-      yaml_out << YAML::Key << "prefix_length" << YAML::Value << node["params"]["prefix_length"];
-      yaml_out << YAML::Key << "deltas" << YAML::Value << YAML::Flow << node["params"]["deltas"];
-      yaml_out << YAML::EndMap;
-    }
-
-    yaml_out << YAML::Key << "results";
-    yaml_out << YAML::Value << YAML::BeginSeq;
-    for (const auto& result : node["results"]) {
-      yaml_out << YAML::Flow << result;
-    }
-    yaml_out << YAML::EndSeq;
-    yaml_out << YAML::EndMap;
+    yaml_out << YAML::Flow << node;
   }
   yaml_out << YAML::EndSeq;
 

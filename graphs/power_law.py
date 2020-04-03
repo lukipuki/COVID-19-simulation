@@ -11,6 +11,7 @@ from collections import namedtuple
 
 
 Country = namedtuple('Country', ['name', 'fit', 'fit_description'])
+CASE_COUNT = 200
 
 parser = argparse.ArgumentParser(description='COVID-19 power law visualization')
 parser.add_argument('data',
@@ -19,38 +20,42 @@ parser.add_argument('data',
                     help=f"YAML file with data")
 args = parser.parse_args()
 
+
+def TG_formula(t, TG, A):
+    return (A / TG) * (t / TG) ** 6.23 / np.exp(t / TG)
+
+
+countries = [Country('Slovakia', lambda t: 10 * t ** 1.21, r'$10 \cdot t^{1.2}$'),
+             Country('Italy', lambda t: TG_formula(t, 7.8, 4417),
+                     r'$\frac{4417}{7.8} \cdot \left(\frac{t}{7.8}\right)^{6.23} / e^{t/7.8}$')]
+# Country('Italy', 0.48 * x ** 3.35, r'$0.5382 \cdot t^{3.37}$')]
+
 with open(args.data, 'r') as stream:
     try:
         data = yaml.safe_load(stream)
-        # active = [point['positive'] - point['recovered'] - point['dead'] for point in data]
-        active = [point['positive'] for point in data]
+        active = [point['positive'] - point['recovered'] - point['dead'] for point in data]
+        # active = [point['positive'] for point in data]
         # dead = [point['dead'] for point in data]
         # recovered = [point['recovered'] for point in data]
         date_list = [point['date'] for point in data]
     except yaml.YAMLError as exc:
         raise exc
 
-cumulative_active = list(filter(lambda x: x >= 10, itertools.accumulate(active)))
+cumulative_active = list(filter(lambda x: x >= CASE_COUNT, itertools.accumulate(active)))
 date_list = date_list[len(active) - len(cumulative_active):]
-x = np.arange(1, len(cumulative_active) + 10)
+x = np.arange(1, len(cumulative_active) + 50)
+country = countries[1]
+y_power_law = country.fit(x)
 
-
-countries = [Country('Slovakia', 10 * x ** 1.21, r'$\text{Fitted curve: } 10 \cdot t^{1.2}$'),
-             Country('Italy', 0.48 * x ** 3.35, r'$\text{Fitted curve: } 0.5382 \cdot t^{3.37}$')]
-ctr = countries[0]
-
-y_power_law = ctr.fit
-
-# To add exponential decay, do something like this instead:
-# x = np.arange(1, len(cumulative_active) + 50)
-# y_power_law = (x ** 6.23) * np.exp(-x / 8.5) * 10**(-5)
+last_date = datetime.strptime(date_list[-1], '%Y-%m-%d')
+date_list += [(last_date + timedelta(days=d)).strftime('%Y-%m-%d') for d in range(1, 51)]
 
 layout = go.Layout(
-    title=f"Active cases in {ctr.name}",
+    title=f"Active cases in {country.name}",
     xaxis=dict(
         type='log',
         autorange=True,
-        title=r'$\text{Days since the 10}^\mathrm{th}\text{ case}$'
+        title=r'$\text{Days since the 200}^\mathrm{th}\text{ case}$'
     ),
     yaxis=dict(type='log',
                autorange=True,
@@ -73,7 +78,7 @@ figure.add_trace(
         y=y_power_law,
         text=date_list,
         mode='lines',
-        name=ctr.fit_description,
+        name=country.fit_description,
         line={
             'dash': 'dash',
             'width': 3

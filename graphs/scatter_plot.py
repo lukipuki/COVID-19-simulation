@@ -20,7 +20,7 @@ parser.add_argument('simulated',
                     help=f"YAML file with simulation results")
 args = parser.parse_args()
 
-prefix_length = 4
+prefix_length = 3
 
 with open(args.data, 'r') as stream:
     try:
@@ -37,20 +37,24 @@ with open(args.data, 'r') as stream:
 with open(args.simulated, 'r') as stream:
     try:
         data = yaml.load(stream, Loader=Loader)
+        best_error, best_b0 = 1e10, None
         for group in data:
-            if group["params"]["b0"] == 168 and group["params"]["prefix_length"] == prefix_length:
+            if group["params"]["prefix_length"] == prefix_length and sum(result["error"] for result in group["results"]) < best_error:
+                results = group["results"]
+                best_error = sum(result["error"] for result in results)
                 daily_positive = [
-                    result["daily_positive"] for result in group["results"]
+                    result["daily_positive"] for result in results
                 ]
                 daily_infected = [
                     list(itertools.accumulate(result["daily_infected"]))
-                    for result in group["results"]
+                    for result in results
                 ]
                 days = [
                     range(len(result["daily_positive"]))
-                    for result in group["results"]
+                    for result in results
                 ]
                 deltas = group["params"]["deltas"]
+                best_b0 = group["params"]["b0"]
 
                 daily_positive, daily_infected, days = map(
                     lambda v: list(chain.from_iterable(v)),
@@ -58,6 +62,9 @@ with open(args.simulated, 'r') as stream:
 
     except yaml.YAMLError as exc:
         raise exc
+
+
+print(f"Picked b0={best_b0} as the best fit for prefix_length={prefix_length}")
 
 layout = go.Layout(xaxis=dict(autorange=True, title='Days'),
                    yaxis=dict(autorange=True, title='COVID-19 cases'),
@@ -84,11 +91,14 @@ figure.add_trace(
 
 figure.add_trace(
     go.Scatter(
-        x=list(range(len(positive))),
         y=deltas,
         mode='lines',
         name='Expected infected',
     ))
+
+# For another graph
+# cumulative_positive = np.add.accumulate(positive)
+# cumulative_deltas = np.add.accumulate(deltas[:len(positive)])
 
 # offline.plot(figure, filename='graph.html')
 figure.show()

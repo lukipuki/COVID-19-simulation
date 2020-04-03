@@ -18,7 +18,7 @@ TODO: expand on actually running the code
 
 ```sh
 mkdir build && cd $_
-cmake ..
+cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build .
 ```
 

@@ -113,7 +113,7 @@ int main(int argc, char* argv[]) {
 
   auto generator = ExponentialGenerator(kGamma1, kGamma2);
   // auto generator = PowerLawGenerator(kGamma1, kPowerLawExponent);
-  constexpr uint32_t kIterations = 50;
+  constexpr uint32_t kIterations = 100;
   std::cout << "prefix_length optimal_b0 dead_count best_error" << std::endl;
   std::vector<YAML::Node> nodes;
 #pragma omp parallel for shared(positive, tested)

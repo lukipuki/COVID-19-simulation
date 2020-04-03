@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
+import argparse
+import pandas as pd
 import yaml
 from sys import stdin
 from datetime import datetime, timedelta
 
 
-# TODO: download it from
-# From https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_time_series
+parser = argparse.ArgumentParser(description='COVID-19 data downloader')
+parser.add_argument('country',
+                    metavar='country',
+                    type=str,
+                    help=f"Country")
+args = parser.parse_args()
+
 
 def diff(a):
     "Calculates the daily increase from a cumulative number"
@@ -15,15 +22,24 @@ def diff(a):
     return a
 
 
-cases = diff(stdin.readline().split())
-recovered = diff(stdin.readline().split())
-dead = diff(stdin.readline().split())
+data = {}
+for typ in ["deaths", "recovered", "confirmed"]:
+    url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/" \
+           f"csse_covid_19_time_series/time_series_covid19_{typ}_global.csv"
+    table = pd.read_csv(url)
+    rows = table.loc[table["Country/Region"] == "Italy"]
+    data[typ] = diff(rows.iloc[:, 4:].values.tolist()[0])
+
+
+positive = data["confirmed"]
+recovered = data["recovered"]
+dead = data["deaths"]
 
 start_day = datetime(2020, 1, 22)
-dates = [(start_day + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(len(cases))]
+dates = [(start_day + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(len(positive))]
 
 points = []
-for c, r, d, t in zip(cases, recovered, dead, dates):
+for c, r, d, t in zip(positive, recovered, dead, dates):
     points.append({'positive': c, 'recovered': r, 'dead': d, 'date': t})
 
 

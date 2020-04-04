@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from plotly import offline
+from plotly.graph_objs import Figure, Layout, Scatter
 from datetime import datetime, timedelta
 import argparse
 import itertools
@@ -55,24 +56,25 @@ y = country.formula.lambd(x)
 last_date = datetime.strptime(date_list[-1], '%Y-%m-%d')
 date_list += [(last_date + timedelta(days=d)).strftime('%Y-%m-%d') for d in range(1, 51)]
 
-layout = go.Layout(title=f"Active cases in {country.name}",
-                   xaxis=dict(autorange=True,
-                              title=r'$\text{Days since the 200}^\mathrm{th}\text{ case}$'),
-                   yaxis=dict(type='log', autorange=True, title='COVID-19 active cases'),
-                   hovermode='x',
-                   font={'size': 15})
-figure = go.Figure(layout=layout)
+layout = Layout(title=f"Active cases in {country.name}",
+                xaxis=dict(autorange=True,
+                           title=r'$\text{Days since the 200}^\mathrm{th}\text{ case}$'),
+                yaxis=dict(type='log', autorange=True, title='COVID-19 active cases'),
+                hovermode='x',
+                font={'size': 15},
+                legend=dict(x=0.01, y=0.99, borderwidth=1))
+
+figure = Figure(layout=layout)
 figure.add_trace(
-    go.Scatter(x=x,
-               y=cumulative_active,
-               text=date_list,
-               mode='lines+markers',
-               name=f"Active cases",
-               line={'width': 3},
-               marker={'size': 8}))
+    Scatter(x=x,
+            y=cumulative_active,
+            mode='lines+markers',
+            name=f"Active cases",
+            line={'width': 3},
+            marker={'size': 8}))
 
 figure.add_trace(
-    go.Scatter(
+    Scatter(
         x=x,
         y=y,
         text=date_list,

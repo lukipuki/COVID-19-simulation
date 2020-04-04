@@ -5,9 +5,9 @@ from datetime import datetime, timedelta
 import argparse
 import itertools
 import numpy as np
-import plotly.graph_objs as go
 import yaml
 from yaml import CLoader as Loader
+from plotly.graph_objs import Figure, Layout, Scatter
 
 parser = argparse.ArgumentParser(description='COVID-19 visualization for Slovakia')
 parser.add_argument('data', metavar='data', type=str, help=f"YAML file with data")
@@ -31,8 +31,8 @@ with open(args.data, 'r') as stream:
         date_list = [point['date'] for point in data]
 
         first_date = datetime.strptime(date_list[0], '%Y-%m-%d')
-        prefix = [(first_date + timedelta(days=d)).strftime('%Y-%m-%d') for d in
-                  range(-prefix_length, 0)]
+        prefix = [(first_date + timedelta(days=d)).strftime('%Y-%m-%d')
+                  for d in range(-prefix_length, 0)]
         date_list = prefix + date_list
 
     except yaml.YAMLError as exc:
@@ -69,24 +69,25 @@ cumulative_real_positive = accumulate(real_positive)
 
 print(f"Picked b0={best_b0} as the best fit for prefix_length={prefix_length}")
 
-layout = go.Layout(title='Total cases',
-                   xaxis=dict(autorange=True, title='Days'),
-                   yaxis=dict(autorange=True, title='COVID-19 cases'),
-                   hovermode='x',
-                   font={'size': 20})
+layout = Layout(title='Total cases',
+                xaxis=dict(autorange=True, title='Days'),
+                yaxis=dict(autorange=True, title='COVID-19 cases'),
+                hovermode='x',
+                font={'size': 15},
+                legend=dict(x=0.01, y=0.99, borderwidth=1))
 
-figure = go.Figure(layout=layout)
+figure = Figure(layout=layout)
 figure.add_trace(
-    go.Scatter(x=days,
-               y=cumulative_daily_positive,
-               text=date_list,
-               mode='markers',
-               name="Simulated cases",
-               line={'width': 3},
-               marker=dict(size=10, opacity=0.10)))
+    Scatter(x=days,
+            y=cumulative_daily_positive,
+            text=date_list,
+            mode='markers',
+            name="Simulated cases",
+            line={'width': 3},
+            marker=dict(size=10, opacity=0.10)))
 
 figure.add_trace(
-    go.Scatter(
+    Scatter(
         x=list(range(len(cumulative_real_positive))),
         y=cumulative_real_positive,
         text=date_list,
@@ -94,7 +95,7 @@ figure.add_trace(
         name=r'Real data',
     ))
 
-# figure.add_trace(go.Scatter(
+# figure.add_trace(Scatter(
 #     y=deltas,
 #     mode='lines',
 #     name='Expected infected',

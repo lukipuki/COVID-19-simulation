@@ -1,99 +1,165 @@
 - date: '2020-03-02'
+  dead: 0
   positive: 0
+  recovered: 0
   tested: 37
 - date: '2020-03-03'
+  dead: 0
   positive: 0
+  recovered: 0
   tested: 32
 - date: '2020-03-04'
+  dead: 0
   positive: 0
+  recovered: 0
   tested: 38
 - date: '2020-03-05'
+  dead: 0
   positive: 0
+  recovered: 0
   tested: 50
 - date: '2020-03-06'
+  dead: 0
   positive: 1
+  recovered: 0
   tested: 50
 - date: '2020-03-07'
+  dead: 0
   positive: 2
+  recovered: 0
   tested: 86
 - date: '2020-03-08'
+  dead: 0
   positive: 2
+  recovered: 0
   tested: 104
 - date: '2020-03-09'
+  dead: 0
   positive: 2
+  recovered: 0
   tested: 52
 - date: '2020-03-10'
+  dead: 0
   positive: 0
+  recovered: 0
   tested: 42
 - date: '2020-03-11'
+  dead: 0
   positive: 3
+  recovered: 0
   tested: 123
 - date: '2020-03-12'
+  dead: 0
   positive: 11
+  recovered: 0
   tested: 140
 - date: '2020-03-13'
+  dead: 0
   positive: 11
+  recovered: 0
   tested: 153
 - date: '2020-03-14'
+  dead: 0
   positive: 12
+  recovered: 0
   tested: 185
 - date: '2020-03-15'
+  dead: 0
   positive: 17
+  recovered: 0
   tested: 245
 - date: '2020-03-16'
+  dead: 0
   positive: 11
+  recovered: 0
   tested: 159
 - date: '2020-03-17'
+  dead: 1
   positive: 25
+  recovered: 0
   tested: 318
 - date: '2020-03-18'
+  dead: 0
   positive: 8
+  recovered: 0
   tested: 225
 - date: '2020-03-19'
+  dead: 0
   positive: 19
+  recovered: 0
   tested: 302
 - date: '2020-03-20'
+  dead: 0
   positive: 13
+  recovered: 0
   tested: 367
 - date: '2020-03-21'
+  dead: -1
   positive: 41
+  recovered: 7
   tested: 440
 - date: '2020-03-22'
+  dead: 0
   positive: 7
+  recovered: 0
   tested: 242
 - date: '2020-03-23'
+  dead: 0
   positive: 19
+  recovered: 0
   tested: 451
 - date: '2020-03-24'
+  dead: 0
   positive: 12
+  recovered: 0
   tested: 476
 - date: '2020-03-25'
+  dead: 0
   positive: 10
+  recovered: -5
   tested: 335
 - date: '2020-03-26'
+  dead: 0
   positive: 43
+  recovered: 0
   tested: 913
 - date: '2020-03-27'
+  dead: 0
   positive: 23
+  recovered: 0
   tested: 747
 - date: '2020-03-28'
+  dead: 0
   positive: 22
+  recovered: 0
   tested: 698
 - date: '2020-03-29'
+  dead: 0
   positive: 22
+  recovered: 5
   tested: 401
 - date: '2020-03-30'
+  dead: 0
   positive: 27
+  recovered: -4
   tested: 688
 - date: '2020-03-31'
+  dead: 1
   positive: 37
+  recovered: 0
   tested: 887
 - date: '2020-04-01'
+  dead: 0
   positive: 26
+  recovered: 2
   tested: 1191
 - date: '2020-04-02'
+  dead: 0
   positive: 24
+  recovered: 5
   tested: 1454
 - date: '2020-04-03'
+  dead: 0
   positive: 21
+  recovered: 0
   tested: 1889

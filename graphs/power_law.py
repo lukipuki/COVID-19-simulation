@@ -25,8 +25,9 @@ def TG_formula(TG, A):
 
 
 countries = [
-    Country('Slovakia', Formula(lambda t: 8 * t**1.28, r'$10 \cdot t^{1.2}$'), 10),
+    Country('Slovakia', Formula(lambda t: 8 * t**1.28, r'$8 \cdot t^{1.28}$'), 10),
     Country('Italy', TG_formula(7.8, 4417), 200),
+    # Country('Italy', Formula(lambda t: 0.5382 * t**3.37, r'$0.5382 \cdot t^{3.37}$'), 200),
     Country('Spain', TG_formula(6.4, 3665), 200),
     Country('Germany', TG_formula(6.7, 3773), 200),
     Country('USA', TG_formula(10.2, 72329), 200),
@@ -34,13 +35,11 @@ countries = [
     Country('France', TG_formula(6.5, 1961), 200),
     Country('Iran', TG_formula(8.7, 2569), 200)
 ]
-# Country('Italy', 0.48 * x ** 3.35, r'$0.5382 \cdot t^{3.37}$')]
 country = next(c for c in countries if c.name == args.country)
 
 with open(args.data, 'r') as stream:
     try:
         data = yaml.safe_load(stream)
-        # active = [point['positive'] for point in data]
         active = [point['positive'] - point['recovered'] - point['dead'] for point in data]
         dead = [point['dead'] for point in data]
         recovered = [point['recovered'] for point in data]
@@ -50,8 +49,8 @@ with open(args.data, 'r') as stream:
 
 cumulative_active = list(filter(lambda x: x >= country.case_count, itertools.accumulate(active)))
 date_list = date_list[len(active) - len(cumulative_active):]
-x = np.arange(1, len(cumulative_active) + 50)
-y_power_law = country.formula.lambd(x)
+x = np.arange(1, len(cumulative_active) * 2)
+y = country.formula.lambd(x)
 
 last_date = datetime.strptime(date_list[-1], '%Y-%m-%d')
 date_list += [(last_date + timedelta(days=d)).strftime('%Y-%m-%d') for d in range(1, 51)]
@@ -61,7 +60,7 @@ layout = go.Layout(title=f"Active cases in {country.name}",
                               title=r'$\text{Days since the 200}^\mathrm{th}\text{ case}$'),
                    yaxis=dict(type='log', autorange=True, title='COVID-19 active cases'),
                    hovermode='x',
-                   font={'size': 20})
+                   font={'size': 15})
 figure = go.Figure(layout=layout)
 figure.add_trace(
     go.Scatter(x=x,
@@ -75,7 +74,7 @@ figure.add_trace(
 figure.add_trace(
     go.Scatter(
         x=x,
-        y=y_power_law,
+        y=y,
         text=date_list,
         mode='lines',
         name=country.formula.text,

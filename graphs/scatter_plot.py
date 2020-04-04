@@ -44,7 +44,7 @@ with open(args.simulated, 'r') as stream:
     except yaml.YAMLError as exc:
         raise exc
 
-    best_error, best_b0 = 1e10, None
+    best_error, best_b0, best_gamma2 = 1e10, None, None
     for group in data:
         if "results" not in group:
             continue
@@ -60,6 +60,7 @@ with open(args.simulated, 'r') as stream:
             days = [range(len(result["daily_positive"])) for result in results]
             deltas = group["params"]["deltas"]
             best_b0 = group["params"]["b0"]
+            best_gamma2 = group["params"]["gamma2"]
 
             daily_positive, daily_infected, days, cumulative_daily_positive = map(
                 lambda v: list(chain.from_iterable(v)),
@@ -67,29 +68,35 @@ with open(args.simulated, 'r') as stream:
 
 cumulative_real_positive = accumulate(real_positive)
 
-print(f"Picked b0={best_b0} as the best fit for prefix_length={prefix_length}")
+print(f"b_0={best_b0} as the best fit for prefix_length={prefix_length}")
 
-layout = Layout(title='Total cases',
+title_text = r'$\text{Daily new COVID-19 cases for }b_0=_b0, \gamma_2=_gamma2, prefix=_prefix$'
+title_text = title_text.replace("_b0", f"{best_b0}").replace("_gamma2", f"{best_gamma2}").replace(
+    "_prefix", f"{prefix_length}")
+
+layout = Layout(title=title_text,
                 xaxis=dict(autorange=True, title='Days'),
-                yaxis=dict(autorange=True, title='COVID-19 cases'),
                 hovermode='x',
                 font={'size': 15},
                 legend=dict(x=0.01, y=0.99, borderwidth=1))
 
 figure = Figure(layout=layout)
 figure.add_trace(
-    Scatter(x=days,
-            y=cumulative_daily_positive,
-            text=date_list,
-            mode='markers',
-            name="Simulated cases",
-            line={'width': 3},
-            marker=dict(size=10, opacity=0.10)))
+    Scatter(
+        x=days,
+        # y=cumulative_daily_positive,
+        y=daily_positive,
+        text=date_list,
+        mode='markers',
+        name="Simulated cases",
+        line={'width': 3},
+        marker=dict(size=10, opacity=0.18)))
 
 figure.add_trace(
     Scatter(
         x=list(range(len(cumulative_real_positive))),
-        y=cumulative_real_positive,
+        # y=cumulative_real_positive,
+        y=real_positive,
         text=date_list,
         mode='lines',
         name=r'Real data',

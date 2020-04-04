@@ -25,7 +25,7 @@ def TG_formula(TG, A):
 
 
 countries = [
-    Country('Slovakia', Formula(lambda t: 10 * t**1.21, r'$10 \cdot t^{1.2}$'), 10),
+    Country('Slovakia', Formula(lambda t: 8 * t**1.28, r'$10 \cdot t^{1.2}$'), 10),
     Country('Italy', TG_formula(7.8, 4417), 200),
     Country('Spain', TG_formula(6.4, 3665), 200),
     Country('Germany', TG_formula(6.7, 3773), 200),

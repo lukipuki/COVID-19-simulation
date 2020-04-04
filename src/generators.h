@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <vector>
 
-constexpr double kPowerLawDecay = 35;
+constexpr double kPolynomialDecay = 35;
 
 class GeneratorInterface {
  public:
@@ -40,16 +40,16 @@ class ExponentialGenerator : public GeneratorInterface {
   double gamma2_;
 };
 
-class PowerLawGenerator : public GeneratorInterface {
+class PolynomialGenerator : public GeneratorInterface {
  public:
-  PowerLawGenerator(double gamma1, double power_law_exponent)
-      : gamma1_(gamma1), power_law_exponent_(power_law_exponent) {}
+  PolynomialGenerator(double gamma1, double polynomial_exponent)
+      : gamma1_(gamma1), polynomial_exponent_(polynomial_exponent) {}
   auto CreateDeltas(uint32_t t0, uint32_t count) const -> std::vector<double> override {
     t0 = std::min(t0, count - 1);
     std::vector<double> values;
     for (int i = 1; i <= count + 1; ++i) {
-      // double val = std::pow(i, power_law_exponent_) * exp(-i / kPowerLawDecay);
-      double val = std::pow(i, power_law_exponent_);
+      // double val = std::pow(i, polynomial_exponent_) * exp(-i / kPolynomialDecay);
+      double val = std::pow(i, polynomial_exponent_);
       values.push_back(val);
     }
     std::vector<double> result = ExponentialPrefix(gamma1_, t0);
@@ -60,9 +60,9 @@ class PowerLawGenerator : public GeneratorInterface {
     assert(result.size() == count);
     return result;
   }
-  ~PowerLawGenerator() override = default;
+  ~PolynomialGenerator() override = default;
 
  private:
   double gamma1_;
-  double power_law_exponent_;
+  double polynomial_exponent_;
 };

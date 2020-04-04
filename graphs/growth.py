@@ -13,7 +13,7 @@ from collections import namedtuple
 Country = namedtuple('Country', ['name', 'formula', 'case_count'])
 Formula = namedtuple('Formula', ['lambd', 'text'])
 
-parser = argparse.ArgumentParser(description='COVID-19 power law visualization')
+parser = argparse.ArgumentParser(description='COVID-19 country growth visualization')
 parser.add_argument('data', metavar='data', type=str, help=f"YAML file with data")
 parser.add_argument('country', metavar='country', type=str, help=f"Country")
 args = parser.parse_args()

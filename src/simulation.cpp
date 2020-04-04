@@ -16,7 +16,7 @@ constexpr uint32_t kRestrictionDay = 11;  // 0-indexed March 12th
 // constexpr uint32_t kRestrictionDay = 9;  // For power law
 constexpr double kGamma1 = 1.25;
 constexpr double kGamma2 = 1.04;
-constexpr double kPowerLawExponent = 1.30;
+constexpr double kPolynomialDegree = 1.30;
 constexpr uint32_t kSymptomsLength = 28;
 
 // Only serialize good parameters, scoring below kScoreThreshold
@@ -117,7 +117,7 @@ int main(int argc, char* argv[]) {
   assert(tested.size() == positive.size());
 
   auto generator = ExponentialGenerator(kGamma1, kGamma2);
-  // auto generator = PowerLawGenerator(kGamma1, kPowerLawExponent);
+  // auto generator = PolynomialGenerator(kGamma1, kPolynomialDegree);
   constexpr uint32_t kIterations = 100;
   std::cout << "prefix_length optimal_b0 dead_count best_error" << std::endl;
   std::vector<YAML::Node> nodes;

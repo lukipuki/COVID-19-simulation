@@ -31,19 +31,19 @@ TEST(Generators, ExponentialNoSecondPhase) {
                                   DoubleNear(std::pow(kGamma1, 2), kEps)));
 }
 
-TEST(Generators, PowerLaw) {
-  constexpr double kGamma1 = 1.25, kPowerLawExponent = 1.2;
-  auto generator = PowerLawGenerator(kGamma1, kPowerLawExponent);
+TEST(Generators, Polynomial) {
+  constexpr double kGamma1 = 1.25, kPolynomialDegree = 1.2;
+  auto generator = PolynomialGenerator(kGamma1, kPolynomialDegree);
   std::vector<double> deltas = generator.CreateDeltas(1, 4);
 
   double second_step = std::pow(kGamma1, 1);
   std::vector<double> power_law_sequence = {
-      // second_step * (std::pow(2, kPowerLawExponent) * std::exp(-2 / kPowerLawDecay) -
-      //                std::pow(1, kPowerLawExponent) * std::exp(-1 / kPowerLawDecay)),
-      // second_step * (std::pow(3, kPowerLawExponent) * std::exp(-3 / kPowerLawDecay) -
-      //                std::pow(2, kPowerLawExponent) * std::exp(-2 / kPowerLawDecay))
-      second_step * (std::pow(2, kPowerLawExponent) - std::pow(1, kPowerLawExponent)),
-      second_step * (std::pow(3, kPowerLawExponent) - std::pow(2, kPowerLawExponent))
+      // second_step * (std::pow(2, kPolynomialDegree) * std::exp(-2 / kPolynomialDecay) -
+      //                std::pow(1, kPolynomialDegree) * std::exp(-1 / kPolynomialDecay)),
+      // second_step * (std::pow(3, kPolynomialDegree) * std::exp(-3 / kPolynomialDecay) -
+      //                std::pow(2, kPolynomialDegree) * std::exp(-2 / kPolynomialDecay))
+      second_step * (std::pow(2, kPolynomialDegree) - std::pow(1, kPolynomialDegree)),
+      second_step * (std::pow(3, kPolynomialDegree) - std::pow(2, kPolynomialDegree))
   };
 
   EXPECT_THAT(deltas, ElementsAre(DoubleNear(1.0, kEps), DoubleNear(kGamma1, kEps),

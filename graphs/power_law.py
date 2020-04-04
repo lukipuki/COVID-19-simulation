@@ -27,8 +27,9 @@ def TG_formula(TG, A):
 countries = [
     Country('Slovakia', Formula(lambda t: 10 * t**1.21, r'$10 \cdot t^{1.2}$'), 10),
     Country('Italy', TG_formula(7.8, 4417), 200),
-    Country('Spain', TG_formula(6.4, 3665), 2500),
-    Country('Germany', TG_formula(6.7, 3773), 2500)
+    Country('Spain', TG_formula(6.4, 3665), 200),
+    Country('Germany', TG_formula(6.7, 3773), 200),
+    Country('USA', TG_formula(10.2, 72329), 200)
 ]
 # Country('Italy', 0.48 * x ** 3.35, r'$0.5382 \cdot t^{3.37}$')]
 country = next(c for c in countries if c.name == args.country)
@@ -53,8 +54,7 @@ last_date = datetime.strptime(date_list[-1], '%Y-%m-%d')
 date_list += [(last_date + timedelta(days=d)).strftime('%Y-%m-%d') for d in range(1, 51)]
 
 layout = go.Layout(title=f"Active cases in {country.name}",
-                   xaxis=dict(type='log',
-                              autorange=True,
+                   xaxis=dict(autorange=True,
                               title=r'$\text{Days since the 200}^\mathrm{th}\text{ case}$'),
                    yaxis=dict(type='log', autorange=True, title='COVID-19 active cases'),
                    hovermode='x',

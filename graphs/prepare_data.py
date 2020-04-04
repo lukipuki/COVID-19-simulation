@@ -23,7 +23,7 @@ for typ in ["deaths", "recovered", "confirmed"]:
     url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/" \
            f"csse_covid_19_time_series/time_series_covid19_{typ}_global.csv"
     table = pd.read_csv(url)
-    rows = table.loc[table["Country/Region"] == "Italy"]
+    rows = table.loc[table["Country/Region"] == args.country]
     data[typ] = diff(rows.iloc[:, 4:].values.tolist()[0])
 
 positive = data["confirmed"]

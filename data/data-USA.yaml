@@ -1,6 +1,6 @@
 - date: '2020-01-22'
   dead: 0
-  positive: 0
+  positive: 1
   recovered: 0
 - date: '2020-01-23'
   dead: 0
@@ -8,7 +8,7 @@
   recovered: 0
 - date: '2020-01-24'
   dead: 0
-  positive: 0
+  positive: 1
   recovered: 0
 - date: '2020-01-25'
   dead: 0
@@ -16,15 +16,15 @@
   recovered: 0
 - date: '2020-01-26'
   dead: 0
-  positive: 0
+  positive: 3
   recovered: 0
 - date: '2020-01-27'
   dead: 0
-  positive: 1
+  positive: 0
   recovered: 0
 - date: '2020-01-28'
   dead: 0
-  positive: 3
+  positive: 0
   recovered: 0
 - date: '2020-01-29'
   dead: 0
@@ -36,19 +36,19 @@
   recovered: 0
 - date: '2020-01-31'
   dead: 0
-  positive: 1
+  positive: 2
   recovered: 0
 - date: '2020-02-01'
   dead: 0
-  positive: 3
+  positive: 1
   recovered: 0
 - date: '2020-02-02'
   dead: 0
-  positive: 2
+  positive: 0
   recovered: 0
 - date: '2020-02-03'
   dead: 0
-  positive: 2
+  positive: 3
   recovered: 0
 - date: '2020-02-04'
   dead: 0
@@ -64,7 +64,7 @@
   recovered: 0
 - date: '2020-02-07'
   dead: 0
-  positive: 1
+  positive: 0
   recovered: 0
 - date: '2020-02-08'
   dead: 0
@@ -72,15 +72,15 @@
   recovered: 0
 - date: '2020-02-09'
   dead: 0
-  positive: 1
-  recovered: 0
+  positive: 0
+  recovered: 3
 - date: '2020-02-10'
   dead: 0
   positive: 0
   recovered: 0
 - date: '2020-02-11'
   dead: 0
-  positive: 2
+  positive: 1
   recovered: 0
 - date: '2020-02-12'
   dead: 0
@@ -88,8 +88,8 @@
   recovered: 0
 - date: '2020-02-13'
   dead: 0
-  positive: 0
-  recovered: 1
+  positive: 1
+  recovered: 0
 - date: '2020-02-14'
   dead: 0
   positive: 0
@@ -109,7 +109,7 @@
 - date: '2020-02-18'
   dead: 0
   positive: 0
-  recovered: 11
+  recovered: 0
 - date: '2020-02-19'
   dead: 0
   positive: 0
@@ -120,7 +120,7 @@
   recovered: 0
 - date: '2020-02-21'
   dead: 0
-  positive: 0
+  positive: 2
   recovered: 2
 - date: '2020-02-22'
   dead: 0
@@ -132,157 +132,157 @@
   recovered: 0
 - date: '2020-02-24'
   dead: 0
-  positive: 0
+  positive: 36
   recovered: 0
 - date: '2020-02-25'
   dead: 0
-  positive: 1
-  recovered: 0
+  positive: 0
+  recovered: 1
 - date: '2020-02-26'
   dead: 0
-  positive: 10
-  recovered: 1
+  positive: 6
+  recovered: 0
 - date: '2020-02-27'
   dead: 0
-  positive: 19
-  recovered: 1
+  positive: 1
+  recovered: 0
 - date: '2020-02-28'
   dead: 0
   positive: 2
-  recovered: 0
+  recovered: 1
 - date: '2020-02-29'
-  dead: 0
-  positive: 31
+  dead: 1
+  positive: 8
   recovered: 0
 - date: '2020-03-01'
   dead: 0
-  positive: 51
+  positive: 6
   recovered: 0
 - date: '2020-03-02'
-  dead: 0
-  positive: 29
+  dead: 5
+  positive: 24
   recovered: 0
 - date: '2020-03-03'
-  dead: 0
-  positive: 37
+  dead: 1
+  positive: 20
   recovered: 0
 - date: '2020-03-04'
-  dead: 0
-  positive: 66
+  dead: 4
+  positive: 31
   recovered: 0
 - date: '2020-03-05'
-  dead: 0
-  positive: 220
+  dead: 1
+  positive: 68
   recovered: 0
 - date: '2020-03-06'
-  dead: 0
-  positive: 188
-  recovered: 1
+  dead: 2
+  positive: 45
+  recovered: 0
 - date: '2020-03-07'
-  dead: 0
-  positive: 129
-  recovered: 1
+  dead: 3
+  positive: 140
+  recovered: 0
 - date: '2020-03-08'
-  dead: 0
-  positive: 241
+  dead: 4
+  positive: 116
   recovered: 0
 - date: '2020-03-09'
-  dead: 2
-  positive: 136
+  dead: 1
+  positive: 65
   recovered: 0
 - date: '2020-03-10'
-  dead: 0
-  positive: 281
-  recovered: 0
+  dead: 6
+  positive: 376
+  recovered: 1
 - date: '2020-03-11'
-  dead: 1
-  positive: 451
-  recovered: 7
-- date: '2020-03-12'
-  dead: 0
-  positive: 170
+  dead: 8
+  positive: 322
   recovered: 0
-- date: '2020-03-13'
+- date: '2020-03-12'
   dead: 4
-  positive: 1597
-  recovered: 21
+  positive: 382
+  recovered: 4
+- date: '2020-03-13'
+  dead: 7
+  positive: 516
+  recovered: 0
 - date: '2020-03-14'
-  dead: 2
-  positive: 910
+  dead: 7
+  positive: 548
   recovered: 0
 - date: '2020-03-15'
-  dead: 2
-  positive: 1210
+  dead: 9
+  positive: 772
   recovered: 0
 - date: '2020-03-16'
-  dead: 6
-  positive: 1477
-  recovered: 21
+  dead: 22
+  positive: 1133
+  recovered: 5
 - date: '2020-03-17'
-  dead: 7
-  positive: 1985
+  dead: 23
+  positive: 1789
   recovered: 0
 - date: '2020-03-18'
-  dead: 4
-  positive: 3070
-  recovered: 38
-- date: '2020-03-19'
-  dead: 16
-  positive: 2993
-  recovered: 8
-- date: '2020-03-20'
-  dead: 23
-  positive: 4528
-  recovered: 67
-- date: '2020-03-21'
-  dead: 17
-  positive: 2365
-  recovered: 53
-- date: '2020-03-22'
   dead: 10
-  positive: 2660
-  recovered: 33
+  positive: 1362
+  recovered: 88
+- date: '2020-03-19'
+  dead: 82
+  positive: 5894
+  recovered: 16
+- date: '2020-03-20'
+  dead: 44
+  positive: 5423
+  recovered: 26
+- date: '2020-03-21'
+  dead: 63
+  positive: 6389
+  recovered: 29
+- date: '2020-03-22'
+  dead: 110
+  positive: 7787
+  recovered: 2
 - date: '2020-03-23'
-  dead: 29
-  positive: 4183
+  dead: 140
+  positive: 10571
   recovered: 0
 - date: '2020-03-24'
-  dead: 34
-  positive: 3930
-  recovered: 2977
+  dead: 149
+  positive: 9893
+  recovered: 170
 - date: '2020-03-25'
-  dead: 49
-  positive: 4337
-  recovered: 304
+  dead: 236
+  positive: 12038
+  recovered: 13
 - date: '2020-03-26'
-  dead: 61
-  positive: 6615
-  recovered: 2126
+  dead: 267
+  positive: 18058
+  recovered: 320
 - date: '2020-03-27'
-  dead: 75
-  positive: 6933
-  recovered: 985
+  dead: 372
+  positive: 17821
+  recovered: 188
 - date: '2020-03-28'
-  dead: 91
-  positive: 6824
-  recovered: 1823
+  dead: 445
+  positive: 19821
+  recovered: 203
 - date: '2020-03-29'
-  dead: 100
-  positive: 4400
-  recovered: 730
+  dead: 441
+  positive: 19408
+  recovered: 1593
 - date: '2020-03-30'
-  dead: 112
-  positive: 4790
-  recovered: 4289
+  dead: 511
+  positive: 20921
+  recovered: 2979
 - date: '2020-03-31'
-  dead: 130
-  positive: 4923
-  recovered: 2600
+  dead: 895
+  positive: 26365
+  recovered: 1380
 - date: '2020-04-01'
-  dead: 145
-  positive: 6064
-  recovered: 2600
+  dead: 884
+  positive: 25200
+  recovered: 1450
 - date: '2020-04-02'
-  dead: 187
-  positive: 6922
-  recovered: 3740
+  dead: 1169
+  positive: 30081
+  recovered: 527

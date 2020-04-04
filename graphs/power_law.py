@@ -29,7 +29,10 @@ countries = [
     Country('Italy', TG_formula(7.8, 4417), 200),
     Country('Spain', TG_formula(6.4, 3665), 200),
     Country('Germany', TG_formula(6.7, 3773), 200),
-    Country('USA', TG_formula(10.2, 72329), 200)
+    Country('USA', TG_formula(10.2, 72329), 200),
+    Country('UK', TG_formula(7.2, 2719), 200),
+    Country('France', TG_formula(6.5, 1961), 200),
+    Country('Iran', TG_formula(8.7, 2569), 200)
 ]
 # Country('Italy', 0.48 * x ** 3.35, r'$0.5382 \cdot t^{3.37}$')]
 country = next(c for c in countries if c.name == args.country)

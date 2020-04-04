@@ -2,7 +2,6 @@
 import argparse
 import pandas as pd
 import yaml
-from sys import stdin
 from datetime import datetime, timedelta
 
 parser = argparse.ArgumentParser(description='COVID-19 data downloader')
@@ -23,8 +22,8 @@ for typ in ["deaths", "recovered", "confirmed"]:
     url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/" \
            f"csse_covid_19_time_series/time_series_covid19_{typ}_global.csv"
     table = pd.read_csv(url)
-    rows = table.loc[table["Country/Region"] == args.country]
-    data[typ] = diff(rows.iloc[:, 4:].values.tolist()[0])
+    row = table.loc[(table["Country/Region"] == args.country) & (table["Province/State"].isnull())]
+    data[typ] = diff(row.iloc[:, 4:].values.tolist()[0])
 
 positive = data["confirmed"]
 recovered = data["recovered"]

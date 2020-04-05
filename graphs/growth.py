@@ -26,9 +26,12 @@ args = parser.parse_args()
 
 
 class GraphType(Enum):
-    Normal = 1
-    SemiLog = 2
-    Log = 3
+    Normal = 'normal'
+    SemiLog = 'semilog'
+    Log = 'log'
+
+    def __str__(self):
+        return self.value
 
 
 def TG_formula(TG, A):
@@ -159,15 +162,18 @@ class CountryData:
 
 
 def create_dashboard(countries_data, server, graph_type=GraphType.Normal):
-    app = dash.Dash(external_scripts=[
-        'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML'
-    ], server=server)
-    app.title = 'COVID-19 predictions'
-    app.css.config.serve_locally = True
-    app.scripts.config.serve_locally = True
+    app = dash.Dash(
+        __name__,
+        url_base_pathname=f'/covid19/{graph_type}/',
+        server=server,
+        external_scripts=[
+            'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML'
+        ])
+    app.title = f'COVID-19 predictions on a {graph_type} graph'
 
     graphs = [
-        dcc.Graph(id=country_data.name, figure=country_data.create_country_figure(graph_type))
+        dcc.Graph(id=f'{country_data.name} {graph_type}',
+                  figure=country_data.create_country_figure(graph_type))
         for country_data in countries_data
     ]
 
@@ -194,16 +200,19 @@ else:
     ]
 
     server = Flask(__name__, template_folder='.')
+
     @server.route("/")
     def home():
         return render_template('index.html')
 
-    @server.route("/covid19-normal")
+    @server.route("/covid19/normal")
     def covid19_normal():
-        return create_dashboard(countries_data, server, GraphType.Normal).index()
+        covid19_normal_app = create_dashboard(countries_data, server, GraphType.Normal)
+        return covid19_normal_app.index()
 
-    @server.route("/covid19-semilog")
+    @server.route("/covid19/semilog")
     def covid19_semilog():
-        return create_dashboard(countries_data, server, GraphType.SemiLog).index()
+        covid19_semilog_app = create_dashboard(countries_data, server, GraphType.SemiLog)
+        return covid19_semilog_app.index()
 
     server.run(host="0.0.0.0", port=8080)

@@ -68,8 +68,8 @@ class CountryData:
             except yaml.YAMLError as exc:
                 raise exc
 
-        self.cumulative_active = list(
-            filter(lambda x: x >= country_basic.case_count, np.add.accumulate(self.active)))
+        self.cumulative_active = np.array(
+            list(filter(lambda x: x >= country_basic.case_count, np.add.accumulate(self.active))))
         self.date_list = self.date_list[len(self.active) - len(self.cumulative_active):]
         self.x = np.arange(1, self.formula.second_ip_day)
         self.y = country_basic.formula.lambd(self.x)
@@ -83,12 +83,13 @@ class CountryData:
 
     def create_country_figure(self, graph_type=GraphType.Normal):
 
+        maximal_height = max(self.y[self.maximal_date], self.cumulative_active.max())
         shapes = [
             dict(type="line",
                  x0=self.maximal_date,
                  y0=self.y[0],
                  x1=self.maximal_date,
-                 y1=self.y[self.maximal_date],
+                 y1=maximal_height,
                  line=dict(width=2, dash='dot'))
         ]
 
@@ -99,7 +100,7 @@ class CountryData:
                      x0=prediction_date,
                      y0=self.y[0],
                      x1=prediction_date,
-                     y1=self.y[self.maximal_date],
+                     y1=maximal_height,
                      line=dict(width=2, dash='dot')))
         except ValueError:
             pass
@@ -112,6 +113,7 @@ class CountryData:
                             categoryorder='category ascending',
                         ),
                         yaxis=dict(autorange=True, title='COVID-19 active cases', tickformat='.0f'),
+                        height=700,
                         shapes=shapes,
                         hovermode='x',
                         font={'size': 15},

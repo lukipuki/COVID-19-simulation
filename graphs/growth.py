@@ -13,6 +13,7 @@ from collections import namedtuple
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+from enum import Enum
 
 Country = namedtuple('Country', ['name', 'formula', 'case_count'])
 Formula = namedtuple('Formula', ['lambd', 'text'])
@@ -28,6 +29,12 @@ parser.add_argument('country',
                     type=str,
                     help=f"Country name or 'ALL'")
 args = parser.parse_args()
+
+
+class GraphType(Enum):
+    Normal = 1
+    SemiLog = 2
+    Log = 3
 
 
 def TG_formula(TG, A):
@@ -83,16 +90,14 @@ class CountryData:
             for d in range(1, 51)
         ]
 
-    def create_country_figure(self):
+    def create_country_figure(self, graph_type=GraphType.SemiLog):
 
         layout = Layout(
             title=f"Active cases in {self.name}",
             xaxis=dict(
                 autorange=True,
                 title=r'$\text{Days since the 200}^\mathrm{th}\text{ case}$'),
-            yaxis=dict(type='log',
-                       autorange=True,
-                       title='COVID-19 active cases'),
+            yaxis=dict(autorange=True, title='COVID-19 active cases'),
             hovermode='x',
             font={'size': 15},
             legend=dict(x=0.01, y=0.99, borderwidth=1))
@@ -118,6 +123,14 @@ class CountryData:
                     'width': 3
                 },
             ))
+        if graph_type == GraphType.Normal:
+            figure.update_yaxes(type="linear")
+        elif graph_type == GraphType.SemiLog:
+            figure.update_xaxes(type="linear")
+            figure.update_yaxes(type="log")
+        elif graph_type == GraphType.Log:
+            figure.update_xaxes(type="log")
+            figure.update_yaxes(type="log")
         return figure
 
 

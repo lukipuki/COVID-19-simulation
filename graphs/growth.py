@@ -161,7 +161,10 @@ if args.country != "ALL":
     country_data.create_country_figure().show()
     # offline.plot(country_data.create_country_figure(), filename='graph.html')
 else:
-    countries_data = [CountryData(args.data, country) for country in countries]
+    countries_data = [
+        CountryData(args.data, country) for country in countries
+        if os.path.isfile(os.path.join(args.data, f'data-{country.name}.yaml'))
+    ]
 
     app = dash.Dash(external_scripts=[
         'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML'

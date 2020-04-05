@@ -84,7 +84,7 @@ class CountryData:
                             type='category',
                             categoryorder='category ascending',
                         ),
-                        yaxis=dict(autorange=True, title='COVID-19 active cases'),
+                        yaxis=dict(autorange=True, title='COVID-19 active cases', tickformat='.0f'),
                         hovermode='x',
                         font={'size': 15},
                         legend=dict(x=0.01, y=0.99, borderwidth=1))

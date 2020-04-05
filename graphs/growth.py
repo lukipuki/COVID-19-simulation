@@ -169,7 +169,9 @@ def create_dashboard(countries_data, server, graph_type=GraphType.Normal):
         external_scripts=[
             'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML'
         ])
-    app.title = f'COVID-19 predictions on a {graph_type} graph'
+    app.title = 'COVID-19 predictions'
+    if graph_type != GraphType.Normal:
+        app.title += f' on a {graph_type} graph'
 
     graphs = [
         dcc.Graph(id=f'{country_data.name} {graph_type}',
@@ -180,7 +182,7 @@ def create_dashboard(countries_data, server, graph_type=GraphType.Normal):
     app.layout = html.Div(children=[
         html.H1(children='COVID-19 predictions of Boďová and Kollár'),
         html.Ul([
-            html.Li('Black dotted lines: prediction date 2020-03-30 and maximum date'),
+            html.Li('Black dotted lines: prediction date 2020-03-29 and maximum date'),
             html.Li('Blue dashed dotted lines: prediction of total active cases'),
             html.Li('Red lines: real total active cases'),
         ])

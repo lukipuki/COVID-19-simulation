@@ -2,6 +2,7 @@
 from collections import namedtuple
 from datetime import datetime, timedelta
 from enum import Enum
+from flask import Flask, render_template
 from plotly import offline
 from plotly.graph_objs import Figure, Layout, Scatter
 import argparse
@@ -157,6 +158,30 @@ class CountryData:
         return figure
 
 
+def create_dashboard(countries_data, server, graph_type=GraphType.Normal):
+    app = dash.Dash(external_scripts=[
+        'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML'
+    ], server=server)
+    app.title = 'COVID-19 predictions'
+    app.css.config.serve_locally = True
+    app.scripts.config.serve_locally = True
+
+    graphs = [
+        dcc.Graph(id=country_data.name, figure=country_data.create_country_figure(graph_type))
+        for country_data in countries_data
+    ]
+
+    app.layout = html.Div(children=[
+        html.H1(children='COVID-19 predictions of Boďová and Kollár'),
+        html.Ul([
+            html.Li('Black dotted lines: prediction date and maximal date'),
+            html.Li('Blue dashed dotted lines: prediction of total active cases'),
+            html.Li('Red lines: real total active cases'),
+        ])
+    ] + graphs)
+    return app
+
+
 if args.country != "ALL":
     country = next(c for c in countries if c.name == args.country)
     country_data = CountryData(args.data, country)
@@ -168,14 +193,17 @@ else:
         if os.path.isfile(os.path.join(args.data, f'data-{country.name}.yaml'))
     ]
 
-    app = dash.Dash(external_scripts=[
-        'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML'
-    ])
+    server = Flask(__name__, template_folder='.')
+    @server.route("/")
+    def home():
+        return render_template('index.html')
 
-    graphs = [
-        dcc.Graph(id=country_data.name, figure=country_data.create_country_figure())
-        for country_data in countries_data
-    ]
+    @server.route("/covid19-normal")
+    def covid19_normal():
+        return create_dashboard(countries_data, server, GraphType.Normal).index()
 
-    app.layout = html.Div(graphs)
-    app.run_server(host="0.0.0.0", port=8080)
+    @server.route("/covid19-semilog")
+    def covid19_semilog():
+        return create_dashboard(countries_data, server, GraphType.SemiLog).index()
+
+    server.run(host="0.0.0.0", port=8080)

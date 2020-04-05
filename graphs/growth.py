@@ -1,20 +1,22 @@
 #!/usr/bin/env python3
+from collections import namedtuple
+from datetime import datetime, timedelta
+from enum import Enum
 from plotly import offline
 from plotly.graph_objs import Figure, Layout, Scatter
-from datetime import datetime, timedelta
 import argparse
-import numpy as np
-import sys
-import yaml
-import os
-from collections import namedtuple
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-from enum import Enum
+import math
+import numpy as np
+import os
+import sys
+import yaml
 
 Country = namedtuple('Country', ['name', 'formula', 'case_count'])
-Formula = namedtuple('Formula', ['lambd', 'text'])
+Formula = namedtuple('Formula', ['lambd', 'text', 'maximal_day', 'second_ip_day'])
+EXPONENT = 6.23
 
 parser = argparse.ArgumentParser(description='COVID-19 country growth visualization')
 parser.add_argument('data', metavar='data', type=str, help=f"Directory with YAML files")
@@ -31,11 +33,14 @@ class GraphType(Enum):
 def TG_formula(TG, A):
     text = r'$\frac{_A}{_TG} \cdot \left(\frac{t}{_TG}\right)^{6.23} / e^{t/_TG}$'
     text = text.replace("_A", f"{A}").replace("_TG", f"{TG}")
-    return Formula(lambda t: (A / TG) * ((t / TG)**6.23) / np.exp(t / TG), text)
+    # Second inflection point day
+    second_ip_day = math.ceil(TG * (EXPONENT + math.sqrt(EXPONENT)))
+    return Formula(lambda t: (A / TG) * ((t / TG)**6.23) / np.exp(t / TG), text, EXPONENT * TG,
+                   second_ip_day)
 
 
 countries = [
-    Country('Slovakia', Formula(lambda t: 8 * t**1.28, r'$8 \cdot t^{1.28}$'), 10),
+    Country('Slovakia', Formula(lambda t: 8 * t**1.28, r'$8 \cdot t^{1.28}$', 60, 60), 10),
     Country('Italy', TG_formula(7.8, 4417), 200),
     # Country('Italy', Formula(lambda t: 0.5382 * t**3.37, r'$0.5382 \cdot t^{3.37}$'), 200),
     Country('Spain', TG_formula(6.4, 3665), 200),
@@ -66,8 +71,9 @@ class CountryData:
         self.cumulative_active = list(
             filter(lambda x: x >= country_basic.case_count, np.add.accumulate(self.active)))
         self.date_list = self.date_list[len(self.active) - len(self.cumulative_active):]
-        self.x = np.arange(1, len(self.cumulative_active) * 2)
+        self.x = np.arange(1, self.formula.second_ip_day)
         self.y = country_basic.formula.lambd(self.x)
+        self.maximal_date = self.y.argmax()
 
         self.last_date = datetime.strptime(self.date_list[-1], '%Y-%m-%d')
         self.date_list += [(self.last_date + timedelta(days=d)).strftime('%Y-%m-%d')
@@ -75,15 +81,14 @@ class CountryData:
                                           len(self.x) - len(self.date_list) + 1)]
         self.x = self.x[:len(self.date_list)]
 
-    def create_country_figure(self, graph_type=GraphType.SemiLog):
+    def create_country_figure(self, graph_type=GraphType.Normal):
 
-        maximal_date = self.y.argmax()
         shapes = [
             dict(type="line",
-                 x0=maximal_date,
+                 x0=self.maximal_date,
                  y0=self.y[0],
-                 x1=maximal_date,
-                 y1=self.y[maximal_date],
+                 x1=self.maximal_date,
+                 y1=self.y[self.maximal_date],
                  line=dict(width=2, dash='dot'))
         ]
 
@@ -94,7 +99,7 @@ class CountryData:
                      x0=prediction_date,
                      y0=self.y[0],
                      x1=prediction_date,
-                     y1=self.y[maximal_date],
+                     y1=self.y[self.maximal_date],
                      line=dict(width=2, dash='dot')))
         except ValueError:
             pass
@@ -153,7 +158,7 @@ class CountryData:
 if args.country != "ALL":
     country = next(c for c in countries if c.name == args.country)
     country_data = CountryData(args.data, country)
-    country_data.create_country_figure(GraphType.Normal).show()
+    country_data.create_country_figure().show()
     # offline.plot(country_data.create_country_figure(), filename='graph.html')
 else:
     countries_data = [CountryData(args.data, country) for country in countries]

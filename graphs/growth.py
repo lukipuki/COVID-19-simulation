@@ -163,7 +163,7 @@ class CountryData:
 
 def create_dashboard(countries_data, server, graph_type=GraphType.Normal):
     app = dash.Dash(
-        __name__,
+        name=f'COVID-19 {graph_type}',
         url_base_pathname=f'/covid19/{graph_type}/',
         server=server,
         external_scripts=[
@@ -180,7 +180,7 @@ def create_dashboard(countries_data, server, graph_type=GraphType.Normal):
     app.layout = html.Div(children=[
         html.H1(children='COVID-19 predictions of Boďová and Kollár'),
         html.Ul([
-            html.Li('Black dotted lines: prediction date and maximal date'),
+            html.Li('Black dotted lines: prediction date 2020-03-30 and maximum date'),
             html.Li('Blue dashed dotted lines: prediction of total active cases'),
             html.Li('Red lines: real total active cases'),
         ])
@@ -201,23 +201,24 @@ else:
 
     server = Flask(__name__, template_folder='.')
 
+    covid19_normal_app = create_dashboard(countries_data, server, GraphType.Normal)
+    covid19_semilog_app = create_dashboard(countries_data, server, GraphType.SemiLog)
+    covid19_loglog_app = create_dashboard(countries_data, server, GraphType.LogLog)
+
     @server.route("/")
     def home():
         return render_template('index.html')
 
     @server.route("/covid19/normal")
     def covid19_normal():
-        covid19_normal_app = create_dashboard(countries_data, server, GraphType.Normal)
         return covid19_normal_app.index()
 
     @server.route("/covid19/semilog")
     def covid19_semilog():
-        covid19_semilog_app = create_dashboard(countries_data, server, GraphType.SemiLog)
         return covid19_semilog_app.index()
 
     @server.route("/covid19/loglog")
     def covid19_loglog():
-        covid19_semilog_app = create_dashboard(countries_data, server, GraphType.LogLog)
-        return covid19_semilog_app.index()
+        return covid19_loglog_app.index()
 
     server.run(host="0.0.0.0", port=8080)

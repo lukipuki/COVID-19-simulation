@@ -77,6 +77,28 @@ class CountryData:
 
     def create_country_figure(self, graph_type=GraphType.SemiLog):
 
+        maximal_date = self.y.argmax()
+        shapes = [
+            dict(type="line",
+                 x0=maximal_date,
+                 y0=self.y[0],
+                 x1=maximal_date,
+                 y1=self.y[maximal_date],
+                 line=dict(width=2, dash='dot'))
+        ]
+
+        try:
+            prediction_date = self.date_list.index('2020-03-29')
+            shapes.append(
+                dict(type="line",
+                     x0=prediction_date,
+                     y0=self.y[0],
+                     x1=prediction_date,
+                     y1=self.y[maximal_date],
+                     line=dict(width=2, dash='dot')))
+        except ValueError:
+            pass
+
         layout = Layout(title=f"Active cases in {self.name}",
                         xaxis=dict(
                             autorange=True,
@@ -85,6 +107,7 @@ class CountryData:
                             categoryorder='category ascending',
                         ),
                         yaxis=dict(autorange=True, title='COVID-19 active cases', tickformat='.0f'),
+                        shapes=shapes,
                         hovermode='x',
                         font={'size': 15},
                         legend=dict(x=0.01, y=0.99, borderwidth=1))
@@ -115,6 +138,7 @@ class CountryData:
                         'color': 'rgb(239, 85, 59)',
                     },
                     marker={'size': 8}))
+
         if graph_type == GraphType.Normal:
             figure.update_yaxes(type="linear")
         elif graph_type == GraphType.SemiLog:

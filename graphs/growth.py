@@ -27,8 +27,8 @@ args = parser.parse_args()
 
 class GraphType(Enum):
     Normal = 'normal'
-    SemiLog = 'semilog'
-    Log = 'log'
+    SemiLog = 'semi-log'
+    LogLog = 'log-log'
 
     def __str__(self):
         return self.value
@@ -155,7 +155,7 @@ class CountryData:
         elif graph_type == GraphType.SemiLog:
             figure.update_xaxes(type="linear")
             figure.update_yaxes(type="log")
-        elif graph_type == GraphType.Log:
+        elif graph_type == GraphType.LogLog:
             figure.update_xaxes(type="log")
             figure.update_yaxes(type="log")
         return figure
@@ -213,6 +213,11 @@ else:
     @server.route("/covid19/semilog")
     def covid19_semilog():
         covid19_semilog_app = create_dashboard(countries_data, server, GraphType.SemiLog)
+        return covid19_semilog_app.index()
+
+    @server.route("/covid19/loglog")
+    def covid19_loglog():
+        covid19_semilog_app = create_dashboard(countries_data, server, GraphType.LogLog)
         return covid19_semilog_app.index()
 
     server.run(host="0.0.0.0", port=8080)

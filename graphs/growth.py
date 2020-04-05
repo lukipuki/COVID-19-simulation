@@ -66,12 +66,11 @@ class CountryData:
         with open(self.path, 'r') as stream:
             try:
                 data = yaml.safe_load(stream)
-                self.active = [
-                    point['positive'] - point['recovered'] - point['dead']
-                    for point in data
-                ]
-                self.dead = [point['dead'] for point in data]
-                self.recovered = [point['recovered'] for point in data]
+                positive = np.array([point['positive'] for point in data])
+                self.dead = np.array([point['dead'] for point in data])
+                self.recovered = np.array(
+                    [point['recovered'] for point in data])
+                self.active = positive - self.recovered - self.dead
                 self.date_list = [point['date'] for point in data]
             except yaml.YAMLError as exc:
                 raise exc
@@ -87,8 +86,10 @@ class CountryData:
         self.last_date = datetime.strptime(self.date_list[-1], '%Y-%m-%d')
         self.date_list += [
             (self.last_date + timedelta(days=d)).strftime('%Y-%m-%d')
-            for d in range(1, 51)
+            for d in range(1,
+                           len(self.x) - len(self.date_list) + 1)
         ]
+        self.x = self.x[:len(self.date_list)]
 
     def create_country_figure(self, graph_type=GraphType.SemiLog):
 

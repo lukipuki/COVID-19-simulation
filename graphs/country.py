@@ -23,7 +23,6 @@ class GraphType(Enum):
         return self.value
 
 
-
 def ATG_formula(TG, A):
     text = r'$\frac{_A}{_TG} \cdot \left(\frac{t}{_TG}\right)^{6.23} / e^{t/_TG}$'
     text = text.replace("_A", f"{A}").replace("_TG", f"{TG}")
@@ -31,7 +30,6 @@ def ATG_formula(TG, A):
     second_ip_day = math.ceil(TG * (EXPONENT + math.sqrt(EXPONENT)))
     return Formula(lambda t: (A / TG) * (t / TG)**EXPONENT / np.exp(t / TG), text, EXPONENT * TG,
                    second_ip_day)
-
 
 
 class CountryGraph:
@@ -53,7 +51,7 @@ class CountryGraph:
         self.cumulative_active = np.array(
             list(filter(lambda x: x >= country_basic.case_count, np.add.accumulate(self.active))))
         self.date_list = self.date_list[len(self.active) - len(self.cumulative_active):]
-        self.x = np.arange(1, self.formula.second_ip_day)
+        self.x = np.arange(1, 1 + min(len(self.date_list), self.formula.second_ip_day))
         self.y = country_basic.formula.lambd(self.x)
         self.maximal_date = self.y.argmax()
 

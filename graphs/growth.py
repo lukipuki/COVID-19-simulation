@@ -16,7 +16,9 @@ args = parser.parse_args()
 countries = [
     Country('Slovakia', Formula(lambda t: 8 * t**1.28, r'$8 \cdot t^{1.28}$', 60, 60), 10),
     Country('Italy', ATG_formula(7.8, 4417), 200),
-    # Country('Italy', Formula(lambda t: 0.5382 * t**3.37, r'$0.5382 \cdot t^{3.37}$'), 200),
+    # The following two are for the blog post
+    # Country('Italy', Formula(lambda t: 2.5 * t**3, r'$2.5 \cdot t^{3}$', 60, 60), 200),
+    # Country('Italy', Formula(lambda t: (229/1.167) * 1.167**t, r'$196 \cdot 1.167^t$', 60, 60), 200),
     Country('Spain', ATG_formula(6.4, 3665), 200),
     Country('Germany', ATG_formula(6.7, 3773), 200),
     Country('USA', ATG_formula(10.2, 72329), 200),

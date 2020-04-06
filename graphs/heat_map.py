@@ -54,7 +54,7 @@ def create_heatmap(gamma, gamma_dict):
             prefix_axis.append(prefix_len)
             data.append(curr)
     fig = px.imshow(data,
-                    labels=dict(x="b0", y="Prefix length", color="Error sum"),
+                    labels=dict(x="b0", y="Prefix length", color="Error average"),
                     x=sorted(b0_set),
                     y=sorted(prefix_len_set))
     fig.update_xaxes(side="top")

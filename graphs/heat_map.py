@@ -8,6 +8,10 @@ from yaml import CLoader as Loader
 from plotly.graph_objs import Figure, Layout, Scatter
 import plotly.express as px
 
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+
 parser = argparse.ArgumentParser(description='COVID-19 visualization for Slovakia')
 parser.add_argument('simulated',
                     metavar='simulated',
@@ -39,8 +43,8 @@ with open(args.simulated, 'r') as stream:
             error_sum = sum(result["error"] for result in group["results"])
         best_errors[gamma2][(b0, prefix_length)] = error_sum
 
-for item in best_errors.items():
-    gamma, gamma_dict = item
+
+def create_heatmap(gamma, gamma_dict):
     min_b0, max_b0 = min(i[0] for i in gamma_dict.keys()), max(i[0] for i in gamma_dict.keys())
     min_prefix_len, max_prefix_len = min(i[1] for i in gamma_dict.keys()), max(
         i[1] for i in gamma_dict.keys())
@@ -58,7 +62,30 @@ for item in best_errors.items():
             prefix_axis.append(prefix_len)
             data.append(curr)
     fig = px.imshow(data[::-1],
-                    labels=dict(x="b0", y="Prefix length", color="Average error"),
+                    labels=dict(x="b0", y="Prefix length", color="Error sum"),
                     y=prefix_axis[::-1])
     fig.update_xaxes(side="top")
-    fig.show()
+    return fig
+
+
+app = dash.Dash(
+    name=f'COVID-19 Heat map',
+    url_base_pathname=f'/heatmap/',
+    external_scripts=[
+        'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML'
+    ])
+app.title = 'COVID-19 predictions heat_map of parameters'
+
+graphs = [
+    dcc.Graph(id=f'hehee', figure=create_heatmap(item[0], item[1])) for item in best_errors.items()
+]
+
+app.layout = html.Div(children=[
+    html.H1(children='COVID-19 predictions of Boďová and Kollár'),
+    html.Ul([
+        html.Li('Individual squares correspond to combination of b0 and prefix_len.'),
+        html.Li('Heat is the total amount of error for these parameters')
+    ])
+] + graphs)
+
+app.run_server(host="0.0.0.0", port=8080)

@@ -25,21 +25,17 @@ with open(args.simulated, 'r') as stream:
 
     best_errors = {}
     for group in data:
-        if ("results" not in group) and ("result_abbrev" not in group):
-            continue
+        assert ("results" in group) or ("result_abbrev" in group)
 
         prefix_length = group["params"]["prefix_length"]
         b0 = group["params"]["b0"]
         gamma2 = group["params"]["gamma2"]
 
-        if gamma2 not in best_errors:
-            best_errors[gamma2] = {}
-
         if "result_abbrev" in group:
             error_sum = group["result_abbrev"]["error"]
         else:
             error_sum = sum(result["error"] for result in group["results"])
-        best_errors[gamma2][(b0, prefix_length)] = error_sum
+        best_errors.setdefault(gamma2, {})[(b0, prefix_length)] = error_sum
 
 
 def create_heatmap(gamma, gamma_dict):
@@ -52,10 +48,8 @@ def create_heatmap(gamma, gamma_dict):
         not_empty = False
         for b0 in range(min_b0, max_b0 + 1):
             if (b0, prefix_len) in gamma_dict:
-                curr.append(gamma_dict[(b0, prefix_len)])
                 not_empty = True
-            else:
-                curr.append(0)
+            curr.append(gamma_dict.get((b0, prefix_len), 0))
         if not_empty:
             prefix_axis.append(prefix_len)
             data.append(curr)
@@ -84,6 +78,7 @@ app.layout = html.Div(children=[
         html.Li('Individual squares correspond to combination of b0 and prefix_len.'),
         html.Li('Heat is the total amount of error for these parameters')
     ])
-] + graphs)
+] + graphs,
+                      style={'font-family': 'sans-serif'})
 
 app.run_server(host="0.0.0.0", port=8080)

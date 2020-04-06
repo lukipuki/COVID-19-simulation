@@ -81,7 +81,7 @@ graphs = [
 ]
 
 app.layout = html.Div(children=[
-    html.H1(children='COVID-19 predictions of Boďová and Kollár'),
+    html.H1(children='Visualizations of a COVID-19 stochastic model by Radoslav Harman'),
     html.Ul([
         html.Li('Individual squares correspond to combination of b0 and prefix_len.'),
         html.Li('Heat is the total amount of error for these parameters')

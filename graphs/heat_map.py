@@ -39,23 +39,24 @@ with open(args.simulated, 'r') as stream:
 
 
 def create_heatmap(gamma, gamma_dict):
-    min_b0, max_b0 = min(i[0] for i in gamma_dict.keys()), max(i[0] for i in gamma_dict.keys())
-    min_prefix_len, max_prefix_len = min(i[1] for i in gamma_dict.keys()), max(
-        i[1] for i in gamma_dict.keys())
+    b0_set = set(i[0] for i in gamma_dict.keys())
+    prefix_len_set = set(i[1] for i in gamma_dict.keys())
+    min_b0, max_b0 = min(b0_set), max(b0_set)
+    min_prefix_len, max_prefix_len = min(prefix_len_set), max(prefix_len_set)
     data, prefix_axis = [], []
     for prefix_len in range(min_prefix_len, max_prefix_len + 1):
         curr = []
-        not_empty = False
         for b0 in range(min_b0, max_b0 + 1):
-            if (b0, prefix_len) in gamma_dict:
-                not_empty = True
+            if b0 not in b0_set:
+                continue
             curr.append(gamma_dict.get((b0, prefix_len), 0))
-        if not_empty:
+        if len(curr) != 0:
             prefix_axis.append(prefix_len)
             data.append(curr)
-    fig = px.imshow(data[::-1],
+    fig = px.imshow(data,
                     labels=dict(x="b0", y="Prefix length", color="Error sum"),
-                    y=prefix_axis[::-1])
+                    x=sorted(b0_set),
+                    y=sorted(prefix_len_set))
     fig.update_xaxes(side="top")
     return fig
 

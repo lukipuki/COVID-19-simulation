@@ -23,15 +23,21 @@ with open(args.simulated, 'r') as stream:
 
     best_errors = {}
     for group in data:
-        if "results" not in group:
+        if ("results" not in group) and ("result_abbrev" not in group):
             continue
+
         prefix_length = group["params"]["prefix_length"]
         b0 = group["params"]["b0"]
         gamma2 = group["params"]["gamma2"]
-        errors = [result["error"] for result in group["results"]]
+
         if gamma2 not in best_errors:
             best_errors[gamma2] = {}
-        best_errors[gamma2][(b0, prefix_length)] = sum(errors) / len(errors)
+
+        if "result_abbrev" in group:
+            error_sum = group["result_abbrev"]["error"]
+        else:
+            error_sum = sum(result["error"] for result in group["results"])
+        best_errors[gamma2][(b0, prefix_length)] = error_sum
 
 for item in best_errors.items():
     gamma, gamma_dict = item

@@ -34,7 +34,7 @@ with open(args.simulated, 'r') as stream:
         if "result_abbrev" in group:
             error_sum = group["result_abbrev"]["error"]
         else:
-            error_sum = sum(result["error"] for result in group["results"])
+            error_sum = sum(result["error"] for result in group["results"]) / len(group["results"])
         best_errors.setdefault(gamma2, {})[(b0, prefix_length)] = error_sum
 
 

@@ -181,17 +181,19 @@ def create_dashboard(countries_data, server, graph_type=GraphType.Normal):
         for country_data in countries_data
     ]
 
-    app.layout = html.Div(children=[
+    content = [
         html.H1(children='COVID-19 predictions of Boďová and Kollár'),
         html.P(children=[
             'On 2020-03-30, mathematicians Boďová and Kollár made predictions about 7 ',
-            f'countries. The data available up to that point (to {PREDICTION_DATE}) is in the ',
-            html.Span('green zone', style={'color': 'green'}),
-            f'. Data coming after {PREDICTION_DATE} is in the ',
+            f'countries. The data available up to that point (until {PREDICTION_DATE}) is in the ',
+            html.Span('green zone', style={'color': 'green'
+                                           }), f'. Data coming after {PREDICTION_DATE} is in the ',
             html.Span('blue zone.', style=dict(color='blue'))
         ]),
         html.P('The black dotted line marks the predicted maximum.')
-    ] + graphs)
+    ] + graphs
+
+    app.layout = html.Div(children=content, style={'font-family': 'sans-serif'})
     return app
 
 

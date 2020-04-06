@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 from datetime import datetime
 import argparse
+import math
 import yaml
 from yaml import CLoader as Loader
 from plotly.graph_objs import Figure, Layout
-import plotly.express as px
+import plotly.graph_objects as go
 
 import dash
 import dash_core_components as dcc
@@ -53,10 +54,20 @@ def create_heatmap(gamma, gamma_dict):
         if len(curr) != 0:
             prefix_axis.append(prefix_len)
             data.append(curr)
-    fig = px.imshow(data,
-                    labels=dict(x="b0", y="Prefix length", color="Error average"),
-                    x=sorted(b0_set),
-                    y=sorted(prefix_len_set))
+
+    data = [[math.log(j) for j in i] for i in data]
+
+    layout = Layout(
+        title=f"Logarithm of error average of particular (b0, prefix_length) combination",
+        xaxis=dict(title=r'b0'),
+        yaxis=dict(title=r'prefix_length'))
+
+    fig = go.Figure(layout=layout,
+                    data=go.Heatmap(z=data,
+                                    x=sorted(b0_set),
+                                    y=sorted(prefix_len_set),
+                                    reversescale=True,
+                                    colorscale='Viridis'))
     fig.update_xaxes(side="top")
     return fig
 
@@ -70,7 +81,8 @@ app = dash.Dash(
 app.title = 'COVID-19 predictions heat_map of parameters'
 
 graphs = [
-    dcc.Graph(id=f'hehee', figure=create_heatmap(item[0], item[1])) for item in best_errors.items()
+    dcc.Graph(id=f'{item[0]}', figure=create_heatmap(item[0], item[1]))
+    for item in best_errors.items()
 ]
 
 app.layout = html.Div(children=[

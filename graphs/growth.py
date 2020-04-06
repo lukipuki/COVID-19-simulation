@@ -18,6 +18,7 @@ import yaml
 Country = namedtuple('Country', ['name', 'formula', 'case_count'])
 Formula = namedtuple('Formula', ['lambd', 'text', 'maximal_day', 'second_ip_day'])
 EXPONENT = 6.23
+PREDICTION_DATE = '2020-03-29'
 
 parser = argparse.ArgumentParser(description='COVID-19 country growth visualization')
 parser.add_argument('data', metavar='data', type=str, help=f"Directory with YAML files")
@@ -39,7 +40,7 @@ def TG_formula(TG, A):
     text = text.replace("_A", f"{A}").replace("_TG", f"{TG}")
     # Second inflection point day
     second_ip_day = math.ceil(TG * (EXPONENT + math.sqrt(EXPONENT)))
-    return Formula(lambda t: (A / TG) * ((t / TG)**6.23) / np.exp(t / TG), text, EXPONENT * TG,
+    return Formula(lambda t: (A / TG) * ((t / TG)**EXPONENT) / np.exp(t / TG), text, EXPONENT * TG,
                    second_ip_day)
 
 
@@ -87,25 +88,29 @@ class CountryData:
 
     def create_country_figure(self, graph_type=GraphType.Normal):
 
-        maximal_height = max(self.y[self.maximal_date], self.cumulative_active.max())
+        x = self.x if graph_type != GraphType.Normal else self.date_list
         shapes = [
             dict(type="line",
-                 x0=self.maximal_date,
-                 y0=self.y[0],
-                 x1=self.maximal_date,
-                 y1=maximal_height,
+                 yref="paper",
+                 x0=x[self.maximal_date],
+                 y0=0,
+                 x1=x[self.maximal_date],
+                 y1=1,
                  line=dict(width=2, dash='dot'))
         ]
-
         try:
-            prediction_date = self.date_list.index('2020-03-29')
+            prediction_date = self.date_list.index(PREDICTION_DATE)
             shapes.append(
-                dict(type="line",
-                     x0=prediction_date,
-                     y0=self.y[0],
-                     x1=prediction_date,
-                     y1=maximal_height,
-                     line=dict(width=2, dash='dot')))
+                dict(type="rect",
+                     yref="paper",
+                     x0=x[0],
+                     x1=x[prediction_date],
+                     y0=0,
+                     y1=1,
+                     fillcolor="LightGreen",
+                     opacity=0.5,
+                     layer="below",
+                     line_width=0))
         except ValueError:
             pass
 
@@ -113,8 +118,6 @@ class CountryData:
                         xaxis=dict(
                             autorange=True,
                             title=r'$\text{Days since the 200}^\mathrm{th}\text{ case}$',
-                            type='category',
-                            categoryorder='category ascending',
                         ),
                         yaxis=dict(autorange=True, title='COVID-19 active cases', tickformat='.0f'),
                         height=700,
@@ -123,7 +126,6 @@ class CountryData:
                         font={'size': 15},
                         legend=dict(x=0.01, y=0.99, borderwidth=1))
 
-        x = self.x if graph_type != GraphType.Normal else self.date_list
         figure = Figure(layout=layout)
         figure.add_trace(
             Scatter(
@@ -181,11 +183,14 @@ def create_dashboard(countries_data, server, graph_type=GraphType.Normal):
 
     app.layout = html.Div(children=[
         html.H1(children='COVID-19 predictions of Boďová and Kollár'),
-        html.Ul([
-            html.Li('Black dotted lines: prediction date 2020-03-29 and maximum date'),
-            html.Li('Blue dashed dotted lines: prediction of total active cases'),
-            html.Li('Red lines: real total active cases'),
-        ])
+        html.P(children=[
+            'On 2020-03-30, mathematicians Boďová and Kollár made predictions about 7 ',
+            f'countries. The data available up to that point (to {PREDICTION_DATE}) is in the ',
+            html.Span('green zone', style={'color': 'green'}),
+            f'. Data coming after {PREDICTION_DATE} is in the ',
+            html.Span('blue zone.', style=dict(color='blue'))
+        ]),
+        html.P('The black dotted line marks the predicted maximum.')
     ] + graphs)
     return app
 

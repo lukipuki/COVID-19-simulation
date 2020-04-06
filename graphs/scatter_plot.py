@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
-from plotly import offline
 from itertools import chain
 from datetime import datetime, timedelta
 import argparse
 import itertools
-import numpy as np
 import yaml
 from yaml import CLoader as Loader
 from plotly.graph_objs import Figure, Layout, Scatter
@@ -17,7 +15,7 @@ parser.add_argument('simulated',
                     help=f"YAML file with simulation results")
 args = parser.parse_args()
 
-prefix_length = 3
+prefix_length = 4
 
 
 def accumulate(a):
@@ -60,7 +58,8 @@ with open(args.simulated, 'r') as stream:
             days = [range(len(result["daily_positive"])) for result in results]
             deltas = group["params"]["deltas"]
             best_b0 = group["params"]["b0"]
-            best_gamma2 = group["params"]["gamma2"]
+            # best_gamma2 = group["params"]["gamma2"]
+            best_alpha = group["params"]["alpha"]
 
             daily_positive, daily_infected, days, cumulative_daily_positive = map(
                 lambda v: list(chain.from_iterable(v)),
@@ -68,14 +67,16 @@ with open(args.simulated, 'r') as stream:
 
 cumulative_real_positive = accumulate(real_positive)
 
-print(f"b_0={best_b0} as the best fit for prefix_length={prefix_length}")
+print(f"b_0={best_b0} is the best fit for prefix_length={prefix_length}")
 
-title_text = r'$\text{Daily new COVID-19 cases for }b_0=_b0, \gamma_2=_gamma2, prefix=_prefix$'
-title_text = title_text.replace("_b0", f"{best_b0}").replace("_gamma2", f"{best_gamma2}").replace(
+# title_text = r'$\text{Daily new COVID-19 cases for }b_0=_b0, \alpha=_alpha, prefix=_prefix$'
+title_text = r'$\text{Total COVID-19 cases for }b_0=_b0, \alpha=_alpha, prefix=_prefix$'
+title_text = title_text.replace("_b0", f"{best_b0}").replace("_alpha", f"{best_alpha}").replace(
     "_prefix", f"{prefix_length}")
 
 layout = Layout(title=title_text,
                 xaxis=dict(autorange=True, title='Days'),
+                yaxis=dict(autorange=True, title='COVID-19 cases in Slovakia'),
                 hovermode='x',
                 font={'size': 15},
                 legend=dict(x=0.01, y=0.99, borderwidth=1))
@@ -83,34 +84,30 @@ layout = Layout(title=title_text,
 figure = Figure(layout=layout)
 figure.add_trace(
     Scatter(
-        x=days,
-        # y=cumulative_daily_positive,
-        y=daily_positive,
+        x=[date_list[d] for d in days],
+        y=cumulative_daily_positive,
+        # y=daily_positive,
         text=date_list,
         mode='markers',
-        name="Simulated cases",
+        name="Simulated daily cases",
         line={'width': 3},
-        marker=dict(size=10, opacity=0.18)))
+        marker=dict(size=10, opacity=0.07)))
 
 figure.add_trace(
     Scatter(
-        x=list(range(len(cumulative_real_positive))),
-        # y=cumulative_real_positive,
-        y=real_positive,
+        x=date_list,
+        y=cumulative_real_positive,
+        # y=real_positive,
         text=date_list,
         mode='lines',
-        name=r'Real data',
+        name=r'Real daily cases',
     ))
 
-# figure.add_trace(Scatter(
-#     y=deltas,
-#     mode='lines',
-#     name='Expected infected',
-# ))
+figure.add_trace(Scatter(
+    x=date_list,
+    y=deltas,
+    mode='lines',
+    name='Expected infected',
+))
 
-# For another graph
-# cumulative_positive = np.add.accumulate(positive)
-# cumulative_deltas = np.add.accumulate(deltas[:len(positive)])
-
-# offline.plot(figure, filename='graph.html')
 figure.show()

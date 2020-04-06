@@ -12,15 +12,15 @@
 #include "stats.h"
 
 constexpr uint32_t kExtraDays = 10;       // Extra simulated days of infections
-constexpr uint32_t kRestrictionDay = 11;  // 0-indexed March 12th
-// constexpr uint32_t kRestrictionDay = 9;  // For power law
+// constexpr uint32_t kRestrictionDay = 11;  // 0-indexed March 12th
+constexpr uint32_t kRestrictionDay = 8;  // For polynomial growth
 constexpr double kGamma1 = 1.25;
 constexpr double kGamma2 = 1.04;
-constexpr double kPolynomialDegree = 1.30;
+constexpr double kPolynomialDegree = 1.28;
 constexpr uint32_t kSymptomsLength = 28;
 
 // Only serialize good parameters, scoring below kScoreThreshold
-constexpr double kScoreThreshold = 230;
+constexpr double kScoreThreshold = 250;
 
 
 class Simulator {
@@ -116,22 +116,22 @@ int main(int argc, char* argv[]) {
   }
   assert(tested.size() == positive.size());
 
-  auto generator = ExponentialGenerator(kGamma1, kGamma2);
-  // auto generator = PolynomialGenerator(kGamma1, kPolynomialDegree);
-  constexpr uint32_t kIterations = 100;
+  // auto generator = ExponentialGenerator(kGamma1, kGamma2);
+  auto generator = PolynomialGenerator(kGamma1, kPolynomialDegree);
+  constexpr uint32_t kIterations = 200;
   std::cout << "prefix_length optimal_b0 dead_count best_error" << std::endl;
   std::vector<YAML::Node> nodes;
 #pragma omp parallel for shared(positive, tested)
   for (uint32_t prefix_length = 2; prefix_length < 10; ++prefix_length) {
     Simulator simulator(prefix_length, positive, tested);
-    // Simulator simulator(prefix_length, positive, tested);
     uint32_t optimal_b0 = -1, optimal_dead_count;
     double best = 1e10;
-    for (uint32_t b0 = 60; b0 <= 200; b0 += 3) {
+    for (uint32_t b0 = 30; b0 <= 200; b0 += 3) {
       YAML::Node node;
       node["params"]["prefix_length"] = prefix_length;
       node["params"]["b0"] = b0;
-      node["params"]["gamma2"] = kGamma2;
+      // node["params"]["gamma2"] = kGamma2;
+      node["params"]["alpha"] = kPolynomialDegree;
       node["params"]["deltas"] = generator.CreateDeltas(prefix_length + kRestrictionDay,
                                                         prefix_length + tested.size() + kExtraDays);
       double sum_error = 0, dead_count = 0;

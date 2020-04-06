@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
-from datetime import datetime, timedelta
+from datetime import datetime
 import argparse
-import itertools
-import numpy as np
 import yaml
 from yaml import CLoader as Loader
-from plotly.graph_objs import Figure, Layout, Scatter
+from plotly.graph_objs import Figure, Layout
 import plotly.express as px
 
 import dash

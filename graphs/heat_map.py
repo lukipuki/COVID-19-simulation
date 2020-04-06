@@ -46,7 +46,7 @@ def create_heatmap(gamma, gamma_dict):
     min_b0, max_b0 = min(i[0] for i in gamma_dict.keys()), max(i[0] for i in gamma_dict.keys())
     min_prefix_len, max_prefix_len = min(i[1] for i in gamma_dict.keys()), max(
         i[1] for i in gamma_dict.keys())
-    data, prefix_axis = [], [], []
+    data, prefix_axis = [], []
     for prefix_len in range(min_prefix_len, max_prefix_len + 1):
         curr = []
         not_empty = False

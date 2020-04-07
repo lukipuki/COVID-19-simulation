@@ -19,7 +19,11 @@ countries = [
     # The following two are for the blog post
     # Country('Italy', Formula(lambda t: 2.5 * t**3, r'$2.5 \cdot t^{3}$', 60, 60), 200),
     # Country('Italy', Formula(lambda t: (229/1.167) * 1.167**t, r'$196 \cdot 1.167^t$', 60, 60), 200),
-    Country('Spain', ATG_formula(6.4, 3665), 200),
+    #
+    # And these two for Spain and Germany are better fits as of 2020-04-06
+    # Country('Spain', ATG_formula(6.4, 3665), 200),
+    # Country('Germany', ATG_formula(6.3, 2873), 200),
+    Country('Spain', ATG_formula(6.1, 3000), 200),
     Country('Germany', ATG_formula(6.7, 3773), 200),
     Country('USA', ATG_formula(10.2, 72329), 200),
     Country('UK', ATG_formula(7.2, 2719), 200),

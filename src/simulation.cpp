@@ -38,7 +38,6 @@ class Simulator {
   }
 
   auto Simulate(double beta0, const GeneratorInterface& generator) -> SimulationResult {
-    constexpr double gamma1 = 1.25, gamma2 = 1.04;
     std::vector<uint32_t> infected = GenerateInfected(generator);
     std::vector<Person> persons;
     std::uniform_int_distribution<> uniform(0, 14);
@@ -123,11 +122,11 @@ int main(int argc, char* argv[]) {
   std::cout << "prefix_length optimal_b0 dead_count best_error" << std::endl;
   std::vector<YAML::Node> nodes;
 #pragma omp parallel for shared(positive, tested)
-  for (uint32_t prefix_length = 2; prefix_length < 20; ++prefix_length) {
+  for (uint32_t prefix_length = 2; prefix_length < 19; ++prefix_length) {
     Simulator simulator(prefix_length, positive, tested);
     uint32_t optimal_b0 = -1, optimal_dead_count;
     double best = 1e10;
-    for (uint32_t b0 = 30; b0 <= 200; b0 += 3) {
+    for (uint32_t b0 = 10; b0 <= 200; b0 += 3) {
       YAML::Node node;
       node["params"]["prefix_length"] = prefix_length;
       node["params"]["b0"] = b0;

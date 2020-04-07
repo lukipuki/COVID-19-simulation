@@ -16,7 +16,7 @@ constexpr uint32_t kExtraDays = 10;       // Extra simulated days of infections
 constexpr uint32_t kRestrictionDay = 8;  // For polynomial growth
 constexpr double kGamma1 = 1.25;
 constexpr double kGamma2 = 1.04;
-constexpr double kPolynomialDegree = 1.28;
+constexpr double kPolynomialDegree = 1.25;
 constexpr uint32_t kSymptomsLength = 28;
 
 // Only serialize good parameters, scoring below kScoreThreshold
@@ -119,10 +119,11 @@ int main(int argc, char* argv[]) {
   // auto generator = ExponentialGenerator(kGamma1, kGamma2);
   auto generator = PolynomialGenerator(kGamma1, kPolynomialDegree);
   constexpr uint32_t kIterations = 200;
+  const uint32_t kEarlyStop = std::ceil(std::sqrt(kIterations));
   std::cout << "prefix_length optimal_b0 dead_count best_error" << std::endl;
   std::vector<YAML::Node> nodes;
 #pragma omp parallel for shared(positive, tested)
-  for (uint32_t prefix_length = 2; prefix_length < 10; ++prefix_length) {
+  for (uint32_t prefix_length = 2; prefix_length < 20; ++prefix_length) {
     Simulator simulator(prefix_length, positive, tested);
     uint32_t optimal_b0 = -1, optimal_dead_count;
     double best = 1e10;
@@ -135,16 +136,21 @@ int main(int argc, char* argv[]) {
       node["params"]["deltas"] = generator.CreateDeltas(prefix_length + kRestrictionDay,
                                                         prefix_length + tested.size() + kExtraDays);
       double sum_error = 0, dead_count = 0;
+      int iterations = 0;
       std::vector<SimulationResult> results;
       for (uint32_t i = 0; i < kIterations; ++i) {
         auto result = simulator.Simulate(b0, generator);
         sum_error += result.error;
         dead_count += std::accumulate(result.dead_count.begin(), result.dead_count.end(), 0);
         results.push_back(result);
+        ++iterations;
+        if (i == kEarlyStop && sum_error / iterations > 1.5 * kScoreThreshold) {
+          break;
+        }
       }
 
-      sum_error /= kIterations;
-      dead_count /= kIterations;
+      sum_error /= iterations;
+      dead_count /= iterations;
       if (sum_error < best) {
         best = sum_error;
         optimal_b0 = b0;
@@ -162,7 +168,7 @@ int main(int argc, char* argv[]) {
       nodes.push_back(node);
     }
 
-    std::cout << std::setw(2) << prefix_length << std::setw(4) << optimal_b0 << std::setw(3)
+    std::cout << std::setw(2) << prefix_length << std::setw(4) << optimal_b0 << std::setw(4)
               << optimal_dead_count << std::setw(9) << best << std::endl;
   }
 

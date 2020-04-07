@@ -11,7 +11,7 @@
 #include "result.h"
 #include "stats.h"
 
-constexpr uint32_t kExtraDays = 10;       // Extra simulated days of infections
+constexpr uint32_t kExtraDays = 10;  // Extra simulated days of infections
 // constexpr uint32_t kRestrictionDay = 11;  // 0-indexed March 12th
 constexpr uint32_t kRestrictionDay = 8;  // For polynomial growth
 constexpr double kGamma1 = 1.25;
@@ -21,7 +21,6 @@ constexpr uint32_t kSymptomsLength = 28;
 
 // Only serialize good parameters, scoring below kScoreThreshold
 constexpr double kScoreThreshold = 250;
-
 
 class Simulator {
  public:
@@ -132,8 +131,6 @@ int main(int argc, char* argv[]) {
       node["params"]["b0"] = b0;
       // node["params"]["gamma2"] = kGamma2;
       node["params"]["alpha"] = kPolynomialDegree;
-      node["params"]["deltas"] = generator.CreateDeltas(prefix_length + kRestrictionDay,
-                                                        prefix_length + tested.size() + kExtraDays);
       double sum_error = 0, dead_count = 0;
       int iterations = 0;
       std::vector<SimulationResult> results;
@@ -160,9 +157,12 @@ int main(int argc, char* argv[]) {
         for (const auto& result : results) {
           node["results"].push_back(result.Serialize());
         }
+        node["params"]["deltas"] = generator.CreateDeltas(
+            prefix_length + kRestrictionDay, prefix_length + tested.size() + kExtraDays);
       } else {
         node["result_abbrev"]["error"] = sum_error;
         node["result_abbrev"]["dead_count"] = dead_count;
+        node["params"]["deltas"] = std::vector<double>{};
       }
       nodes.push_back(node);
     }

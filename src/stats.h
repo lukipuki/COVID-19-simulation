@@ -59,7 +59,7 @@ constexpr std::array<double, N> generate_log_factorials() {
   return ret;
 }
 
-constexpr uint32_t kFactorialLength = 5000;
+constexpr uint32_t kFactorialLength = 100000;
 constexpr std::array<double, kFactorialLength> log_factorials =
     generate_log_factorials<kFactorialLength>();
 

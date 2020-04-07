@@ -32,7 +32,7 @@ def ATG_formula(TG, A):
                    second_ip_day)
 
 
-class CountryGraph:
+class CountryReport:
     def __init__(self, path, country_basic):
         self.name = country_basic.name
         self.formula = country_basic.formula
@@ -51,7 +51,7 @@ class CountryGraph:
         self.cumulative_active = np.array(
             list(filter(lambda x: x >= country_basic.case_count, np.add.accumulate(self.active))))
         self.date_list = self.date_list[len(self.active) - len(self.cumulative_active):]
-        self.x = np.arange(1, 1 + min(len(self.date_list), self.formula.second_ip_day))
+        self.x = np.arange(1, self.formula.second_ip_day + 1)
         self.y = country_basic.formula.lambd(self.x)
         self.maximal_date = self.y.argmax()
 

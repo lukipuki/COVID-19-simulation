@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from country import Country, CountryGraph, GraphType, Formula, ATG_formula, PREDICTION_DATE
+from country import Country, CountryReport, GraphType, Formula, ATG_formula, PREDICTION_DATE
 from flask import Flask, render_template
 import argparse
 import dash
@@ -64,12 +64,12 @@ def create_dashboard(countries_data, server, graph_type=GraphType.Normal):
 
 if args.country != "ALL":
     country = next(c for c in countries if c.name == args.country)
-    country_data = CountryGraph(args.data, country)
+    country_data = CountryReport(args.data, country)
     country_data.create_country_figure().show()
     # plotly.offline.plot(country_data.create_country_figure(), filename='graph.html')
 else:
     countries_data = [
-        CountryGraph(args.data, country) for country in countries
+        CountryReport(args.data, country) for country in countries
         if os.path.isfile(os.path.join(args.data, f'data-{country.name}.yaml'))
     ]
 

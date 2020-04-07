@@ -7,17 +7,6 @@ import yaml
 from yaml import CLoader as Loader
 from plotly.graph_objs import Figure, Layout, Scatter
 
-parser = argparse.ArgumentParser(description='COVID-19 visualization for Slovakia')
-parser.add_argument('country_data',
-                    metavar='country_data',
-                    type=str,
-                    help=f"YAML file with country data")
-parser.add_argument('simulated',
-                    metavar='simulated',
-                    type=str,
-                    help=f"YAML file with simulation results")
-args = parser.parse_args()
-
 PREFIX_LENGTH = 4
 
 
@@ -29,38 +18,10 @@ class GraphType(Enum):
         return self.value
 
 
-def transform(list_2d, graph_type=GraphType.Cumulative):
-    if graph_type == GraphType.Cumulative:
-        return list(chain.from_iterable(accumulate(a) for a in list_2d))
-    else:
-        return list(chain.from_iterable(list_2d))
-
-
-with open(args.country_data, 'r') as stream:
-    try:
-        data = yaml.safe_load(stream)
-        real_positive = [0] * PREFIX_LENGTH + [point['positive'] for point in data]
-        date_list = [point['date'] for point in data]
-
-        first_date = datetime.strptime(date_list[0], '%Y-%m-%d')
-        prefix = [(first_date + timedelta(days=d)).strftime('%Y-%m-%d')
-                  for d in range(-PREFIX_LENGTH, 0)]
-        date_list = prefix + date_list
-        last_date = datetime.strptime(date_list[-1], '%Y-%m-%d')
-        for d in range(10):
-            date_list.append((last_date + timedelta(days=d + 1)).strftime('%Y-%m-%d'))
-
-    except yaml.YAMLError as exc:
-        raise exc
-
-
 class SimulationReport():
-    def __init__(self, simulation_yaml):
+    def __init__(self, simulation_yaml, country_yaml):
         with open(simulation_yaml, 'r') as stream:
-            try:
-                data = yaml.load(stream, Loader=Loader)
-            except yaml.YAMLError as exc:
-                raise exc
+            data = yaml.load(stream, Loader=Loader)
 
             self.best_error, self.best_b0, self.best_gamma2 = 1e20, None, None
             for group in data:
@@ -89,6 +50,20 @@ class SimulationReport():
                 f"error={self.best_error}"
             )
 
+        with open(country_yaml, 'r') as stream:
+            data = yaml.safe_load(stream)
+            self.real_positive = [0] * PREFIX_LENGTH + [point['positive'] for point in data]
+            date_list = [point['date'] for point in data]
+
+            first_date = datetime.strptime(date_list[0], '%Y-%m-%d')
+            prefix = [(first_date + timedelta(days=d)).strftime('%Y-%m-%d')
+                      for d in range(-PREFIX_LENGTH, 0)]
+            date_list = prefix + date_list
+            last_date = datetime.strptime(date_list[-1], '%Y-%m-%d')
+            for d in range(10):
+                date_list.append((last_date + timedelta(days=d + 1)).strftime('%Y-%m-%d'))
+            self.date_list = date_list
+
     def create_scatter_plot(self, graph_type=GraphType.Cumulative):
         if graph_type == GraphType.Cumulative:
             title_text = r'$\text{Total COVID-19 cases for }b_0=_b0, \alpha=_alpha, prefix=_prefix$'
@@ -106,8 +81,14 @@ class SimulationReport():
 
         figure = Figure(layout=layout)
 
+        def transform(list_2d, graph_type=GraphType.Cumulative):
+            if graph_type == GraphType.Cumulative:
+                return list(chain.from_iterable(accumulate(a) for a in list_2d))
+            else:
+                return list(chain.from_iterable(list_2d))
+
         figure.add_trace(
-            Scatter(x=[date_list[d] for d in self.positive_days],
+            Scatter(x=[self.date_list[d] for d in self.positive_days],
                     y=transform(self.daily_positive, graph_type),
                     mode='markers',
                     name="Simulated confirmed cases",
@@ -116,15 +97,15 @@ class SimulationReport():
 
         figure.add_trace(
             Scatter(
-                x=date_list,
-                y=transform([real_positive], graph_type),
-                text=date_list,
+                x=self.date_list,
+                y=transform([self.real_positive], graph_type),
+                text=self.date_list,
                 mode='lines',
                 name=r'Real confirmed cases',
             ))
 
         figure.add_trace(
-            Scatter(x=[date_list[d] for d in self.infected_days],
+            Scatter(x=[self.date_list[d] for d in self.infected_days],
                     y=transform(self.daily_infected, graph_type),
                     mode='markers',
                     name="Simulated total infected",
@@ -133,7 +114,7 @@ class SimulationReport():
 
         figure.add_trace(
             Scatter(
-                x=date_list,
+                x=self.date_list,
                 y=transform([self.deltas], graph_type),
                 mode='lines',
                 name='Expected infected',
@@ -142,4 +123,16 @@ class SimulationReport():
         return figure
 
 
-SimulationReport(args.simulated).create_scatter_plot().show()
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='COVID-19 visualization for Slovakia')
+    parser.add_argument('country_data',
+                        metavar='country_data',
+                        type=str,
+                        help=f"YAML file with country data")
+    parser.add_argument('simulated',
+                        metavar='simulated',
+                        type=str,
+                        help=f"YAML file with simulation results")
+    args = parser.parse_args()
+
+    SimulationReport(args.simulated, args.country_data).create_scatter_plot().show()

@@ -21,7 +21,7 @@ class GrowthType(Enum):
 
 
 class HeatMap():
-    def __init__(self, simulation_yaml):
+    def __init__(self, simulation_yaml, growth_type=GrowthType.Polynomial):
         with open(simulation_yaml, 'r') as stream:
             data = yaml.load(stream, Loader=Loader)
 
@@ -31,17 +31,22 @@ class HeatMap():
 
                 self.prefix_length = group["params"]["prefix_length"]
                 self.b0 = group["params"]["b0"]
-                self.alpha = group["params"]["alpha"]
+                if growth_type == GrowthType.Polynomial:
+                    self.param_name = "alpha"
+                else:
+                    self.param_name = "gamma2"
+                self.param = group["params"][self.param_name]
 
                 if "result_abbrev" in group:
-                    error_sum = group["result_abbrev"]["error"]
+                    average_error = group["result_abbrev"]["error"]
                 else:
-                    error_sum = sum(result["error"]
+                    average_error = sum(result["error"]
                                     for result in group["results"]) / len(group["results"])
-                self.best_errors.setdefault(self.alpha,
-                                            {})[(self.b0, self.prefix_length)] = error_sum
 
-    def create_heatmap(self, gamma, gamma_dict):
+                errors = self.best_errors.setdefault(self.param, {})
+                errors[(self.b0, self.prefix_length)] = average_error
+
+    def create_heatmap(self, param, gamma_dict):
         b0_set = set(i[0] for i in gamma_dict.keys())
         prefix_len_set = set(i[1] for i in gamma_dict.keys())
         min_b0, max_b0 = min(b0_set), max(b0_set)
@@ -60,10 +65,10 @@ class HeatMap():
         data = [[math.log(j) for j in i] for i in data]
 
         layout = Layout(
-            title=
-            f"Logarithm of error average of particular (b0, prefix_length) combination for alpha = {gamma}",
+            title=f'Logarithm of average error for {self.param_name} = {param}',
             xaxis=dict(title='b0'),
-            yaxis=go.layout.YAxis(title=go.layout.yaxis.Title(text='prefix_len', )))
+            yaxis=dict(title='prefix length'),
+            font={'size': 15})
 
         fig = go.Figure(
             layout=layout,
@@ -73,8 +78,8 @@ class HeatMap():
                 y=sorted(prefix_len_set),
                 reversescale=True,
                 colorscale='Viridis',
-                hovertemplate=
-                'b0: %{x}<br>prefix_len: %{y}<br>log(average_error): %{z}<extra></extra>'))
+                hovertemplate='b0: %{x}<br>prefix_len: %{y}<br>'\
+                'log(): %{z}<extra></extra>'))
         fig.update_xaxes(side="top")
         return fig
 

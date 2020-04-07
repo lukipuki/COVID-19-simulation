@@ -2,7 +2,7 @@
 from datetime import datetime
 from enum import Enum
 from yaml import CLoader as Loader
-from plotly.graph_objs import Figure, Layout
+from plotly.graph_objs import Figure, Layout, Heatmap
 import argparse
 import dash
 import dash_core_components as dcc
@@ -26,6 +26,7 @@ class HeatMap():
             data = yaml.load(stream, Loader=Loader)
 
             self.best_errors = {}
+            self.growth_type = growth_type
             for group in data:
                 assert ("results" in group) or ("result_abbrev" in group)
 
@@ -41,7 +42,7 @@ class HeatMap():
                     average_error = group["result_abbrev"]["error"]
                 else:
                     average_error = sum(result["error"]
-                                    for result in group["results"]) / len(group["results"])
+                                        for result in group["results"]) / len(group["results"])
 
                 errors = self.best_errors.setdefault(self.param, {})
                 errors[(self.b0, self.prefix_length)] = average_error
@@ -64,29 +65,28 @@ class HeatMap():
 
         data = [[math.log(j) for j in i] for i in data]
 
-        layout = Layout(
-            title=f'Logarithm of average error for {self.param_name} = {param}',
-            xaxis=dict(title='b0'),
-            yaxis=dict(title='prefix length'),
-            font={'size': 15})
+        layout = Layout(title=f'Logarithm of average error for {self.param_name} = {param}',
+                        xaxis=dict(title='b0'),
+                        yaxis=dict(title='prefix length'),
+                        font={'size': 15})
 
-        fig = go.Figure(
-            layout=layout,
-            data=go.Heatmap(
-                z=data,
-                x=sorted(b0_set),
-                y=sorted(prefix_len_set),
-                reversescale=True,
-                colorscale='Viridis',
-                hovertemplate='b0: %{x}<br>prefix_len: %{y}<br>'\
-                'log(): %{z}<extra></extra>'))
-        fig.update_xaxes(side="top")
-        return fig
+        figure = Figure(layout=layout)
+        figure.add_trace(
+            Heatmap(z=data,
+                    x=sorted(b0_set),
+                    y=sorted(prefix_len_set),
+                    reversescale=True,
+                    colorscale='Viridis',
+                    hovertemplate='b0: %{x}<br>prefix_len: %{y}<br>'
+                    'log(): %{z}<extra></extra>'))
 
-    def create_app(self, url_base_pathname):
+        return figure
+
+    def create_app(self, server):
         app = dash.Dash(
-            name=f'COVID-19 Heat map',
-            url_base_pathname=url_base_pathname,
+            name=f'COVID-19 {self.growth_type} heat map',
+            server=server,
+            url_base_pathname=f"/covid19/heatmap/{self.growth_type}/",
             external_scripts=[
                 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML'
             ])
@@ -100,8 +100,10 @@ class HeatMap():
         app.layout = html.Div(children=[
             html.H1(children='Visualizations of a COVID-19 stochastic model by Radoslav Harman'),
             html.Ul([
-                html.Li('Individual squares correspond to combination of b0 and prefix_len.'),
-                html.Li('Heat is the total amount of error for these parameters')
+                html.Li('Squares correspond to a combination of b0 and prefix length.'),
+                html.Li('Heat is the average error for these parameters, averaged over 100 '
+                        'simulations. We show the logarithm of the error, since we want to '
+                        'emphasize differences between small values')
             ])
         ] + graphs,
                               style={'font-family': 'sans-serif'})
@@ -116,5 +118,5 @@ if __name__ == '__main__':
                         help=f"YAML file with simulation results")
     args = parser.parse_args()
 
-    app = HeatMap(args.simulated).create_app("/")
+    app = HeatMap(args.simulated).create_app(True)
     app.run_server(host="0.0.0.0", port=8080)

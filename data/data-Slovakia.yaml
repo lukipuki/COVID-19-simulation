@@ -169,7 +169,12 @@
   recovered: 0
   tested: 1524
 - date: '2020-04-05'
-  dead: 1
+  dead: 0
   positive: 49
   recovered: 0
   tested: 1036
+- date: '2020-04-06'
+  dead: 2
+  positive: 47
+  recovered: 5
+  tested: 1448

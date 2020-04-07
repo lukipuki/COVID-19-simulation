@@ -1,7 +1,12 @@
+#!/usr/bin/env python3
 from collections import namedtuple
 from datetime import datetime, timedelta
 from enum import Enum
 from plotly.graph_objs import Figure, Layout, Scatter
+import argparse
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
 import math
 import numpy as np
 import os
@@ -32,12 +37,31 @@ def ATG_formula(TG, A):
                    second_ip_day)
 
 
+countries = [
+    Country('Slovakia', Formula(lambda t: 8 * t**1.28, r'$8 \cdot t^{1.28}$', 60, 60), 10),
+    Country('Italy', ATG_formula(7.8, 4417), 200),
+    # The following two are for the blog post
+    # Country('Italy', Formula(lambda t: 2.5 * t**3, r'$2.5 \cdot t^{3}$', 60, 60), 200),
+    # Country('Italy', Formula(lambda t: (229/1.167) * 1.167**t, r'$196 \cdot 1.167^t$', 60, 60), 200),
+    #
+    # And these two for Spain and Germany are better fits as of 2020-04-06
+    # Country('Spain', ATG_formula(6.1, 3050), 200),
+    # Country('Germany', ATG_formula(6.3, 2873), 200),
+    Country('Spain', ATG_formula(6.4, 3665), 200),
+    Country('Germany', ATG_formula(6.7, 3773), 200),
+    Country('USA', ATG_formula(10.2, 72329), 200),
+    Country('UK', ATG_formula(7.2, 2719), 200),
+    Country('France', ATG_formula(6.5, 1961), 200),
+    Country('Iran', ATG_formula(8.7, 2569), 200)
+]
+
+
 class CountryReport:
-    def __init__(self, path, country_basic):
+    def __init__(self, data_dir, country_basic):
         self.name = country_basic.name
         self.formula = country_basic.formula
-        self.path = os.path.join(path, f'data-{self.name}.yaml')
-        with open(self.path, 'r') as stream:
+        self.data_dir = os.path.join(data_dir, f'data-{self.name}.yaml')
+        with open(self.data_dir, 'r') as stream:
             try:
                 data = yaml.safe_load(stream)
                 positive = np.array([point['positive'] for point in data])
@@ -136,3 +160,53 @@ class CountryReport:
             figure.update_xaxes(type="log")
             figure.update_yaxes(type="log")
         return figure
+
+    @staticmethod
+    def create_dashboard(data_dir, server, graph_type=GraphType.Normal):
+        country_reports = [
+            CountryReport(data_dir, country) for country in countries
+            if os.path.isfile(os.path.join(data_dir, f'data-{country.name}.yaml'))
+        ]
+
+        app = dash.Dash(
+            name=f'COVID-19 {graph_type}',
+            url_base_pathname=f'/covid19/{graph_type}/',
+            server=server,
+            external_scripts=[
+                'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML'
+            ])
+        app.title = 'COVID-19 predictions'
+        if graph_type != GraphType.Normal:
+            app.title += f' on a {graph_type} graph'
+
+        graphs = [
+            dcc.Graph(id=f'{country_data.name} {graph_type}',
+                      figure=country_data.create_country_figure(graph_type))
+            for country_data in country_reports
+        ]
+
+        content = [
+            html.H1(children='COVID-19 predictions of Boďová and Kollár'),
+            html.P(children=[
+                'On 2020-03-30, mathematicians Boďová and Kollár made predictions about 7 countries.'
+                f' The data available up to that point (until {PREDICTION_DATE}) is in the ',
+                html.Span('green zone', style={'color': 'green'
+                                               }), f'. Data coming after {PREDICTION_DATE} is in the ',
+                html.Span('blue zone.', style=dict(color='blue'))
+            ]),
+            html.P('The black dotted line marks the predicted maximum.')
+        ] + graphs
+
+        app.layout = html.Div(children=content, style={'font-family': 'sans-serif'})
+        return app
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='COVID-19 country growth visualization')
+    parser.add_argument('data_dir', metavar='data_dir', type=str, help=f"Directory with YAML files")
+    parser.add_argument('country', metavar='country', type=str, help=f"Country name or 'ALL'")
+    args = parser.parse_args()
+
+    country = next(c for c in countries if c.name == args.country)
+    country_data = CountryReport(args.data_dir, country)
+    country_data.create_country_figure().show()

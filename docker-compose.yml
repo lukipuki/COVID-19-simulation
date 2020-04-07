@@ -11,4 +11,4 @@ services:
     ports:
       - 127.0.0.1:8081:8080
     restart: always
-    command: "python3 /covid19/graphs/growth.py /covid19/data ALL"
+    command: "/covid19/graphs/server.py /covid19/data"

@@ -15,7 +15,7 @@ import yaml
 EXPONENT = 6.23
 PREDICTION_DATE = '2020-03-29'
 
-Country = namedtuple('Country', ['name', 'formula', 'case_count'])
+Country = namedtuple('Country', ['name', 'formulas', 'case_count'])
 Formula = namedtuple('Formula', ['lambd', 'text', 'maximal_day', 'second_ip_day'])
 
 
@@ -38,8 +38,9 @@ def ATG_formula(TG, A):
 
 
 countries = [
-    Country('Slovakia', Formula(lambda t: 8 * t**1.28, r'$8 \cdot t^{1.28}$', 60, 60), 10),
-    Country('Italy', ATG_formula(7.8, 4417), 200),
+    Country('Slovakia', [Formula(lambda t: 8 * t**1.28, r'$8 \cdot t^{1.28}$', 60, 60)], 10),
+    Country('Italy', [ATG_formula(7.8, 4417)], 200),
+    Country('USA', [ATG_formula(10.2, 72329)], 200),
     # The following two are for the blog post
     # Country('Italy', Formula(lambda t: 2.5 * t**3, r'$2.5 \cdot t^{3}$', 60, 60), 200),
     # Country('Italy', Formula(lambda t: (229/1.167) * 1.167**t, r'$196 \cdot 1.167^t$', 60, 60), 200),
@@ -47,19 +48,18 @@ countries = [
     # And these two for Spain and Germany are better fits as of 2020-04-06
     # Country('Spain', ATG_formula(6.1, 3050), 200),
     # Country('Germany', ATG_formula(6.3, 2873), 200),
-    Country('Spain', ATG_formula(6.4, 3665), 200),
-    Country('Germany', ATG_formula(6.7, 3773), 200),
-    Country('USA', ATG_formula(10.2, 72329), 200),
-    Country('UK', ATG_formula(7.2, 2719), 200),
-    Country('France', ATG_formula(6.5, 1961), 200),
-    Country('Iran', ATG_formula(8.7, 2569), 200)
+    Country('Spain', [ATG_formula(6.4, 3665), ATG_formula(6.1, 3060)], 200),
+    Country('Germany', [ATG_formula(6.7, 3773), ATG_formula(6.3, 2850)], 200),
+    Country('UK', [ATG_formula(7.2, 2719)], 200),
+    Country('France', [ATG_formula(6.5, 1961)], 200),
+    Country('Iran', [ATG_formula(8.7, 2569)], 200)
 ]
 
 
 class CountryReport:
     def __init__(self, data_dir, country_basic):
         self.name = country_basic.name
-        self.formula = country_basic.formula
+        self.formulas = country_basic.formulas
         self.data_dir = os.path.join(data_dir, f'data-{self.name}.yaml')
         with open(self.data_dir, 'r') as stream:
             try:
@@ -75,9 +75,9 @@ class CountryReport:
         self.cumulative_active = np.array(
             list(filter(lambda x: x >= country_basic.case_count, np.add.accumulate(self.active))))
         self.date_list = self.date_list[len(self.active) - len(self.cumulative_active):]
-        self.x = np.arange(1, self.formula.second_ip_day + 1)
-        self.y = country_basic.formula.lambd(self.x)
-        self.maximal_date = self.y.argmax()
+        self.x = np.arange(1, max(f.second_ip_day for f in self.formulas) + 1)
+        self.y = [formula.lambd(self.x) for formula in self.formulas]
+        self.maximal_dates = [y.argmax() for y in self.y]
 
         self.last_date = datetime.strptime(self.date_list[-1], '%Y-%m-%d')
         self.date_list += [(self.last_date + timedelta(days=d)).strftime('%Y-%m-%d')
@@ -91,11 +91,11 @@ class CountryReport:
         shapes = [
             dict(type="line",
                  yref="paper",
-                 x0=x[self.maximal_date],
+                 x0=x[maximal_date],
                  y0=0,
-                 x1=x[self.maximal_date],
+                 x1=x[maximal_date],
                  y1=1,
-                 line=dict(width=2, dash='dot'))
+                 line=dict(width=2, dash='dot')) for maximal_date in self.maximal_dates
         ]
         try:
             prediction_date = self.date_list.index(PREDICTION_DATE)
@@ -122,23 +122,25 @@ class CountryReport:
                         height=700,
                         shapes=shapes,
                         hovermode='x',
-                        font={'size': 15},
+                        font=dict(size=20),
                         legend=dict(x=0.01, y=0.99, borderwidth=1))
 
         figure = Figure(layout=layout)
-        figure.add_trace(
-            Scatter(
-                x=x,
-                y=self.y,
-                text=self.date_list,
-                mode='lines',
-                name=self.formula.text,
-                line={
-                    'dash': 'dash',
-                    'width': 3,
-                    'color': 'rgb(31, 119, 180)',
-                },
-            ))
+        colors = ['rgb(31, 119, 180)', '#bcbd22'][:len(self.formulas)]
+        for color, formula in zip(colors, self.formulas):
+            figure.add_trace(
+                Scatter(
+                    x=x,
+                    y=formula.lambd(self.x),
+                    text=self.date_list,
+                    mode='lines',
+                    name=formula.text,
+                    line={
+                        'dash': 'dash',
+                        'width': 2,
+                        'color': color
+                    },
+                ))
 
         figure.add_trace(
             Scatter(x=x,
@@ -185,16 +187,35 @@ class CountryReport:
             for country_data in country_reports
         ]
 
+        prediction_link = "https://www.facebook.com/permalink.php?"\
+            "story_fbid=10113020662000793&id=2247644"
+        france_link = "https://www.reuters.com/article/us-health-coronavirus-france-toll/" \
+            "french-coronavirus-cases-jump-above-chinas-after-including-nursing-home-tally-idUSKBN21L3BG"
         content = [
             html.H1(children='COVID-19 predictions of Boďová and Kollár'),
             html.P(children=[
-                'On 2020-03-30, mathematicians Boďová and Kollár made predictions about 7 countries.'
-                f' The data available up to that point (until {PREDICTION_DATE}) is in the ',
-                html.Span('green zone', style={'color': 'green'
-                                               }), f'. Data coming after {PREDICTION_DATE} is in the ',
+                'On 2020-03-30, mathematicians Boďová and Kollár ',
+                html.A('made predictions about 7 countries', href=prediction_link),
+                f'. The data available up to that point (until {PREDICTION_DATE}) is in the ',
+                html.Span('green zone', style={'color': 'green'}),
+                f'. Data coming after {PREDICTION_DATE} is in the ',
                 html.Span('blue zone.', style=dict(color='blue'))
             ]),
-            html.P('The black dotted line marks the predicted maximum.')
+            html.P(children=[
+                html.Ul([
+                    html.Li(
+                        'The dashed lines are the predictions, the solid red lines are the real '
+                        'active cases. The black dotted lines mark the predicted maximums.'),
+                    html.Li([
+                        "France included data ",
+                        html.A('from nursing homes at once on 2020-04-04', href=france_link),
+                        ", which makes the graph look strange."
+                    ]),
+                    html.Li("8 days after the prediction, it's apparent that Spain and Germany do"
+                            " better than predicted. Their graphs also contain a second curve "
+                            "with TG equal to 6.1 and 6.4 respectively.")
+                ])
+            ])
         ] + graphs
 
         app.layout = html.Div(children=content, style={'font-family': 'sans-serif'})

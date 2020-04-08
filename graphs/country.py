@@ -210,9 +210,10 @@ class CountryReport:
             dcc.Markdown("""
                 ### References
                 * [Polynomial growth in age-dependent branching processes with diverging
-                  reproductive number](https://www.medrxiv.org/content/10.1101/2020.02.16.20023820v2.full.pdf) by A. Vazquez
-                * [Fractal kinetics of COVID-19 pandemic](https://arxiv.org/abs/cond-mat/0505116)
-                  by R. Ziff & A. Ziff
+                  reproductive number](https://arxiv.org/abs/cond-mat/0505116) by Alexei Vazquez
+                * [Fractal kinetics of COVID-19 pandemic]
+                  (https://www.medrxiv.org/content/10.1101/2020.02.16.20023820v2.full.pdf)
+                  by Robert Ziff and Anna Ziff
                 * Unpublished manuscript by Katarína Boďová and Richard Kollár
                 """),
             dcc.Markdown(f"""

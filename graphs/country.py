@@ -45,10 +45,8 @@ countries = [
     # Country('Italy', Formula(lambda t: 2.5 * t**3, r'$2.5 \cdot t^{3}$', 60, 60), 200),
     # Country('Italy', Formula(lambda t: (229/1.167) * 1.167**t, r'$196 \cdot 1.167^t$', 60, 60), 200),
     #
-    # And these two for Spain and Germany are better fits as of 2020-04-06
-    # Country('Spain', ATG_formula(6.1, 3050), 200),
-    # Country('Germany', ATG_formula(6.3, 2873), 200),
-    Country('Spain', [ATG_formula(6.4, 3665), ATG_formula(6.1, 3060)], 200),
+    # Spain and Germany seem to have better fits as of 2020-04-06
+    Country('Spain', [ATG_formula(6.4, 3665), ATG_formula(6.2, 3120)], 200),
     Country('Germany', [ATG_formula(6.7, 3773), ATG_formula(6.3, 2850)], 200),
     Country('UK', [ATG_formula(7.2, 2719)], 200),
     Country('France', [ATG_formula(6.5, 1961)], 200),
@@ -223,8 +221,8 @@ class CountryReport:
                 * The dashed lines are the predictions, the solid red lines are the real active
                   cases. The black dotted lines mark the predicted maximums.
                 * 8 days after the prediction, it's apparent that Spain and Germany do better
-                  than predicted. We've now added a second curve with <em>T<sub>G</sub></em> equal 
-                  to 6.1 and 6.4 respectively.
+                  than predicted. We've now added a second curve with <em>T<sub>G</sub></em> equal
+                  to 6.2 and 6.4 respectively.
                 * France included data [from nursing homes all at once on
                   2020-04-04]({france_link}), which makes the graph look strange.
                 """,

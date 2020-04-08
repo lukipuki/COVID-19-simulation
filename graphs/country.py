@@ -194,28 +194,41 @@ class CountryReport:
         content = [
             html.H1(children='COVID-19 predictions of Boďová and Kollár'),
             html.P(children=[
-                'On 2020-03-30, mathematicians Boďová and Kollár ',
+                'On 2020-03-30, mathematicians Katarína Boďová and Richard Kollár ',
                 html.A('made predictions about 7 countries', href=prediction_link),
                 f'. The data available up to that point (until {PREDICTION_DATE}) is in the ',
                 html.Span('green zone', style={'color': 'green'}),
                 f'. Data coming after {PREDICTION_DATE} is in the ',
-                html.Span('blue zone.', style=dict(color='blue'))
+                html.Span('blue zone.', style=dict(color='blue')),
+                dcc.Markdown("""
+                <em>N</em>(<em>t</em>) is the number of active cases on day <em>t</em>
+                (constants <em>A</em> and <em>T</em><sub><em>G</em></sub> are country-specific):
+                <em>N</em>(<em>t</em>) = (<em>A</em>/<em>T</em><sub><em>G</em></sub>) ⋅
+                (<em>t</em>/<em>T</em><sub><em>G</em></sub>)<sup>6.23</sup> /
+                e<sup><em>t</em>/<em>T</em><sub><em>G</em></sub></sup>
+                """,
+                             dangerously_allow_html=True)
             ]),
-            html.P(children=[
-                html.Ul([
-                    html.Li(
-                        'The dashed lines are the predictions, the solid red lines are the real '
-                        'active cases. The black dotted lines mark the predicted maximums.'),
-                    html.Li([
-                        "France included data ",
-                        html.A('from nursing homes at once on 2020-04-04', href=france_link),
-                        ", which makes the graph look strange."
-                    ]),
-                    html.Li("8 days after the prediction, it's apparent that Spain and Germany do"
-                            " better than predicted. Their graphs also contain a second curve "
-                            "with TG equal to 6.1 and 6.4 respectively.")
-                ])
-            ])
+            dcc.Markdown("""
+                ### References
+                * [Polynomial growth in age-dependent branching processes with diverging
+                  reproductive number](https://www.medrxiv.org/content/10.1101/2020.02.16.20023820v2.full.pdf) by A. Vazquez
+                * [Fractal kinetics of COVID-19 pandemic](https://arxiv.org/abs/cond-mat/0505116)
+                  by R. Ziff & A. Ziff
+                * Unpublished manuscript by Katarína Boďová and Richard Kollár
+                """),
+            dcc.Markdown(f"""
+                ### Notes about the graphs
+
+                * The dashed lines are the predictions, the solid red lines are the real active
+                  cases. The black dotted lines mark the predicted maximums.
+                * 8 days after the prediction, it's apparent that Spain and Germany do better
+                  than predicted. We've now added a second curve with <em>T<sub>G</sub></em> equal 
+                  to 6.1 and 6.4 respectively.
+                * France included data [from nursing homes all at once on
+                  2020-04-04]({france_link}), which makes the graph look strange.
+                """,
+                         dangerously_allow_html=True)
         ] + graphs
 
         app.layout = html.Div(children=content, style={'font-family': 'sans-serif'})

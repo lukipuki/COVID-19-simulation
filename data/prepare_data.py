@@ -25,15 +25,14 @@ for typ in ["deaths", "recovered", "confirmed"]:
     row = table.loc[(table["Country/Region"] == args.country) & (table["Province/State"].isnull())]
     data[typ] = diff(row.iloc[:, 4:].values.tolist()[0])
 
-positive = data["confirmed"]
-recovered = data["recovered"]
-dead = data["deaths"]
 
 start_day = datetime(2020, 1, 22)
-dates = [(start_day + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(len(positive))]
+delta = -1 if args.country == 'Slovakia' else 0
+length = len(data["deaths"])
+dates = [(start_day + timedelta(days=i + delta)).strftime("%Y-%m-%d") for i in range(length)]
 
 points = []
-for c, r, d, t in zip(positive, recovered, dead, dates):
+for c, r, d, t in zip(data["confirmed"], data["recovered"], data["deaths"], dates):
     points.append({'positive': c, 'recovered': r, 'dead': d, 'date': t})
 
 with open("data.yaml", 'w') as f:

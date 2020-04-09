@@ -1,21 +1,28 @@
 <!doctype html>
 <html>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta charset="UTF-8">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="UTF-8">
+    <title>COVID-19 visualizations</title>
+  </head>
   <body>
     <h1>COVID-19 predictions of Katarína Boďová and Richard Kollár</h1>
-    <ul>
-      <li>7 countries plotted on <a href="{{ url_for('covid19_normal') }}">normal graphs</a></li>
-      <li>7 countries plotted on <a href="{{ url_for('covid19_loglog') }}">log-log graphs</a></li>
-      <li>7 countries plotted on <a href="{{ url_for('covid19_semilog') }}">semi-log graphs</a></li>
-    </ul>
+    <p>Predictions for 7 countries plotted on
+      <ul>
+        <li><a href="{{ url_for('covid19_normal') }}">normal graphs</a></li>
+        <li><a href="{{ url_for('covid19_semilog') }}">semi-log graphs</a></li>
+        <li><a href="{{ url_for('covid19_loglog') }}">log-log graphs</a></li>
+      </ul>
+    </p>
     <h1>
       Visualizations of a COVID-19 stochastic model by Radoslav Harman
     </h1>
-    <ul>
-      <li>Heat map for <a href="{{ url_for('covid19_heatmap_polynomial') }}">polynomial growth of confirmed cases.</a></li>
-      <li>Heat map for <a href="{{ url_for('covid19_heatmap_exponential') }}">exponential growth of confirmed cases.</a></li>
-    </ul>
-
+    <p>
+      Heat map for
+      <ul>
+        <li><a href="{{ url_for('covid19_heatmap_polynomial') }}">polynomial growth of total confirmed cases</a></li>
+        <li><a href="{{ url_for('covid19_heatmap_exponential') }}">exponential growth of total confirmed cases</a></li>
+      </ul>
+    </p>
   </body>
 </html>

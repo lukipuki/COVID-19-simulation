@@ -114,7 +114,7 @@ class CountryReport:
         layout = Layout(title=f"Active cases in {self.name}",
                         xaxis=dict(
                             autorange=True,
-                            title=r'$\text{Days since the 200}^\mathrm{th}\text{ case}$',
+                            title=r'$\text{Day [starting at the 200}^\mathrm{th}\text{ case]}$',
                         ),
                         yaxis=dict(autorange=True, title='COVID-19 active cases', tickformat='.0f'),
                         height=700,
@@ -199,8 +199,9 @@ class CountryReport:
                 f'. Data coming after {PREDICTION_DATE} is in the ',
                 html.Span('blue zone.', style=dict(color='blue')),
                 dcc.Markdown("""
-                <em>N</em>(<em>t</em>) is the number of active cases on day <em>t</em>
-                (constants <em>A</em> and <em>T</em><sub><em>G</em></sub> are country-specific):
+                The predicted number of active cases <em>N</em>(<em>t</em>) on day <em>t</em> is
+                calculated as follows (constants <em>A</em> and <em>T</em><sub><em>G</em></sub>
+                are country-specific):
                 <em>N</em>(<em>t</em>) = (<em>A</em>/<em>T</em><sub><em>G</em></sub>) ⋅
                 (<em>t</em>/<em>T</em><sub><em>G</em></sub>)<sup>6.23</sup> /
                 e<sup><em>t</em>/<em>T</em><sub><em>G</em></sub></sup>

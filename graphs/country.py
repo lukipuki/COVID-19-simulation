@@ -38,7 +38,7 @@ def ATG_formula(TG, A):
 
 
 countries = [
-    Country('Slovakia', [Formula(lambda t: 8 * t**1.28, r'$8 \cdot t^{1.28}$', 60, 60)], 10),
+    Country('Slovakia', [Formula(lambda t: 8 * t**1.28, r'$8 \cdot t^{1.28}$', 40, 40)], 10),
     Country('Italy', [ATG_formula(7.8, 4417)], 200),
     Country('USA', [ATG_formula(10.2, 72329)], 200),
     # The following two are for the blog post
@@ -70,8 +70,9 @@ class CountryReport:
             except yaml.YAMLError as exc:
                 raise exc
 
+        self.case_count = country_basic.case_count
         self.cumulative_active = np.array(
-            list(filter(lambda x: x >= country_basic.case_count, np.add.accumulate(self.active))))
+            list(filter(lambda x: x >= self.case_count, np.add.accumulate(self.active))))
         self.date_list = self.date_list[len(self.active) - len(self.cumulative_active):]
         self.x = np.arange(1, max(f.second_ip_day for f in self.formulas) + 1)
         self.y = [formula.lambd(self.x) for formula in self.formulas]
@@ -114,7 +115,7 @@ class CountryReport:
         layout = Layout(title=f"Active cases in {self.name}",
                         xaxis=dict(
                             autorange=True,
-                            title=r'$\text{Day [starting at the 200}^\mathrm{th}\text{ case]}$',
+                            title=r'Day [starting at the {self.case_count}th case}$',
                         ),
                         yaxis=dict(autorange=True, title='COVID-19 active cases', tickformat='.0f'),
                         height=700,

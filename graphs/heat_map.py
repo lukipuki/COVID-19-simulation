@@ -66,7 +66,7 @@ class HeatMap():
         data = [[math.log(j) for j in i] for i in data]
 
         layout = Layout(title=f'Logarithm of average error for {self.param_name} = {param}',
-                        xaxis=dict(title='b0'),
+                        xaxis=dict(title='$b_0$'),
                         yaxis=dict(title='prefix length'),
                         font={'size': 15})
 

@@ -219,8 +219,8 @@ class CountryReport:
             dcc.Markdown(f"""
                 ### Notes about the graphs
 
-                * The dashed lines are the predictions, the solid red lines are the real active
-                  cases. The black dotted lines mark the predicted maximums.
+                * Dashed lines are the predictions, solid red lines are the real active
+                  cases. Black dotted lines mark the predicted maximums.
                 * 8 days after the prediction, it's apparent that Spain and Germany do better
                   than predicted. We've now added a second curve with <em>T<sub>G</sub></em> equal
                   to 6.2 and 6.4 respectively.

@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 from datetime import datetime, timedelta
 from enum import Enum
-from itertools import chain, accumulate
+from itertools import accumulate
+from itertools.chain import from_iterable
 import argparse
 import yaml
+from simulation_results_pb2 import SimulationResults
 from yaml import CLoader as Loader
 from plotly.graph_objs import Figure, Layout, Scatter
 
@@ -19,36 +21,32 @@ class GraphType(Enum):
 
 
 class SimulationReport():
-    def __init__(self, simulation_yaml, country_yaml):
-        with open(simulation_yaml, 'r') as stream:
-            data = yaml.load(stream, Loader=Loader)
+    def __init__(self, simulation_pb2_file, country_yaml):
+        with open(simulation_pb2_file, 'rb') as stream:
+            simulation_results = SimulationResults()
+            simulation_results.ParseFromString(stream.read())
 
             self.best_error, self.best_b0, self.best_gamma2 = 1e20, None, None
-            for group in data:
-                if "results" not in group:
+            for result in simulation_results.results:
+                if result.prefix_length != PREFIX_LENGTH or result.summary.error > self.best_error:
                     continue
-                error = sum(result["error"] for result in group["results"]) / len(group["results"])
-                if group["params"]["prefix_length"] == PREFIX_LENGTH and error < self.best_error:
-                    results = group["results"]
-                    self.daily_positive = [result["daily_positive"] for result in results]
-                    self.positive_days = list(
-                        chain.from_iterable(
-                            range(len(result["daily_positive"])) for result in results))
-                    self.daily_infected = [result["daily_infected"] for result in results]
-                    self.infected_days = list(
-                        chain.from_iterable(
-                            range(len(result["daily_infected"])) for result in results))
+                runs = result.runs
+                self.daily_positive = [run.daily_positive for run in runs]
+                self.positive_days = chain.from_iterable(
+                    range(len(run.daily_positive)) for run in runs)
+                self.daily_infected = [run.daily_infected for run in runs]
+                self.infected_days = chain.from_iterable(
+                    range(len(run.daily_infected)) for run in runs)
 
-                    self.deltas = group["params"]["deltas"]
-                    self.best_b0 = group["params"]["b0"]
-                    # TODO: support both
-                    # self.best_gamma2 = group["params"]["gamma2"]
-                    self.best_alpha = group["params"]["alpha"]
-                    self.best_error = error
-            print(
-                f"b_0={self.best_b0} is the best fit for prefix_length={PREFIX_LENGTH}, "
-                f"error={self.best_error}"
-            )
+                self.deltas = result.deltas
+                self.best_b0 = result.b0
+                # TODO: support both
+                # self.best_gamma2 = result.gamma2
+                self.best_alpha = result.alpha
+                self.best_error = result.summary.error
+
+            print(f"b_0={self.best_b0} is the best fit for prefix_length={PREFIX_LENGTH}, "
+                  f"error={self.best_error}")
 
         with open(country_yaml, 'r') as stream:
             data = yaml.safe_load(stream)

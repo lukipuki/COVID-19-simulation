@@ -9,7 +9,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import math
 import plotly.graph_objects as go
-import yaml
+import simulation_results_pb2
 
 
 class GrowthType(Enum):
@@ -21,31 +21,27 @@ class GrowthType(Enum):
 
 
 class HeatMap():
-    def __init__(self, simulation_yaml, growth_type=GrowthType.Polynomial):
-        with open(simulation_yaml, 'r') as stream:
-            data = yaml.load(stream, Loader=Loader)
+    def __init__(self, simulation_proto, growth_type=GrowthType.Polynomial):
+        with open(simulation_proto, "rb") as f:
+            read_simulation_results = simulation_results_pb2.SimulationResults()
+            read_simulation_results.ParseFromString(f.read())
 
             self.best_errors = {}
             self.growth_type = growth_type
-            for group in data:
-                assert ("results" in group) or ("result_abbrev" in group)
 
-                self.prefix_length = group["params"]["prefix_length"]
-                self.b0 = group["params"]["b0"]
+            for result in read_simulation_results.results:
+                self.prefix_length = result.prefix_length
+                self.b0 = result.b0
+
                 if growth_type == GrowthType.Polynomial:
                     self.param_name = "alpha"
+                    self.param = result.alpha
                 else:
                     self.param_name = "gamma2"
-                self.param = group["params"][self.param_name]
-
-                if "result_abbrev" in group:
-                    average_error = group["result_abbrev"]["error"]
-                else:
-                    average_error = sum(result["error"]
-                                        for result in group["results"]) / len(group["results"])
+                    self.param = result.gamma2
 
                 errors = self.best_errors.setdefault(self.param, {})
-                errors[(self.b0, self.prefix_length)] = average_error
+                errors[(self.b0, self.prefix_length)] = result.summary.error
 
     def create_heatmap(self, param, gamma_dict):
         b0_set = set(i[0] for i in gamma_dict.keys())
@@ -115,7 +111,7 @@ if __name__ == '__main__':
     parser.add_argument('simulated',
                         metavar='simulated',
                         type=str,
-                        help=f"YAML file with simulation results")
+                        help=f"Protobuf file with simulation results")
     args = parser.parse_args()
 
     app = HeatMap(args.simulated).create_app(True)

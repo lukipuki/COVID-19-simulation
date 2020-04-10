@@ -9,6 +9,12 @@ message SimulationResult {
   }
   repeated double deltas = 5;
 
+  message Summary {
+    double error = 1;
+    uint32 dead_count = 2;
+  }
+  Summary summary = 6;
+
   message OneRun {
     double error = 1;
     repeated uint32 daily_positive = 2;
@@ -17,19 +23,7 @@ message SimulationResult {
     repeated uint32 daily_recovered = 5;
   }
 
-  message Runs {
-    repeated OneRun runs = 1;
-  }
-
-  message Summary {
-    double error = 1;
-    uint32 dead_count = 2;
-  }
-
-  oneof result {
-    Runs runs = 6;
-    Summary summary = 7;
-  }
+  repeated OneRun runs = 7;
 }
 
 message SimulationResults {

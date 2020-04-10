@@ -4,7 +4,7 @@ Based on [Stochastic Simulation of the Initial Phase of the COVID-19 Epidemic in
 
 # Building using CMake
 
-You need [googletest](https://github.com/google/googletest), [yaml-cpp](https://github.com/jbeder/yaml-cpp) and OpenMP installed (usually comes with the compiler).
+You need [googletest](https://github.com/google/googletest), [protobuf](https://github.com/protocolbuffers/protobuf), [yaml-cpp](https://github.com/jbeder/yaml-cpp) and OpenMP installed (usually comes with the compiler).
 
 ```sh
 mkdir build && cd $_

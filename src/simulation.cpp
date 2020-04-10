@@ -144,14 +144,13 @@ int main(int argc, char* argv[]) {
       }
       double sum_error = 0, dead_count = 0;
       int iterations = 0;
-      SimulationResult::Runs runs;
       for (uint32_t i = 0; i < kIterations; ++i) {
         auto run = simulator.Simulate(b0, generator);
         sum_error += run.error();
         for (auto count : run.daily_dead()) {
           dead_count += count;
         }
-        *runs.add_runs() = run;
+        *result.add_runs() = run;
         ++iterations;
         if (i == kEarlyStop && sum_error / iterations > 1.5 * kScoreThreshold) {
           break;
@@ -166,14 +165,13 @@ int main(int argc, char* argv[]) {
         optimal_dead_count = dead_count;
       }
 
+      SimulationResult::Summary summary;
+      summary.set_error(sum_error);
+      summary.set_dead_count(dead_count);
+      *result.mutable_summary() = summary;
       if (sum_error > kScoreThreshold) {
-        SimulationResult::Summary summary;
-        summary.set_error(sum_error);
-        summary.set_dead_count(dead_count);
         result.mutable_deltas()->Clear();
-        *result.mutable_summary() = summary;
-      } else {
-        *result.mutable_runs() = runs;
+        result.mutable_runs()->Clear();
       }
       *results.add_results() = result;
     }

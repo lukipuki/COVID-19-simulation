@@ -115,7 +115,7 @@ class CountryReport:
         layout = Layout(title=f"Active cases in {self.name}",
                         xaxis=dict(
                             autorange=True,
-                            title=r'Day [starting at the {self.case_count}th case}$',
+                            title=f'Day [starting at the {self.case_count}th case]',
                         ),
                         yaxis=dict(autorange=True, title='COVID-19 active cases', tickformat='.0f'),
                         height=700,
@@ -125,7 +125,7 @@ class CountryReport:
                         legend=dict(x=0.01, y=0.99, borderwidth=1))
 
         figure = Figure(layout=layout)
-        colors = ['rgb(31, 119, 180)', '#bcbd22'][:len(self.formulas)]
+        colors = ['rgb(31, 119, 180)', '#bcbd22', 'violet'][:len(self.formulas)]
         for color, formula in zip(colors, self.formulas):
             figure.add_trace(
                 Scatter(

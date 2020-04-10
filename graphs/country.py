@@ -225,7 +225,7 @@ class CountryReport:
                   cases. Black dotted lines mark the predicted maximums.
                 * 8 days after the prediction, it's apparent that Spain and Germany do better
                   than predicted. We've now added a second curve with <em>T<sub>G</sub></em> equal
-                  to 6.2 and 6.4 respectively.
+                  to 6.2 and 6.3 respectively.
                 * France included data [from nursing homes all at once on
                   2020-04-04]({france_link}), which makes the graph look strange.
                 """,

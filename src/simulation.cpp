@@ -8,9 +8,10 @@
 
 #include "generators.h"
 #include "person.h"
-#include "result.h"
+#include "simulation_results.pb.h"
 #include "stats.h"
 
+constexpr bool kExponentialGrowth = false;
 constexpr uint32_t kExtraDays = 10;  // Extra simulated days of infections
 // constexpr uint32_t kRestrictionDay = 11;  // 0-indexed March 12th
 constexpr uint32_t kRestrictionDay = 8;  // For polynomial growth
@@ -20,7 +21,7 @@ constexpr double kPolynomialDegree = 1.25;
 constexpr uint32_t kSymptomsLength = 28;
 
 // Only serialize good parameters, scoring below kScoreThreshold
-constexpr double kScoreThreshold = 250;
+constexpr double kScoreThreshold = 270;
 
 class Simulator {
  public:
@@ -36,14 +37,16 @@ class Simulator {
     std::partial_sum(positive_.begin(), positive_.end(), positive_.begin());
   }
 
-  auto Simulate(double beta0, const GeneratorInterface& generator) -> SimulationResult {
+  auto Simulate(double beta0, const GeneratorInterface& generator) -> SimulationResult::OneRun {
     std::vector<uint32_t> infected = GenerateInfected(generator);
     std::vector<Person> persons;
     std::uniform_int_distribution<> uniform(0, 14);
 
-    SimulationResult result(infected);
-    result.error = 0;
+    SimulationResult::OneRun run;
+    *run.mutable_daily_infected() = {infected.begin(), infected.end()};
     int32_t cumulative_positive = 0;
+    double error = 0;
+    std::vector<uint32_t> dead_count;
     for (uint32_t day = 0; day < positive_.size(); ++day) {
       for (uint32_t i = 0; i < infected[day]; ++i) {
         auto age = generate_age(&random_generator_);
@@ -52,8 +55,10 @@ class Simulator {
             symptoms, std::ceil(symptoms * kSymptomsLength + uniform(random_generator_)), day);
         if (persons.back().DateOfDeath().has_value()) {
           uint32_t date = *persons.back().DateOfDeath();
-          if (result.dead_count.size() <= date) result.dead_count.resize(date + 1);
-          ++result.dead_count[date];
+          if (dead_count.size() <= date) {
+            dead_count.resize(date + 1);
+          }
+          ++dead_count[date];
         }
       }
 
@@ -65,19 +70,18 @@ class Simulator {
           persons.begin(), persons.end(),
           [day, threshold](const Person& ca) { return ca.CurrentSymptoms(day) < threshold; });
 
-      result.daily_positive.push_back(persons.end() - iter);
+      run.add_daily_positive(persons.end() - iter);
       cumulative_positive += persons.end() - iter;
       if (cumulative_positive + positive_[day] > 0) {
-        result.error -= log_distance_probability(cumulative_positive, positive_[day]);
-        // std::cout << day << " " << cumulative_positive << " " << positive_[day] << " "
-        //           << log_distance_probability(cumulative_positive, positive_[day])
-        //           << std::endl;
+        error -= log_distance_probability(cumulative_positive, positive_[day]);
       }
 
       persons.resize(iter - persons.begin());
     }
+    run.set_error(error);
+    *run.mutable_daily_dead() = {dead_count.begin(), dead_count.end()};
 
-    return result;
+    return run;
   }
 
  private:
@@ -118,27 +122,36 @@ int main(int argc, char* argv[]) {
   auto generator = PolynomialGenerator(kGamma1, kPolynomialDegree);
   constexpr uint32_t kIterations = 200;
   const uint32_t kEarlyStop = std::ceil(std::sqrt(kIterations));
+  SimulationResults results;
   std::cout << "prefix_length optimal_b0 dead_count best_error" << std::endl;
-  std::vector<YAML::Node> nodes;
 #pragma omp parallel for shared(positive, tested)
   for (uint32_t prefix_length = 2; prefix_length < 19; ++prefix_length) {
     Simulator simulator(prefix_length, positive, tested);
     uint32_t optimal_b0 = -1, optimal_dead_count;
     double best = 1e10;
     for (uint32_t b0 = 10; b0 <= 200; b0 += 3) {
-      YAML::Node node;
-      node["params"]["prefix_length"] = prefix_length;
-      node["params"]["b0"] = b0;
-      // node["params"]["gamma2"] = kGamma2;
-      node["params"]["alpha"] = kPolynomialDegree;
+      SimulationResult result;
+      result.set_prefix_length(prefix_length);
+      result.set_b0(b0);
+      std::vector<double> deltas = generator.CreateDeltas(
+          prefix_length + kRestrictionDay, prefix_length + tested.size() + kExtraDays);
+      *result.mutable_deltas() = {deltas.begin(), deltas.end()};
+
+      if constexpr (kExponentialGrowth) {
+        result.set_gamma2(kGamma2);
+      } else {
+        result.set_alpha(kPolynomialDegree);
+      }
       double sum_error = 0, dead_count = 0;
       int iterations = 0;
-      std::vector<SimulationResult> results;
+      SimulationResult::Runs runs;
       for (uint32_t i = 0; i < kIterations; ++i) {
-        auto result = simulator.Simulate(b0, generator);
-        sum_error += result.error;
-        dead_count += std::accumulate(result.dead_count.begin(), result.dead_count.end(), 0);
-        results.push_back(result);
+        auto run = simulator.Simulate(b0, generator);
+        sum_error += run.error();
+        for (auto count : run.daily_dead()) {
+          dead_count += count;
+        }
+        *runs.add_runs() = run;
         ++iterations;
         if (i == kEarlyStop && sum_error / iterations > 1.5 * kScoreThreshold) {
           break;
@@ -153,31 +166,24 @@ int main(int argc, char* argv[]) {
         optimal_dead_count = dead_count;
       }
 
-      if (sum_error < kScoreThreshold) {
-        for (const auto& result : results) {
-          node["results"].push_back(result.Serialize());
-        }
-        node["params"]["deltas"] = generator.CreateDeltas(
-            prefix_length + kRestrictionDay, prefix_length + tested.size() + kExtraDays);
+      if (sum_error > kScoreThreshold) {
+        SimulationResult::Summary summary;
+        summary.set_error(sum_error);
+        summary.set_dead_count(dead_count);
+        result.mutable_deltas()->Clear();
+        *result.mutable_summary() = summary;
       } else {
-        node["result_abbrev"]["error"] = sum_error;
-        node["result_abbrev"]["dead_count"] = dead_count;
-        node["params"]["deltas"] = std::vector<double>{};
+        *result.mutable_runs() = runs;
       }
-      nodes.push_back(node);
+      *results.add_results() = result;
     }
 
     std::cout << std::setw(2) << prefix_length << std::setw(4) << optimal_b0 << std::setw(4)
               << optimal_dead_count << std::setw(9) << best << std::endl;
   }
 
-  YAML::Emitter yaml_out;
-  yaml_out << YAML::BeginSeq;
-  for (const auto& node : nodes) {
-    yaml_out << YAML::Flow << node;
+  std::fstream output("results.pb", std::ios::out | std::ios::trunc | std::ios::binary);
+  if (!results.SerializeToOstream(&output)) {
+    std::cerr << "Failed to write results" << std::endl;
   }
-  yaml_out << YAML::EndSeq;
-
-  std::ofstream results_yaml("results.yaml");
-  results_yaml << yaml_out.c_str() << std::endl;
 }

@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+message SimulationResult {
+  uint32 prefix_length = 1;
+  uint32 b0 = 2;
+  oneof growth_param {
+    double alpha = 3;
+    double gamma2 = 4;
+  }
+  repeated double deltas = 5;
+
+  message OneRun {
+    double error = 1;
+    repeated uint32 daily_positive = 2;
+    repeated uint32 daily_infected = 3;
+    repeated uint32 daily_dead = 4;
+    repeated uint32 daily_recovered = 5;
+  }
+
+  message Runs {
+    repeated OneRun runs = 1;
+  }
+
+  message Summary {
+    double error = 1;
+    uint32 dead_count = 2;
+  }
+
+  oneof result {
+    Runs runs = 6;
+    Summary summary = 7;
+  }
+}
+
+message SimulationResults {
+  repeated SimulationResult results = 1;
+}

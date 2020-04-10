@@ -9,11 +9,15 @@ endif()
 
 find_package(OpenMP)
 find_package(yaml-cpp REQUIRED)
+find_package(Protobuf REQUIRED)
 
-add_executable(simulation src/simulation.cpp)
+protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS src/simulation_results.proto)
+
+add_executable(simulation src/simulation.cpp ${PROTO_SRCS} ${PROTO_HDRS})
 target_compile_features(simulation PRIVATE cxx_std_17)
-target_link_libraries(simulation PRIVATE yaml-cpp $<$<BOOL:${OpenMP_FOUND}>:OpenMP::OpenMP_CXX>)
-target_include_directories(simulation PRIVATE src/)
+target_link_libraries(simulation PRIVATE yaml-cpp $<$<BOOL:${OpenMP_FOUND}>:OpenMP::OpenMP_CXX>
+  protobuf::libprotobuf)
+target_include_directories(simulation PRIVATE src/ ${CMAKE_CURRENT_BINARY_DIR}/)
 
 enable_testing()
 find_package(GTest REQUIRED)

@@ -264,19 +264,19 @@
   recovered: 188
 - date: '2020-03-28'
   dead: 445
-  positive: 19821
+  positive: 19808
   recovered: 203
 - date: '2020-03-29'
   dead: 441
-  positive: 19431
+  positive: 19444
   recovered: 1593
 - date: '2020-03-30'
   dead: 511
-  positive: 20928
+  positive: 20922
   recovered: 2979
 - date: '2020-03-31'
   dead: 895
-  positive: 26335
+  positive: 26341
   recovered: 1380
 - date: '2020-04-01'
   dead: 884
@@ -284,19 +284,19 @@
   recovered: 1450
 - date: '2020-04-02'
   dead: 1169
-  positive: 30244
+  positive: 30390
   recovered: 527
 - date: '2020-04-03'
   dead: 1161
-  positive: 31970
+  positive: 31824
   recovered: 706
 - date: '2020-04-04'
   dead: 1320
-  positive: 33264
+  positive: 33267
   recovered: 4945
 - date: '2020-04-05'
   dead: 1212
-  positive: 28222
+  positive: 28219
   recovered: 2796
 - date: '2020-04-06'
   dead: 1164
@@ -310,3 +310,7 @@
   dead: 1973
   positive: 32829
   recovered: 1796
+- date: '2020-04-09'
+  dead: 1783
+  positive: 32385
+  recovered: 1851

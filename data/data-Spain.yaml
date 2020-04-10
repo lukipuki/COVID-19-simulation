@@ -310,3 +310,7 @@
   dead: 747
   positive: 6278
   recovered: 4813
+- date: '2020-04-09'
+  dead: 655
+  positive: 5002
+  recovered: 4144

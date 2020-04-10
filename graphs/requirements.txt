@@ -2,4 +2,6 @@ dash
 Flask
 numpy
 pandas
+protobuf
 plotly
+pyyaml

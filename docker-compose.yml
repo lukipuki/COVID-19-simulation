@@ -11,4 +11,4 @@ services:
     ports:
       - 127.0.0.1:8081:8080
     restart: always
-    command: "/covid19/graphs/server.py data/ data/results-poly.yaml data/results-exp.yaml"
+    command: "/covid19/graphs/server.py data/ data/results-poly.pb data/results-exp.pb"

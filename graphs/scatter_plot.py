@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 from datetime import datetime, timedelta
 from enum import Enum
-from itertools import accumulate
-from itertools.chain import from_iterable
+from itertools import accumulate, chain
 import argparse
 import yaml
 from simulation_results_pb2 import SimulationResults

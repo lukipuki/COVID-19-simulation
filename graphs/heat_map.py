@@ -30,8 +30,8 @@ class HeatMap():
             self.growth_type = growth_type
 
             for result in read_simulation_results.results:
-                self.prefix_length = result.prefix_length
-                self.b0 = result.b0
+                prefix_length = result.prefix_length
+                b0 = result.b0
 
                 if growth_type == GrowthType.Polynomial:
                     self.param_name = "alpha"
@@ -41,7 +41,7 @@ class HeatMap():
                     self.param = result.gamma2
 
                 errors = self.best_errors.setdefault(self.param, {})
-                errors[(self.b0, self.prefix_length)] = result.summary.error
+                errors[(b0, prefix_length)] = result.summary.error
 
     def create_heatmap(self, param, gamma_dict):
         b0_set = set(i[0] for i in gamma_dict.keys())
@@ -54,7 +54,7 @@ class HeatMap():
             for b0 in range(min_b0, max_b0 + 1):
                 if b0 not in b0_set:
                     continue
-                curr.append(gamma_dict.get((b0, prefix_len), 0))
+                curr.append(gamma_dict.get((b0, prefix_len), math.exp(11.5)))
             if len(curr) != 0:
                 prefix_axis.append(prefix_len)
                 data.append(curr)
@@ -64,7 +64,7 @@ class HeatMap():
         layout = Layout(title=f'Logarithm of average error for {self.param_name} = {param}',
                         xaxis=dict(title='$b_0$'),
                         yaxis=dict(title='prefix length'),
-                        font={'size': 15})
+                        font={'size': 20})
 
         figure = Figure(layout=layout)
         figure.add_trace(
@@ -74,7 +74,7 @@ class HeatMap():
                     reversescale=True,
                     colorscale='Viridis',
                     hovertemplate='b0: %{x}<br>prefix_len: %{y}<br>'
-                    'log(): %{z}<extra></extra>'))
+                    'log(error): %{z}<extra></extra>'))
 
         return figure
 
@@ -90,7 +90,7 @@ class HeatMap():
 
         graphs = [
             dcc.Graph(id=f'{key}', figure=self.create_heatmap(key, value))
-            for key, value in self.best_errors.items()
+            for key, value in sorted(self.best_errors.items())
         ]
 
         app.layout = html.Div(children=[
@@ -114,5 +114,5 @@ if __name__ == '__main__':
                         help=f"Protobuf file with simulation results")
     args = parser.parse_args()
 
-    app = HeatMap(args.simulated).create_app(True)
+    app = HeatMap(args.simulated, GrowthType.Polynomial).create_app(True)
     app.run_server(host="0.0.0.0", port=8080)

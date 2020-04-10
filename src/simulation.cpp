@@ -11,7 +11,6 @@
 #include "simulation_results.pb.h"
 #include "stats.h"
 
-
 // #define EXPONENTIAL_GROWTH
 // constexpr bool kExponentialGrowth = true;
 constexpr bool kExponentialGrowth = false;
@@ -31,7 +30,6 @@ class Simulator {
       : tested_(prefix_length, 0),
         positive_(prefix_length, 0),
         t0_{kRestrictionDay + prefix_length},
-        rd_{},
         random_generator_(rd_()) {
     std::copy(tested.begin(), tested.end(), std::back_inserter(tested_));
     std::copy(positive.begin(), positive.end(), std::back_inserter(positive_));
@@ -125,7 +123,7 @@ int main(int argc, char* argv[]) {
   std::cout << "prefix_length optimal_b0 dead_count best_error" << std::endl;
 #pragma omp parallel for shared(positive, tested)
 #ifdef EXPONENTIAL_GROWTH
-// Yes, it's #ifdef, because 'if constexpr' sucks
+  // Yes, it's #ifdef, because 'if constexpr' sucks
   for (uint32_t g = 96; g <= 106; g += 2) {
     auto generator = ExponentialGenerator(kGamma1, g / 100.0);
 #else
@@ -133,7 +131,7 @@ int main(int argc, char* argv[]) {
     auto generator = PolynomialGenerator(kGamma1, g / 100.0);
 #endif
     double param = g / 100.0;
-    for (uint32_t prefix_length = 1; prefix_length < 10; ++prefix_length) {
+    for (uint32_t prefix_length = 1; prefix_length < 19; ++prefix_length) {
       Simulator simulator(prefix_length, positive, tested);
       uint32_t optimal_b0 = -1, optimal_dead_count;
       double best = 1e10;
@@ -181,6 +179,7 @@ int main(int argc, char* argv[]) {
           result.mutable_deltas()->Clear();
           result.mutable_runs()->Clear();
         }
+#pragma omp critical
         *results.add_results() = result;
       }
 

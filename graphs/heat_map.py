@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
-from datetime import datetime
+from collections import OrderedDict
 from enum import Enum
-from yaml import CLoader as Loader
 from plotly.graph_objs import Figure, Layout, Heatmap
 import argparse
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import math
-import plotly.graph_objects as go
 import simulation_results_pb2
 
 
@@ -21,56 +19,50 @@ class GrowthType(Enum):
 
 
 class HeatMap():
-    def __init__(self, simulation_proto, growth_type=GrowthType.Polynomial):
+    def __init__(self, simulation_proto):
         with open(simulation_proto, "rb") as f:
             read_simulation_results = simulation_results_pb2.SimulationResults()
             read_simulation_results.ParseFromString(f.read())
 
-            self.best_errors = {}
-            self.growth_type = growth_type
-
+            self.best_errors = OrderedDict()
+            self.growth_type = None
             for result in read_simulation_results.results:
-                prefix_length = result.prefix_length
-                b0 = result.b0
 
-                if growth_type == GrowthType.Polynomial:
-                    self.param_name = "alpha"
+                if self.growth_type is None:
+                    if result.HasField("alpha"):
+                        self.growth_type = GrowthType.Polynomial
+                        self.param_name = "alpha"
+                    else:
+                        self.growth_type = GrowthType.Exponential
+                        self.param_name = "gamma2"
+
+                if self.growth_type == GrowthType.Polynomial:
                     self.param = result.alpha
                 else:
-                    self.param_name = "gamma2"
                     self.param = result.gamma2
 
-                errors = self.best_errors.setdefault(self.param, {})
-                errors[(b0, prefix_length)] = result.summary.error
+                errors_by_param = self.best_errors.setdefault(self.param, OrderedDict())
+                errors = errors_by_param.setdefault(result.prefix_length, [])
+                errors.append((result.b0, result.summary.error))
 
     def create_heatmap(self, param, gamma_dict):
-        b0_set = set(i[0] for i in gamma_dict.keys())
-        prefix_len_set = set(i[1] for i in gamma_dict.keys())
-        min_b0, max_b0 = min(b0_set), max(b0_set)
-        min_prefix_len, max_prefix_len = min(prefix_len_set), max(prefix_len_set)
-        data, prefix_axis = [], []
-        for prefix_len in range(min_prefix_len, max_prefix_len + 1):
-            curr = []
-            for b0 in range(min_b0, max_b0 + 1):
-                if b0 not in b0_set:
-                    continue
-                curr.append(gamma_dict.get((b0, prefix_len), math.exp(11.5)))
-            if len(curr) != 0:
-                prefix_axis.append(prefix_len)
-                data.append(curr)
-
-        data = [[math.log(j) for j in i] for i in data]
+        data = []
+        for key, value in gamma_dict.items():
+            value.sort()
+            b0_set = [x[0] for x in value]
+            data.append([math.log(x[1]) for x in value])
 
         layout = Layout(title=f'Logarithm of average error for {self.param_name} = {param}',
                         xaxis=dict(title='$b_0$'),
                         yaxis=dict(title='prefix length'),
+                        height=700,
                         font={'size': 20})
 
         figure = Figure(layout=layout)
         figure.add_trace(
             Heatmap(z=data,
-                    x=sorted(b0_set),
-                    y=sorted(prefix_len_set),
+                    x=b0_set,
+                    y=list(gamma_dict.keys()),
                     reversescale=True,
                     colorscale='Viridis',
                     hovertemplate='b0: %{x}<br>prefix_len: %{y}<br>'
@@ -93,16 +85,20 @@ class HeatMap():
             for key, value in sorted(self.best_errors.items())
         ]
 
-        app.layout = html.Div(children=[
-            html.H1(children='Visualizations of a COVID-19 stochastic model by Radoslav Harman'),
-            html.Ul([
-                html.Li('Squares correspond to a combination of b0 and prefix length.'),
-                html.Li('Heat is the average error for these parameters, averaged over 100 '
-                        'simulations. We show the logarithm of the error, since we want to '
-                        'emphasize differences between small values')
-            ])
-        ] + graphs,
-                              style={'font-family': 'sans-serif'})
+        body = [
+            dcc.Markdown(f"""
+                # Visualizations of a COVID-19 stochastic model, with {self.growth_type} growth
+                Model is by Radoslav Harman. You can read the
+                [description of the model](http://www.iam.fmph.uniba.sk/ospm/Harman/COR01.pdf).
+
+                * Squares correspond to a combination of b<sub>0</sub> and prefix length.
+                * Heat is the average error for these parameters, averaged over 200 simulations.
+                  We show the logarithm of the error, since we want to emphasize differences
+                  between small values.
+            """,
+                         dangerously_allow_html=True)
+        ] + graphs
+        app.layout = html.Div(body, style={'font-family': 'sans-serif'})
         return app
 
 
@@ -114,5 +110,5 @@ if __name__ == '__main__':
                         help=f"Protobuf file with simulation results")
     args = parser.parse_args()
 
-    app = HeatMap(args.simulated, GrowthType.Polynomial).create_app(True)
+    app = HeatMap(args.simulated).create_app(True)
     app.run_server(host="0.0.0.0", port=8080)

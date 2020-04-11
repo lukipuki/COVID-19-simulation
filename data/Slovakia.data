@@ -1,5 +1,6 @@
 name: "Slovakia"
 stats {
+  tested: 37
   date {
     day: 2
     month: 3
@@ -7,6 +8,7 @@ stats {
   }
 }
 stats {
+  tested: 32
   date {
     day: 3
     month: 3
@@ -14,6 +16,7 @@ stats {
   }
 }
 stats {
+  tested: 38
   date {
     day: 4
     month: 3
@@ -21,6 +24,7 @@ stats {
   }
 }
 stats {
+  tested: 50
   date {
     day: 5
     month: 3
@@ -29,6 +33,7 @@ stats {
 }
 stats {
   positive: 1
+  tested: 50
   date {
     day: 6
     month: 3
@@ -37,6 +42,7 @@ stats {
 }
 stats {
   positive: 2
+  tested: 86
   date {
     day: 7
     month: 3
@@ -45,6 +51,7 @@ stats {
 }
 stats {
   positive: 2
+  tested: 104
   date {
     day: 8
     month: 3
@@ -53,6 +60,7 @@ stats {
 }
 stats {
   positive: 2
+  tested: 52
   date {
     day: 9
     month: 3
@@ -60,6 +68,7 @@ stats {
   }
 }
 stats {
+  tested: 42
   date {
     day: 10
     month: 3
@@ -68,6 +77,7 @@ stats {
 }
 stats {
   positive: 3
+  tested: 123
   date {
     day: 11
     month: 3
@@ -76,6 +86,7 @@ stats {
 }
 stats {
   positive: 11
+  tested: 140
   date {
     day: 12
     month: 3
@@ -84,6 +95,7 @@ stats {
 }
 stats {
   positive: 11
+  tested: 153
   date {
     day: 13
     month: 3
@@ -92,6 +104,7 @@ stats {
 }
 stats {
   positive: 12
+  tested: 185
   date {
     day: 14
     month: 3
@@ -100,6 +113,7 @@ stats {
 }
 stats {
   positive: 17
+  tested: 245
   date {
     day: 15
     month: 3
@@ -108,6 +122,7 @@ stats {
 }
 stats {
   positive: 11
+  tested: 159
   date {
     day: 16
     month: 3
@@ -117,6 +132,7 @@ stats {
 stats {
   dead: 1
   positive: 25
+  tested: 318
   date {
     day: 17
     month: 3
@@ -125,6 +141,7 @@ stats {
 }
 stats {
   positive: 8
+  tested: 225
   date {
     day: 18
     month: 3
@@ -133,6 +150,7 @@ stats {
 }
 stats {
   positive: 19
+  tested: 302
   date {
     day: 19
     month: 3
@@ -141,6 +159,7 @@ stats {
 }
 stats {
   positive: 13
+  tested: 367
   date {
     day: 20
     month: 3
@@ -151,6 +170,7 @@ stats {
   dead: -1
   positive: 41
   recovered: 7
+  tested: 440
   date {
     day: 21
     month: 3
@@ -159,6 +179,7 @@ stats {
 }
 stats {
   positive: 7
+  tested: 242
   date {
     day: 22
     month: 3
@@ -167,6 +188,7 @@ stats {
 }
 stats {
   positive: 19
+  tested: 451
   date {
     day: 23
     month: 3
@@ -175,6 +197,7 @@ stats {
 }
 stats {
   positive: 12
+  tested: 476
   date {
     day: 24
     month: 3
@@ -184,6 +207,7 @@ stats {
 stats {
   positive: 10
   recovered: -5
+  tested: 335
   date {
     day: 25
     month: 3
@@ -192,6 +216,7 @@ stats {
 }
 stats {
   positive: 43
+  tested: 913
   date {
     day: 26
     month: 3
@@ -200,6 +225,7 @@ stats {
 }
 stats {
   positive: 23
+  tested: 747
   date {
     day: 27
     month: 3
@@ -208,6 +234,7 @@ stats {
 }
 stats {
   positive: 22
+  tested: 698
   date {
     day: 28
     month: 3
@@ -217,6 +244,7 @@ stats {
 stats {
   positive: 22
   recovered: 5
+  tested: 401
   date {
     day: 29
     month: 3
@@ -226,6 +254,7 @@ stats {
 stats {
   positive: 27
   recovered: -4
+  tested: 688
   date {
     day: 30
     month: 3
@@ -235,6 +264,7 @@ stats {
 stats {
   dead: 1
   positive: 37
+  tested: 887
   date {
     day: 31
     month: 3
@@ -244,6 +274,7 @@ stats {
 stats {
   positive: 26
   recovered: 2
+  tested: 1191
   date {
     day: 1
     month: 4
@@ -253,6 +284,7 @@ stats {
 stats {
   positive: 24
   recovered: 5
+  tested: 1454
   date {
     day: 2
     month: 4
@@ -261,6 +293,7 @@ stats {
 }
 stats {
   positive: 21
+  tested: 1889
   date {
     day: 3
     month: 4
@@ -269,6 +302,7 @@ stats {
 }
 stats {
   positive: 14
+  tested: 1524
   date {
     day: 4
     month: 4
@@ -279,6 +313,7 @@ stats {
   dead: 1
   positive: 49
   recovered: -2
+  tested: 1036
   date {
     day: 5
     month: 4
@@ -288,6 +323,7 @@ stats {
 stats {
   positive: 47
   recovered: 5
+  tested: 1448
   date {
     day: 6
     month: 4
@@ -297,6 +333,7 @@ stats {
 stats {
   positive: 101
   recovered: 3
+  tested: 2042
   date {
     day: 7
     month: 4
@@ -306,8 +343,27 @@ stats {
 stats {
   positive: 19
   recovered: 7
+  tested: 1690
   date {
     day: 8
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  positive: 14
+  tested: 2301
+  date {
+    day: 9
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  positive: 13
+  tested: 2174
+  date {
+    day: 10
     month: 4
     year: 2020
   }

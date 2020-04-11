@@ -1,17 +1,16 @@
-#!/bin/zsh
-#
+#!/bin/zsh -x
+
 declare -A short_names
-short_names["France"]=France
-short_names["Germany"]=Germany
-short_names["Iran"]=Iran
-short_names["Italy"]=Italy
-short_names["Spain"]=Spain
 short_names["US"]=USA
 short_names["United Kingdom"]=UK
 
+#TODO: get rid of PYTHONPATH
+export PYTHONPATH=../graphs
 for country in France Germany Iran Italy Spain "United Kingdom" US
 do
-  ./prepare_data.py $country
-  mv data.yaml data-$short_names["$country"].yaml
-  mv data.data $short_names["$country"].data
+  if [[ -z $short_names["${country}"] ]]; then
+    ./prepare_data.py $country
+  else
+    ./prepare_data.py $country --short_name $short_names["${country}"]
+  fi
 done

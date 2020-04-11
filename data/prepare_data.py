@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 import argparse
 import pandas as pd
-import yaml
 from datetime import datetime, timedelta
 from google.protobuf import text_format
 from country_data_pb2 import CountryData, DailyStats
 
 parser = argparse.ArgumentParser(description='COVID-19 data downloader')
 parser.add_argument('country', metavar='country', type=str, help=f"Country")
-parser.add_argument('--short_name', metavar='short_name', type=str, help=f"Short name of the country",
+parser.add_argument('--short_name',
+                    metavar='short_name',
+                    type=str,
+                    help=f"Short name of the country",
                     default=None)
 args = parser.parse_args()
 short_name = args.short_name if args.short_name is not None else args.country
@@ -46,11 +48,7 @@ for c, r, d, t in zip(data["confirmed"], data["recovered"], data["deaths"], date
     stats.dead = d
     date = stats.date
     date.day, date.month, date.year = t.day, t.month, t.year
-
     country_data.stats.append(stats)
 
-with open("data.yaml", 'w') as f:
-    yaml.dump(points, f, default_flow_style=False)
-
-with open(f'data.data', "w") as output:
+with open(f'{short_name}.data', "w") as output:
     output.write(text_format.MessageToString(country_data))

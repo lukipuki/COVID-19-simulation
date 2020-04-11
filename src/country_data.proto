@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+message DailyStats {
+  int32 dead = 1;
+  int32 positive = 2;
+  int32 recovered = 3;
+  int32 tested = 4;
+
+  message Date {
+    uint32 day = 1;
+    uint32 month = 2;
+    uint32 year = 3;
+  }
+  Date date = 5;
+}
+
+message CountryData {
+  string name = 1;
+  repeated DailyStats stats = 2;
+}

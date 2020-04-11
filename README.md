@@ -19,21 +19,14 @@ build/simulation data/Slovakia.data
 protoc --protobuf_in=results.pb --decode SimulationResults src/simulation_results.proto
 ```
 
-# Known issues
-
-* Code doesn't compile in clang, due to `constexpr` functions that aren't really `constexpr`.
-
+You can also visualize the results, see the [graphs README](graphs/README.md) for examples.
 
 <!--
 # Building using Conan
-
-NOTE: Ideally, Conan downloads the dependencies for you and compiles the project.
 
 Conan is able to download the dependencies and compile the project. However, you still need OpenMP on your system, though that usually comes installed with the compiler.
 
 ```sh
 conan create .
 ```
-
-TODO: expand on actually running the code
 -->

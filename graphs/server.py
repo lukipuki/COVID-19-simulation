@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 from country import CountryReport, GraphType
-from heat_map import HeatMap, GrowthType
+from heat_map import HeatMap
 from flask import Flask, render_template, redirect, url_for
 import argparse
+import glob
 
 parser = argparse.ArgumentParser(description='COVID-19 web server')
 parser.add_argument('data_dir',
@@ -63,4 +64,4 @@ def covid19_heatmap_exponential():
     return covid19_heatmap_exponential_app.index()
 
 
-server.run(host="0.0.0.0", port=8080)
+server.run(host="0.0.0.0", port=8080, debug=True, extra_files=glob.glob(f'{args.data_dir}/*.data'))

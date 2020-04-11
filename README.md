@@ -16,17 +16,23 @@ cmake --build .
 
 ```
 build/simulation data/Slovakia.data
-protoc --protobuf_in=results.pb --decode SimulationResults src/simulation_results.proto
+cat results.pb | protoc --decode SimulationResults src/simulation_results.proto
 ```
 
 You can also visualize the results, see the [graphs README](graphs/README.md) for examples.
 
-<!--
 # Building using Conan
 
 Conan is able to download the dependencies and compile the project. However, you still need OpenMP on your system, though that usually comes installed with the compiler.
 
 ```sh
-conan create .
+mkdir build && cd $_
+conan install -b gtest ..
+conan build ..
 ```
--->
+
+You can also use Conan to install `protoc`.
+```
+conan install -g deploy 'protoc_installer/[>=0]@bincrafters/stable
+./protoc_installer/bin/protoc --decode ...  # As above
+```

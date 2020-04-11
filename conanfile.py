@@ -14,7 +14,7 @@ class COVID19Simulation(ConanFile):
         "url": "auto"
     }
 
-    build_requires = "gtest/1.8.1"
+    build_requires = "gtest/1.8.1", "protoc_installer/3.9.1@bincrafters/stable"
     # You also need an updated protobuf-compiler for protobuf. The attached Dockerfile won't work.
     requires = "protobuf/3.9.1"
 

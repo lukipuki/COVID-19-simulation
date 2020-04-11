@@ -56,24 +56,23 @@ countries = [
 
 
 class CountryReport:
-    def __init__(self, data_dir, country_basic):
-        self.name = country_basic.name
-        self.formulas = country_basic.formulas
-        self.data_dir = os.path.join(data_dir, f'{self.name}.data')
+    def __init__(self, data_dir, country_tuple):
+        self.formulas = country_tuple.formulas
+        self.data_dir = os.path.join(data_dir, f'{country_tuple.name}.data')
         with open(self.data_dir, "rb") as f:
-            read_country_data = CountryData()
-            text_format.Parse(f.read(), read_country_data)
-            positive = np.array([day.positive for day in read_country_data.stats])
-            self.dead = np.array([day.dead for day in read_country_data.stats])
-            self.recovered = np.array([day.recovered for day in read_country_data.stats])
+            country_data = CountryData()
+            text_format.Parse(f.read(), country_data)
+            self.name = country_data.name
+            positive = np.array([day.positive for day in country_data.stats])
+            self.dead = np.array([day.dead for day in country_data.stats])
+            self.recovered = np.array([day.recovered for day in country_data.stats])
             self.active = positive - self.recovered - self.dead
             self.date_list = [
-                "-".join([str(day.date.year),
-                          str(day.date.month),
-                          str(day.date.day)]) for day in read_country_data.stats
+                f"{day.date.year}-{day.date.month:02d}-{day.date.day:02d}"
+                for day in country_data.stats
             ]
 
-        self.case_count = country_basic.case_count
+        self.case_count = country_tuple.case_count
         self.cumulative_active = np.array(
             list(filter(lambda x: x >= self.case_count, np.add.accumulate(self.active))))
         self.date_list = self.date_list[len(self.active) - len(self.cumulative_active):]
@@ -171,7 +170,7 @@ class CountryReport:
     def create_dashboard(data_dir, server, graph_type=GraphType.Normal):
         country_reports = [
             CountryReport(data_dir, country) for country in countries
-            if os.path.isfile(os.path.join(data_dir, f'data-{country.name}.yaml'))
+            if os.path.isfile(os.path.join(data_dir, f'{country.name}.data'))
         ]
 
         app = dash.Dash(

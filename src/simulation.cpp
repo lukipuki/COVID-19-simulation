@@ -4,11 +4,13 @@
 #include <iomanip>
 #include <iostream>
 
-#include "yaml-cpp/yaml.h"
+#include <google/protobuf/text_format.h>
+#include <google/protobuf/io/zero_copy_stream_impl.h>
 
 #include "generators.h"
 #include "person.h"
 #include "simulation_results.pb.h"
+#include "country_data.pb.h"
 #include "stats.h"
 
 // #define EXPONENTIAL_GROWTH
@@ -21,7 +23,7 @@ constexpr uint32_t kSymptomsLength = 28;
 constexpr uint32_t kExtraDays = 10;  // Extra simulated days of infections
 
 // Only serialize good parameters, scoring below kScoreThreshold
-constexpr double kScoreThreshold = 280;
+constexpr double kScoreThreshold = 300;
 
 class Simulator {
  public:
@@ -105,17 +107,23 @@ class Simulator {
 
 int main(int argc, char* argv[]) {
   if (argc <= 1) {
-    std::cout << "You need to supply a YAML file with data" << std::endl;
+    std::cerr << "You need to supply a proto file with country data" << std::endl;
     exit(1);
   }
 
   std::vector<uint32_t> tested;
   std::vector<uint32_t> positive;
-  for (const auto& node : YAML::LoadFile(argv[1])) {
-    positive.push_back(node["positive"].as<uint32_t>());
-    tested.push_back(node["tested"].as<uint32_t>());
+
+  CountryData country_data;
+  std::ifstream country_file(argv[1]);
+  google::protobuf::io::IstreamInputStream input_stream(&country_file);
+  if (!google::protobuf::TextFormat::Parse(&input_stream, &country_data)) {
+    std::cerr << "Failed to parse data" << std::endl;
   }
-  assert(tested.size() == positive.size());
+  for (const auto& day : country_data.stats()) {
+    positive.push_back(day.positive());
+    tested.push_back(day.tested());
+  }
 
   constexpr uint32_t kIterations = 200;
   const uint32_t kEarlyStop = std::ceil(std::sqrt(kIterations));
@@ -183,7 +191,7 @@ int main(int argc, char* argv[]) {
         *results.add_results() = result;
       }
 
-      std::cout << std::setw(2) << prefix_length << std::setw(4) << optimal_b0 << std::setw(4)
+      std::cout << std::setw(2) << prefix_length << std::setw(4) << optimal_b0 << std::setw(5)
                 << optimal_dead_count << std::setw(9) << best << std::endl;
     }
   }

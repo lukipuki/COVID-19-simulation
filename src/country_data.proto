@@ -2,9 +2,9 @@ syntax = "proto3";
 
 message DailyStats {
   int32 dead = 1;
-  int32 positive = 2;
+  uint32 positive = 2;
   int32 recovered = 3;
-  int32 tested = 4;
+  uint32 tested = 4;
 
   message Date {
     uint32 day = 1;

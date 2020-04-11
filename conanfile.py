@@ -16,7 +16,7 @@ class COVID19Simulation(ConanFile):
 
     build_requires = "gtest/1.8.1"
     # You also need an updated protobuf-compiler for protobuf. The attached Dockerfile won't work.
-    requires = "yaml-cpp/0.6.3", "protobuf/3.9.1"
+    requires = "protobuf/3.9.1"
 
     def build(self):
         cmake = CMake(self)

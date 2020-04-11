@@ -78,7 +78,7 @@ class HeatMap():
             external_scripts=[
                 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML'
             ])
-        app.title = 'COVID-19 predictions heat_map of parameters'
+        app.title = 'Visualizations of a COVID-19 stochastic model, with {self.growth_type} growth'
 
         graphs = [
             dcc.Graph(id=f'{key}', figure=self.create_heatmap(key, value))

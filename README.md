@@ -12,6 +12,13 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build .
 ```
 
+# Running and viewing protobuf files
+
+```
+build/simulation data/data-Slovakia.yaml
+protoc --protobuf_in=results.pb --decode SimulationResults src/simulation_results.proto
+```
+
 # Known issues
 
 * Code doesn't compile in clang, due to `constexpr` functions that aren't really `constexpr`.

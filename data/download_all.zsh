@@ -13,4 +13,5 @@ for country in France Germany Iran Italy Spain "United Kingdom" US
 do
   ./prepare_data.py $country
   mv data.yaml data-$short_names["$country"].yaml
+  mv data.data $short_names["$country"].data
 done

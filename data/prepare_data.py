@@ -52,5 +52,5 @@ for c, r, d, t in zip(data["confirmed"], data["recovered"], data["deaths"], date
 with open("data.yaml", 'w') as f:
     yaml.dump(points, f, default_flow_style=False)
 
-with open(f'{short_name}.data', "w") as output:
+with open(f'data.data', "w") as output:
     output.write(text_format.MessageToString(country_data))

@@ -10,7 +10,8 @@ import dash_html_components as html
 import math
 import numpy as np
 import os
-import yaml
+from google.protobuf import text_format
+from country_data_pb2 import CountryData, DailyStats
 
 EXPONENT = 6.23
 PREDICTION_DATE = '2020-03-29'
@@ -58,17 +59,19 @@ class CountryReport:
     def __init__(self, data_dir, country_basic):
         self.name = country_basic.name
         self.formulas = country_basic.formulas
-        self.data_dir = os.path.join(data_dir, f'data-{self.name}.yaml')
-        with open(self.data_dir, 'r') as stream:
-            try:
-                data = yaml.safe_load(stream)
-                positive = np.array([point['positive'] for point in data])
-                self.dead = np.array([point['dead'] for point in data])
-                self.recovered = np.array([point['recovered'] for point in data])
-                self.active = positive - self.recovered - self.dead
-                self.date_list = [point['date'] for point in data]
-            except yaml.YAMLError as exc:
-                raise exc
+        self.data_dir = os.path.join(data_dir, f'{self.name}.data')
+        with open(self.data_dir, "rb") as f:
+            read_country_data = CountryData()
+            text_format.Parse(f.read(), read_country_data)
+            positive = np.array([day.positive for day in read_country_data.stats])
+            self.dead = np.array([day.dead for day in read_country_data.stats])
+            self.recovered = np.array([day.recovered for day in read_country_data.stats])
+            self.active = positive - self.recovered - self.dead
+            self.date_list = [
+                "-".join([str(day.date.year),
+                          str(day.date.month),
+                          str(day.date.day)]) for day in read_country_data.stats
+            ]
 
         self.case_count = country_basic.case_count
         self.cumulative_active = np.array(

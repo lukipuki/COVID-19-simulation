@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+message DayInfo {
+  uint32 dead = 1;
+  uint32 positive = 2;
+  uint32 recovered = 3;
+
+  message Date {
+    uint32 day = 1;
+    uint32 month = 2;
+    uint32 year = 3;
+  }
+  Date date = 4;
+}
+
+message DayByDayInfo {
+  repeated DayInfo results = 1;
+}

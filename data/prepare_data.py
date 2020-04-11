@@ -8,7 +8,10 @@ from country_data_pb2 import CountryData, DailyStats
 
 parser = argparse.ArgumentParser(description='COVID-19 data downloader')
 parser.add_argument('country', metavar='country', type=str, help=f"Country")
+parser.add_argument('--short_name', metavar='short_name', type=str, help=f"Short name of the country",
+                    default=None)
 args = parser.parse_args()
+short_name = args.short_name if args.short_name is not None else args.country
 
 
 def diff(a):
@@ -34,6 +37,7 @@ dates = [start_day + timedelta(days=i + delta) for i in range(length)]
 
 points = []
 country_data = CountryData()
+country_data.name = args.country
 for c, r, d, t in zip(data["confirmed"], data["recovered"], data["deaths"], dates):
     points.append({'positive': c, 'recovered': r, 'dead': d, 'date': t.strftime("%Y-%m-%d")})
     stats = DailyStats()
@@ -48,5 +52,5 @@ for c, r, d, t in zip(data["confirmed"], data["recovered"], data["deaths"], date
 with open("data.yaml", 'w') as f:
     yaml.dump(points, f, default_flow_style=False)
 
-with open(f'{args.country}.data', "w") as output:
+with open(f'{short_name}.data', "w") as output:
     output.write(text_format.MessageToString(country_data))

@@ -11,12 +11,12 @@ import math
 import numpy as np
 import os
 from google.protobuf import text_format
-from country_data_pb2 import CountryData, DailyStats
+from country_data_pb2 import CountryData
 
 EXPONENT = 6.23
 PREDICTION_DATE = '2020-03-29'
 
-Country = namedtuple('Country', ['name', 'formulas', 'case_count'])
+Country = namedtuple('Country', ['name', 'formulas', 'min_case_count'])
 Formula = namedtuple('Formula', ['lambd', 'text', 'maximal_day', 'second_ip_day'])
 
 
@@ -57,9 +57,7 @@ countries = [
 
 class CountryReport:
     def __init__(self, data_dir, country_tuple):
-        self.formulas = country_tuple.formulas
-        self.data_dir = os.path.join(data_dir, f'{country_tuple.name}.data')
-        with open(self.data_dir, "rb") as f:
+        with open(os.path.join(data_dir, f'{country_tuple.name}.data'), "rb") as f:
             country_data = CountryData()
             text_format.Parse(f.read(), country_data)
             self.name = country_data.name
@@ -72,11 +70,12 @@ class CountryReport:
                 for day in country_data.stats
             ]
 
-        self.case_count = country_tuple.case_count
+        self.formulas = country_tuple.formulas
+        self.min_case_count = country_tuple.min_case_count
         self.cumulative_active = np.array(
-            list(filter(lambda x: x >= self.case_count, np.add.accumulate(self.active))))
+            list(filter(lambda x: x >= self.min_case_count, np.add.accumulate(self.active))))
         self.date_list = self.date_list[len(self.active) - len(self.cumulative_active):]
-        self.x = np.arange(1, max(f.second_ip_day for f in self.formulas) + 1)
+        self.x = np.arange(max(f.second_ip_day for f in self.formulas)) + 1
         self.y = [formula.lambd(self.x) for formula in self.formulas]
         self.maximal_dates = [y.argmax() for y in self.y]
 
@@ -117,7 +116,7 @@ class CountryReport:
         layout = Layout(title=f"Active cases in {self.name}",
                         xaxis=dict(
                             autorange=True,
-                            title=f'Day [starting at the {self.case_count}th case]',
+                            title=f'Day [starting at the {self.min_case_count}th case]',
                         ),
                         yaxis=dict(autorange=True,
                                    title=f'COVID-19 active cases in {self.name}',
@@ -242,7 +241,10 @@ class CountryReport:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='COVID-19 country growth visualization')
-    parser.add_argument('data_dir', metavar='data_dir', type=str, help=f"Directory with YAML files")
+    parser.add_argument('data_dir',
+                        metavar='data_dir',
+                        type=str,
+                        help=f"Directory with country proto files")
     parser.add_argument('country', metavar='country', type=str, help=f"Country name or 'ALL'")
     args = parser.parse_args()
 

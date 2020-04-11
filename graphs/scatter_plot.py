@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
+from country_data_pb2 import CountryData
 from datetime import datetime, timedelta
 from enum import Enum
+from google.protobuf import text_format
 from itertools import accumulate, chain
-import argparse
-import yaml
-from simulation_results_pb2 import SimulationResults
-from yaml import CLoader as Loader
 from plotly.graph_objs import Figure, Layout, Scatter
+from simulation_results_pb2 import SimulationResults
+import argparse
 
 PREFIX_LENGTH = 4
+EXTENSION = 10
 
 
 class GraphType(Enum):
@@ -20,7 +21,7 @@ class GraphType(Enum):
 
 
 class SimulationReport():
-    def __init__(self, simulation_pb2_file, country_yaml):
+    def __init__(self, simulation_pb2_file, country_proto):
         with open(simulation_pb2_file, 'rb') as stream:
             simulation_results = SimulationResults()
             simulation_results.ParseFromString(stream.read())
@@ -39,35 +40,37 @@ class SimulationReport():
 
                 self.deltas = result.deltas
                 self.best_b0 = result.b0
-                # TODO: support both
-                # self.best_gamma2 = result.gamma2
-                self.best_alpha = result.alpha
+                if result.HasField("alpha"):
+                    self.param_name = "alpha"
+                    self.best_param = result.alpha
+                else:
+                    self.param_name = "gamma_2"
+                    self.best_param = result.gamma2
+
                 self.best_error = result.summary.error
 
-            print(f"b_0={self.best_b0} is the best fit for prefix_length={PREFIX_LENGTH}, "
-                  f"error={self.best_error}")
+            print(f"b_0={self.best_b0}, {self.param_name}={self.best_param} is the best fit "
+                  f"for prefix_length={PREFIX_LENGTH}, error={self.best_error}")
 
-        with open(country_yaml, 'r') as stream:
-            data = yaml.safe_load(stream)
-            self.real_positive = [0] * PREFIX_LENGTH + [point['positive'] for point in data]
-            date_list = [point['date'] for point in data]
+        with open(country_proto, "rb") as f:
+            country_data = CountryData()
+            text_format.Parse(f.read(), country_data)
+            self.real_positive = [0] * PREFIX_LENGTH + [day.positive for day in country_data.stats]
+            first_date = country_data.stats[0].date
+            first_date = datetime(day=first_date.day, month=first_date.month,
+                                  year=first_date.year) + timedelta(days=-PREFIX_LENGTH)
 
-            first_date = datetime.strptime(date_list[0], '%Y-%m-%d')
-            prefix = [(first_date + timedelta(days=d)).strftime('%Y-%m-%d')
-                      for d in range(-PREFIX_LENGTH, 0)]
-            date_list = prefix + date_list
-            last_date = datetime.strptime(date_list[-1], '%Y-%m-%d')
-            for d in range(10):
-                date_list.append((last_date + timedelta(days=d + 1)).strftime('%Y-%m-%d'))
-            self.date_list = date_list
+            self.date_list = [(first_date + timedelta(days=d)).strftime('%Y-%m-%d')
+                              for d in range(len(self.real_positive) + EXTENSION)]
 
     def create_scatter_plot(self, graph_type=GraphType.Cumulative):
         if graph_type == GraphType.Cumulative:
-            title_text = r'$\text{Total COVID-19 cases for }b_0=_b0, \alpha=_alpha, prefix=_prefix$'
+            title_text = r'$\text{Total COVID-19 cases for }b_0=_b0, \_param=_alpha, prefix=_prefix$'
         else:
-            title_text = r'$\text{Daily new COVID-19 cases for }b_0=_b0, \alpha=_alpha, prefix=_prefix$'
-        title_text = title_text.replace("_b0", f"{self.best_b0}").replace(
-            "_alpha", f"{self.best_alpha}").replace("_prefix", f"{PREFIX_LENGTH}")
+            title_text = r'$\text{Daily new COVID-19 cases for }b_0=_b0, \_param=_alpha, prefix=_prefix$'
+        title_text = title_text.replace("_b0", f"{self.best_b0}") \
+            .replace("_alpha", f"{self.best_param}") \
+            .replace("_param", self.param_name).replace("_prefix", f"{PREFIX_LENGTH}")
 
         layout = Layout(title=title_text,
                         xaxis=dict(autorange=True, title='Days'),
@@ -125,11 +128,11 @@ if __name__ == '__main__':
     parser.add_argument('country_data',
                         metavar='country_data',
                         type=str,
-                        help=f"YAML file with country data")
+                        help=f"Protobuf file with country data")
     parser.add_argument('simulated',
                         metavar='simulated',
                         type=str,
-                        help=f"YAML file with simulation results")
+                        help=f"Protobuf file with simulation results")
     args = parser.parse_args()
 
     SimulationReport(args.simulated, args.country_data).create_scatter_plot().show()

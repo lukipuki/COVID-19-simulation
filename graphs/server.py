@@ -5,15 +5,18 @@ from flask import Flask, render_template, redirect, url_for
 import argparse
 
 parser = argparse.ArgumentParser(description='COVID-19 web server')
-parser.add_argument('data_dir', metavar='data_dir', type=str, help=f"Directory with YAML files")
+parser.add_argument('data_dir',
+                    metavar='data_dir',
+                    type=str,
+                    help=f"Directory with country proto files")
 parser.add_argument('simulated_polynomial',
                     metavar='simulated_polynomial',
                     type=str,
-                    help=f"YAML file with simulation results of polynomial growth")
+                    help=f"Proto file with simulation results of polynomial growth")
 parser.add_argument('simulated_exponential',
                     metavar='simulated_exponential',
                     type=str,
-                    help=f"YAML file with simulation results of exponential growth")
+                    help=f"Proto file with simulation results of exponential growth")
 args = parser.parse_args()
 
 server = Flask(__name__, template_folder='.')

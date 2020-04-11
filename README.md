@@ -4,7 +4,7 @@ Based on [Stochastic Simulation of the Initial Phase of the COVID-19 Epidemic in
 
 # Building using CMake
 
-You need [googletest](https://github.com/google/googletest), [protobuf](https://github.com/protocolbuffers/protobuf), [yaml-cpp](https://github.com/jbeder/yaml-cpp) and OpenMP installed (usually comes with the compiler). You can also use the `Dockerfile` in the root of the repository, which has all the dependencies installed.
+You need [googletest](https://github.com/google/googletest), [protobuf](https://github.com/protocolbuffers/protobuf) and OpenMP installed (usually comes with the compiler). You can also use the `Dockerfile` in the root of the repository, which has all the dependencies installed.
 
 ```sh
 mkdir build && cd $_
@@ -15,7 +15,7 @@ cmake --build .
 # Running and viewing protobuf files
 
 ```
-build/simulation data/data-Slovakia.yaml
+build/simulation data/Slovakia.data
 protoc --protobuf_in=results.pb --decode SimulationResults src/simulation_results.proto
 ```
 
@@ -27,7 +27,7 @@ protoc --protobuf_in=results.pb --decode SimulationResults src/simulation_result
 <!--
 # Building using Conan
 
-NOTE: Ideally, Conan downloads the dependencies for you and compiles the project, but the package for `yaml-cpp` is broken and we therefore recommend installing it, e.g. by `apt-get install libyaml-cpp-dev` in Ubuntu.
+NOTE: Ideally, Conan downloads the dependencies for you and compiles the project.
 
 Conan is able to download the dependencies and compile the project. However, you still need OpenMP on your system, though that usually comes installed with the compiler.
 

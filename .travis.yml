@@ -1,0 +1,13 @@
+os: linux
+language: python
+python: "3.7"
+dist: bionic
+install:
+  - pip install conan
+  - conan user
+  - conan profile new default --detect
+  - sudo apt-get update
+  - sudo apt-get install -y gcc-8 g++-8
+  - mv gcc-8 /home/travis/.conan/profiles
+script:
+  - conan create -pr gcc-8 -b gtest -b missing .

@@ -21,7 +21,7 @@ auto beta_distribution(double alpha, double beta, std::mt19937* gen) -> double {
 }
 
 // For each death probability 'd', calculate 'b', such that 'Pr[B(1, b) > 0.5] = d'.
-constexpr std::array<double, kDecadesCount> generate_bs() {
+std::array<double, kDecadesCount> generate_bs() {
   constexpr std::array<double, kDecadesCount> kDeathProbabilities = {
       0.002, 0.002, 0.002, 0.002, 0.004, 0.013, 0.036, 0.08, 0.148};
 
@@ -31,7 +31,7 @@ constexpr std::array<double, kDecadesCount> generate_bs() {
   }
   return ret;
 }
-constexpr std::array<double, kDecadesCount> bs = generate_bs();
+const std::array<double, kDecadesCount> bs = generate_bs();
 
 // Quantile 'q' of beta distribution B(1, b).
 auto qbeta(double b, double q) -> double { return 1 - pow(1 - q, 1.0 / b); }
@@ -50,7 +50,7 @@ auto generate_age(std::mt19937* generator) -> uint32_t {
 
 // Calculate the logarithms of factorials up to N.
 template <uint32_t N>
-constexpr std::array<double, N> generate_log_factorials() {
+auto generate_log_factorials() -> std::array<double, N> {
   std::array<double, N> ret{};
   ret[0] = 0;
   for (int i = 1; i < N; i++) {
@@ -59,8 +59,9 @@ constexpr std::array<double, N> generate_log_factorials() {
   return ret;
 }
 
+// TODO(lukas): this shouldn't be a constant, since we don't know how big array we will need
 constexpr uint32_t kFactorialLength = 200000;
-constexpr std::array<double, kFactorialLength> log_factorials =
+const std::array<double, kFactorialLength> log_factorials =
     generate_log_factorials<kFactorialLength>();
 
 // Logarithm of the probability used in the distance function.

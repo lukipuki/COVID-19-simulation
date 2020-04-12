@@ -3,7 +3,8 @@ import argparse
 import pandas as pd
 from datetime import datetime, timedelta
 from google.protobuf import text_format
-from country_data_pb2 import CountryData, DailyStats
+
+from covid_graphs.pb.country_data_pb2 import CountryData, DailyStats
 
 parser = argparse.ArgumentParser(description='COVID-19 data downloader')
 parser.add_argument('country', metavar='country', type=str, help=f"Country")

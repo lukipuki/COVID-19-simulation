@@ -6,6 +6,5 @@ RUN apt update \
     && apt install -y python3-pip python3-numpy python3-pandas \
     && rm -rf /tmp/* /var/lib/apt/lists/* /root/.cache/*
 
-COPY requirements.txt .
-
-RUN pip3 install -r requirements.txt
+COPY . .
+RUN pip3 install .

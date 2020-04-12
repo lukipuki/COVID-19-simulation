@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
-from country import CountryReport, GraphType
-from heat_map import HeatMap
 from flask import Flask, render_template, redirect, url_for
 import argparse
 import glob
+from pathlib import Path
+
+from covid_graphs.country import CountryReport, GraphType
+from covid_graphs.heat_map import HeatMap
+
 
 parser = argparse.ArgumentParser(description='COVID-19 web server')
 parser.add_argument('data_dir',
@@ -25,13 +28,14 @@ server = Flask(__name__, template_folder='.')
 covid19_normal_app = CountryReport.create_dashboard(args.data_dir, server, GraphType.Normal)
 covid19_semilog_app = CountryReport.create_dashboard(args.data_dir, server, GraphType.SemiLog)
 covid19_loglog_app = CountryReport.create_dashboard(args.data_dir, server, GraphType.LogLog)
-covid19_heatmap_app = HeatMap(args.simulated_polynomial).create_app(server)
-covid19_heatmap_exponential_app = HeatMap(args.simulated_exponential).create_app(server)
+# covid19_heatmap_app = HeatMap(args.simulated_polynomial).create_app(server)
+# covid19_heatmap_exponential_app = HeatMap(args.simulated_exponential).create_app(server)
+
 
 
 @server.route("/")
 def home():
-    return render_template('index.html')
+    return render_template("index.html")
 
 
 @server.route("/covid19/")

@@ -11,7 +11,8 @@ import math
 import numpy as np
 import os
 from google.protobuf import text_format
-from country_data_pb2 import CountryData
+
+from .pb.country_data_pb2 import CountryData
 
 EXPONENT = 6.23
 PREDICTION_DATE = '2020-03-29'

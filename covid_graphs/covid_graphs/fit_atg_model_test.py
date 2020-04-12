@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-import fit_atg_model
+from . import fit_atg_model
 
 def test_fit_atg_model():
     a = 2719.0

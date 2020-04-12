@@ -5,9 +5,7 @@ import argparse
 from datetime import datetime, timedelta
 from google.protobuf import text_format
 
-sys.path.append('../graphs')
-
-from country_data_pb2 import CountryData, DailyStats
+from covid_graphs.pb.country_data_pb2 import CountryData, DailyStats
 
 parser = argparse.ArgumentParser(description='COVID-19 web server')
 parser.add_argument('country_name',

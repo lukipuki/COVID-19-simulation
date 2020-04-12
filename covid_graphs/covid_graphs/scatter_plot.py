@@ -5,8 +5,9 @@ from enum import Enum
 from google.protobuf import text_format
 from itertools import accumulate, chain
 from plotly.graph_objs import Figure, Layout, Scatter
-from simulation_results_pb2 import SimulationResults
 import argparse
+
+from .pb.simulation_results_pb2 import SimulationResults
 
 PREFIX_LENGTH = 4
 EXTENSION = 10

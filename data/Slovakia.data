@@ -368,3 +368,12 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 14
+  tested: 1580
+  date {
+    day: 11
+    month: 4
+    year: 2020
+  }
+}

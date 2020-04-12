@@ -33,7 +33,6 @@ def fit_atg_model(xs: np.ndarray, ys: np.ndarray) -> AtgModelFit:
     assert np.all(ys >= 0), "No support for negative values for `ys`."
     a0 = 2000.0
     tg0 = 7.0
-    # TODO(miskosz): Handle failures.
     least_squares_result = least_squares(fun=_residuals, x0=[a0, tg0], args=(xs, ys))
     return AtgModelFit(a=least_squares_result.x[0], tg=least_squares_result.x[1])
 
@@ -43,11 +42,10 @@ def _residuals(params: List[float], xs: np.ndarray, ys: np.ndarray) -> float:
     Returns the residual ("error") of model fitting with parameter values `params`
     to the datapoints (xs, ys).
 
-    NOTE: We compute the logarithm in logspace since the data spans multiple orders.
-    We don't care if the model is off by 10 for values close to 20000, but we care
-    for small values. We choose natural base of the logarithm.
+    Note: The error terms could be computed in logspace so that they are not dominated by datapoints
+    with high values. However, it seems this method gives closest results to those of Bodova & Kollar.
     """
-    return np.log(1. + _model(params=params, xs=xs)) - np.log(1. + ys)
+    return _model(params=params, xs=xs) - ys
 
 
 def _model(params: List[float], xs: np.ndarray) -> np.ndarray:
@@ -58,24 +56,5 @@ def _model(params: List[float], xs: np.ndarray) -> np.ndarray:
     """
     a, tg = params
     # Note(miskosz): Optimise `tg` in logspace if the following line becomes a problem.
-    assert tg > 0, f"No support for negative values for `tg` (tg={tg})."
+    assert tg > 0, f"No support for non-positive values for `tg` (tg={tg})."
     return (a/tg) * (xs/tg)**EXPONENT * np.exp(-xs/tg)
-
-
-# Note(miskosz): Lousy test at the bottom of the file O:)
-# TODO(miskosz): Add a testing script. Atm can be tested by `pytest graphs/fit_atg_model.py`.
-def test_fit_atg_model():
-    a = 2719.0
-    tg = 7.2
-    xs = np.arange(1, 100)
-
-    # Test perfect fit.
-    ys = _model(params=[a, tg], xs=xs)
-    fit = fit_atg_model(xs=xs, ys=ys)
-    assert np.allclose([fit.a, fit.tg], [a, tg])
-
-    # Test noisy fit.
-    ys += np.random.rand(len(ys))
-    fit = fit_atg_model(xs=xs, ys=ys)
-    assert fit.a == pytest.approx(a, rel=0.1)
-    assert fit.tg == pytest.approx(tg, rel=0.1)

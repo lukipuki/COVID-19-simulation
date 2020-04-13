@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from country_data_pb2 import CountryData
 from datetime import datetime, timedelta
 from enum import Enum
 from google.protobuf import text_format
@@ -7,6 +6,7 @@ from itertools import accumulate, chain
 from plotly.graph_objs import Figure, Layout, Scatter
 import argparse
 
+from .pb.country_data_pb2 import CountryData
 from .pb.simulation_results_pb2 import SimulationResults
 
 
@@ -127,7 +127,7 @@ class SimulationReport():
         return figure
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(description='COVID-19 visualization for Slovakia')
     parser.add_argument('country_data',
                         metavar='country_data',

@@ -21,10 +21,11 @@ setup(
     dependency_links=[],
     python_requires=">=3.7",
     packages=find_namespace_packages(),
-    scripts=["covid_graphs/scripts/prepare_data.py", "covid_graphs/scripts/scatter_plot.py"],
     entry_points={
         "console_scripts": [
-            "covid_graphs.run_server=covid_graphs.scripts.server:run_server"
+            "covid_graphs.run_server = covid_graphs.scripts.server:run_server",
+            "covid_graphs.scatter_plot = covid_graphs.scatter_plot:main",
+            "covid_graphs.prepare_data = covid_graphs.prepare_data:main"
         ]
     },
     package_data={"": ["*.html"]},

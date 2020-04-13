@@ -23,10 +23,10 @@ Run `covid_graphs.run_server --help` for help on command parameters.
 
 ## Running standalone graphs
 
-For quick development or data examination, running standalone graphs is useful. We're assuming that the programs are run from the root of the repository.
+For quick development or data examination, running standalone graphs is useful.
 
 ```sh
-covid_graphs/covid_graphs/country.py data Spain
-scatter_plot.py data/Slovakia.data build/results.pb
+covid_graphs.country data Spain
+covid_graphs.scatter_plot data/Slovakia.data build/results.pb
 covid_graphs/covid_graphs/heat_map.py build/results.pb
 ```

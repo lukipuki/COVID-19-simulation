@@ -240,7 +240,7 @@ class CountryReport:
         return app
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(description='COVID-19 country growth visualization')
     parser.add_argument('data_dir',
                         metavar='data_dir',

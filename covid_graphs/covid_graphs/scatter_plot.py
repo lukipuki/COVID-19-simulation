@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from datetime import datetime, timedelta
 from enum import Enum
 from google.protobuf import text_format

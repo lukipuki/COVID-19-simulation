@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from collections import OrderedDict
 from enum import Enum
 from plotly.graph_objs import Figure, Layout, Heatmap

@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+import click
+import click_pathlib
 from flask import Flask, render_template, redirect, url_for
-import argparse
 import glob
 from pathlib import Path
 
@@ -8,66 +8,68 @@ from covid_graphs.country import CountryReport, GraphType
 from covid_graphs.heat_map import HeatMap
 
 
-parser = argparse.ArgumentParser(description='COVID-19 web server')
-parser.add_argument('data_dir',
-                    metavar='data_dir',
-                    type=str,
-                    help=f"Directory with country proto files")
-parser.add_argument('simulated_polynomial',
-                    metavar='simulated_polynomial',
-                    type=str,
-                    help=f"Proto file with simulation results of polynomial growth")
-parser.add_argument('simulated_exponential',
-                    metavar='simulated_exponential',
-                    type=str,
-                    help=f"Proto file with simulation results of exponential growth")
-args = parser.parse_args()
-
-
 CURRENT_DIR = Path(__file__).parent
-server = Flask(__name__, template_folder=CURRENT_DIR)
-
-covid19_normal_app = CountryReport.create_dashboard(args.data_dir, server, GraphType.Normal)
-covid19_semilog_app = CountryReport.create_dashboard(args.data_dir, server, GraphType.SemiLog)
-covid19_loglog_app = CountryReport.create_dashboard(args.data_dir, server, GraphType.LogLog)
-covid19_heatmap_app = HeatMap(args.simulated_polynomial).create_app(server)
-covid19_heatmap_exponential_app = HeatMap(args.simulated_exponential).create_app(server)
 
 
+@click.command(help="COVID-19 web server")
+@click.option(
+    "-d",
+    "--data-dir",
+    required=True,
+    type=click_pathlib.Path(exists=True),
+    help="Directory with country proto files",
+)
+@click.option(
+    "-p",
+    "--simulated-polynomial",
+    required=True,
+    type=click_pathlib.Path(exists=True),
+    help="Proto file with simulation results of polynomial growth",
+)
+@click.option(
+    "-e",
+    "--simulated-exponential",
+    required=True,
+    type=click_pathlib.Path(exists=True),
+    help="Proto file with simulation results of exponential growth",
+)
+def run_server(data_dir: Path, simulated_polynomial: Path, simulated_exponential: Path) -> None:
+    """Creates and runs a flask server."""
+    server = Flask(__name__, template_folder=CURRENT_DIR)
 
-@server.route("/")
-def home():
-    return render_template("index.html")
+    # TODO(miskosz): Make the functions consume Path objects instead of strings.
+    covid19_normal_app = CountryReport.create_dashboard(str(data_dir), server, GraphType.Normal)
+    covid19_semilog_app = CountryReport.create_dashboard(str(data_dir), server, GraphType.SemiLog)
+    covid19_loglog_app = CountryReport.create_dashboard(str(data_dir), server, GraphType.LogLog)
+    covid19_heatmap_app = HeatMap(str(simulated_polynomial)).create_app(server)
+    covid19_heatmap_exponential_app = HeatMap(str(simulated_exponential)).create_app(server)
 
+    @server.route("/")
+    def home():
+        return render_template("index.html")
 
-@server.route("/covid19/")
-def covid19_redirect():
-    return redirect(url_for("covid19_normal"))
+    @server.route("/covid19/")
+    def covid19_redirect():
+        return redirect(url_for("covid19_normal"))
 
+    @server.route("/covid19/normal")
+    def covid19_normal():
+        return covid19_normal_app.index()
 
-@server.route("/covid19/normal")
-def covid19_normal():
-    return covid19_normal_app.index()
+    @server.route("/covid19/semilog")
+    def covid19_semilog():
+        return covid19_semilog_app.index()
 
+    @server.route("/covid19/loglog")
+    def covid19_loglog():
+        return covid19_loglog_app.index()
 
-@server.route("/covid19/semilog")
-def covid19_semilog():
-    return covid19_semilog_app.index()
+    @server.route("/covid19/heatmap/polynomial")
+    def covid19_heatmap_polynomial():
+        return covid19_heatmap_app.index()
 
+    @server.route("/covid19/heatmap/exponential")
+    def covid19_heatmap_exponential():
+        return covid19_heatmap_exponential_app.index()
 
-@server.route("/covid19/loglog")
-def covid19_loglog():
-    return covid19_loglog_app.index()
-
-
-@server.route("/covid19/heatmap/polynomial")
-def covid19_heatmap_polynomial():
-    return covid19_heatmap_app.index()
-
-
-@server.route("/covid19/heatmap/exponential")
-def covid19_heatmap_exponential():
-    return covid19_heatmap_exponential_app.index()
-
-
-server.run(host="0.0.0.0", port=8081, debug=True, extra_files=glob.glob(f'{args.data_dir}/*.data'))
+    server.run(host="0.0.0.0", port=8081, debug=True, extra_files=data_dir.glob("*.data"))

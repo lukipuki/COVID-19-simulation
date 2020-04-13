@@ -7,6 +7,8 @@ setup(
     version="1.0",
     description="COVID-19 graph plotting",
     install_requires=[
+        "click",
+        "click_pathlib",
         "dash",
         "Flask",
         "numpy",
@@ -17,9 +19,13 @@ setup(
         "scipy",
     ],
     dependency_links=[],
-    include_package_data=True,
     python_requires=">=3.7",
     packages=find_namespace_packages(),
-    scripts=["covid_graphs/scripts/prepare_data.py", "covid_graphs/scripts/scatter_plot.py", "covid_graphs/scripts/server.py"],
-    package_data={"covid_graphs": ["covid_graphs/scripts/index.html"]},
+    scripts=["covid_graphs/scripts/prepare_data.py", "covid_graphs/scripts/scatter_plot.py"],
+    entry_points={
+        "console_scripts": [
+            "covid_graphs.run_server=covid_graphs.scripts.server:run_server"
+        ]
+    },
+    package_data={"": ["*.html"]},
 )

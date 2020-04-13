@@ -9,7 +9,7 @@ import argparse
 
 from .pb.simulation_results_pb2 import SimulationResults
 
-PREFIX_LENGTH = 4
+
 EXTENSION = 10
 
 
@@ -29,7 +29,7 @@ class SimulationReport():
 
             self.best_error, self.best_b0, self.best_gamma2 = 1e20, None, None
             for result in simulation_results.results:
-                if result.prefix_length != PREFIX_LENGTH or result.summary.error > self.best_error:
+                if result.summary.error > self.best_error:
                     continue
                 runs = result.runs
                 self.daily_positive = [run.daily_positive for run in runs]
@@ -41,6 +41,7 @@ class SimulationReport():
 
                 self.deltas = result.deltas
                 self.best_b0 = result.b0
+                self.prefix_length = result.prefix_length
                 if result.HasField("alpha"):
                     self.param_name = "alpha"
                     self.best_param = result.alpha
@@ -51,15 +52,17 @@ class SimulationReport():
                 self.best_error = result.summary.error
 
             print(f"b_0={self.best_b0}, {self.param_name}={self.best_param} is the best fit "
-                  f"for prefix_length={PREFIX_LENGTH}, error={self.best_error}")
+                  f"for prefix_length={self.prefix_length}, error={self.best_error}")
 
         with open(country_proto, "rb") as f:
             country_data = CountryData()
             text_format.Parse(f.read(), country_data)
-            self.real_positive = [0] * PREFIX_LENGTH + [day.positive for day in country_data.stats]
+            self.real_positive = [0] * self.prefix_length + [
+                day.positive for day in country_data.stats
+            ]
             first_date = country_data.stats[0].date
             first_date = datetime(day=first_date.day, month=first_date.month,
-                                  year=first_date.year) + timedelta(days=-PREFIX_LENGTH)
+                                  year=first_date.year) - timedelta(days=self.prefix_length)
 
             self.date_list = [(first_date + timedelta(days=d)).strftime('%Y-%m-%d')
                               for d in range(len(self.real_positive) + EXTENSION)]
@@ -71,7 +74,7 @@ class SimulationReport():
             title_text = r'$\text{Daily new COVID-19 cases for }b_0=_b0, \_param=_alpha, prefix=_prefix$'
         title_text = title_text.replace("_b0", f"{self.best_b0}") \
             .replace("_alpha", f"{self.best_param}") \
-            .replace("_param", self.param_name).replace("_prefix", f"{PREFIX_LENGTH}")
+            .replace("_param", self.param_name).replace("_prefix", f"{self.prefix_length}")
 
         layout = Layout(title=title_text,
                         xaxis=dict(autorange=True, title='Days'),

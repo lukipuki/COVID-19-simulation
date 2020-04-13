@@ -246,7 +246,7 @@ if __name__ == '__main__':
                         metavar='data_dir',
                         type=str,
                         help=f"Directory with country proto files")
-    parser.add_argument('country', metavar='country', type=str, help=f"Country name or 'ALL'")
+    parser.add_argument('country', metavar='country', type=str, help=f"Country name")
     args = parser.parse_args()
 
     country = next(c for c in countries if c.name == args.country)

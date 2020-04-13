@@ -4,15 +4,15 @@
 #include <optional>
 #include <vector>
 
-#include "stats.h"
+#include "population_model.h"
 
 class Person {
  public:
   Person() = default;
-  Person(Stats* stats, uint32_t start_date) : start_date_{start_date} {
-    auto age_decade = stats->GenerateAgeDecade();
-    auto symptoms_max = stats->GenerateSymptoms(age_decade);
-    auto disease_length = stats->DiseaseLength(symptoms_max);
+  Person(PopulationModel* population_model, uint32_t start_date) : start_date_{start_date} {
+    auto age_decade = population_model->GenerateAgeDecade();
+    auto symptoms_max = population_model->GenerateSymptoms(age_decade);
+    auto disease_length = population_model->DiseaseLength(symptoms_max);
 
     double step = symptoms_max / disease_length;
     for (uint32_t i = 0; i <= disease_length; ++i) {

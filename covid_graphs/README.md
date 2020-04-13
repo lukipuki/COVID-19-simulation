@@ -6,10 +6,17 @@ In the root directory of the repository, run `docker-compose`.
 ```sh
 docker-compose up --build # Optionally add -d for deamon
 ```
+You can then access the server locally at `http://127.0.0.1:8081`.
 
-Alternatively, you can run the server locally without Docker.
+
+### Running without Docker
+Alternatively, you can run the server locally without Docker. Create a virtual
+environment, install the `covid_graphs` package an run the server.
 ```sh
-./graphs/server.py data build/results-poly.pb build/results-exp.pb
+python3.7 -m venv your/path/to/venv
+source your/path/to/venv/bin/activate
+pip install -e .
+server.py data build/results-poly.pb build/results-exp.pb
 ```
 
 
@@ -18,7 +25,7 @@ Alternatively, you can run the server locally without Docker.
 For quick development or data examination, running standalone graphs is useful. We're assuming that the programs are run from the root of the repository.
 
 ```sh
-./graphs/country.py data Spain
-./graphs/scatter_plot.py data/Slovakia.data build/results.pb
-./graphs/heat_map.py build/results.pb
+covid_graphs/covid_graphs/country.py data Spain
+scatter_plot.py data/Slovakia.data build/results.pb
+covid_graphs/covid_graphs/heat_map.py build/results.pb
 ```

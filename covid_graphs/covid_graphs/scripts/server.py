@@ -23,13 +23,15 @@ parser.add_argument('simulated_exponential',
                     help=f"Proto file with simulation results of exponential growth")
 args = parser.parse_args()
 
-server = Flask(__name__, template_folder='.')
+
+CURRENT_DIR = Path(__file__).parent
+server = Flask(__name__, template_folder=CURRENT_DIR)
 
 covid19_normal_app = CountryReport.create_dashboard(args.data_dir, server, GraphType.Normal)
 covid19_semilog_app = CountryReport.create_dashboard(args.data_dir, server, GraphType.SemiLog)
 covid19_loglog_app = CountryReport.create_dashboard(args.data_dir, server, GraphType.LogLog)
-# covid19_heatmap_app = HeatMap(args.simulated_polynomial).create_app(server)
-# covid19_heatmap_exponential_app = HeatMap(args.simulated_exponential).create_app(server)
+covid19_heatmap_app = HeatMap(args.simulated_polynomial).create_app(server)
+covid19_heatmap_exponential_app = HeatMap(args.simulated_exponential).create_app(server)
 
 
 

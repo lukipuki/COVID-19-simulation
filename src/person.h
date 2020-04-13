@@ -9,7 +9,7 @@
 class Person {
  public:
   Person() = default;
-  Person(Stats* stats, uint32_t start_date) : start_date_{start_date}, date_of_death_{} {
+  Person(Stats* stats, uint32_t start_date) : start_date_{start_date} {
     auto age_decade = stats->GenerateAgeDecade();
     auto symptoms_max = stats->GenerateSymptoms(age_decade);
     auto disease_length = stats->DiseaseLength(symptoms_max);

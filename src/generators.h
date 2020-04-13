@@ -18,14 +18,17 @@ class GeneratorInterface {
     return deltas;
   }
 
-  virtual auto CreateDeltas(uint32_t t0, uint32_t count) const -> std::vector<double> = 0;
+  [[nodiscard]] virtual auto CreateDeltas(uint32_t t0, uint32_t count) const
+      -> std::vector<double> = 0;
   virtual ~GeneratorInterface() = default;
 };
 
 class ExponentialGenerator : public GeneratorInterface {
  public:
   ExponentialGenerator(double gamma1, double gamma2) : gamma1_(gamma1), gamma2_(gamma2) {}
-  auto CreateDeltas(uint32_t t0, uint32_t count) const -> std::vector<double> override {
+  // Creates deltas as defined in COR01.pdf.
+  [[nodiscard]] auto CreateDeltas(uint32_t t0, uint32_t count) const
+      -> std::vector<double> override {
     t0 = std::min(t0, count - 1);
     std::vector<double> result = ExponentialPrefix(gamma1_, t0);
     while (result.size() < count) {
@@ -44,7 +47,9 @@ class PolynomialGenerator : public GeneratorInterface {
  public:
   PolynomialGenerator(double gamma1, double polynomial_exponent)
       : gamma1_(gamma1), polynomial_exponent_(polynomial_exponent) {}
-  auto CreateDeltas(uint32_t t0, uint32_t count) const -> std::vector<double> override {
+  // Creates deltas with polynomial growth after t0.
+  [[nodiscard]] auto CreateDeltas(uint32_t t0, uint32_t count) const
+      -> std::vector<double> override {
     t0 = std::min(t0, count - 1);
     std::vector<double> values;
     for (int i = 1; i <= count + 1; ++i) {

@@ -103,7 +103,7 @@ class HeatMap():
         return app
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(description='COVID-19 visualization for Slovakia')
     parser.add_argument('simulated',
                         metavar='simulated',

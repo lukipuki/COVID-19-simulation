@@ -49,10 +49,7 @@ class Simulator {
     uint32_t days = positive_.size();
     for (uint32_t day = 0; day < days; ++day) {
       for (uint32_t i = 0; i < infected[day]; ++i) {
-        auto age_decade = stats_.GenerateAgeDecade();
-        auto symptoms = stats_.GenerateSymptoms(age_decade);
-        auto disease_length = stats_.DiseaseLength(symptoms);
-        persons.emplace_back(symptoms, disease_length, day);
+        persons.emplace_back(&stats_, day);
         if (persons.back().DateOfDeath().has_value()) {
           uint32_t date = *persons.back().DateOfDeath();
           if (dead_count.size() <= date) {

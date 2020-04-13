@@ -12,64 +12,108 @@ constexpr uint32_t kPopulationSize = 5450000;
 constexpr uint32_t kDecadesCount = 9;
 constexpr std::array<double, kDecadesCount> kPopulationAge = {0.11, 0.10, 0.12, 0.16, 0.15,
                                                               0.13, 0.13, 0.07, 0.03};
-const double kLog2 = std::log(2);
+constexpr std::array<double, kDecadesCount> kDeathProbabilities = {
+    0.002, 0.002, 0.002, 0.002, 0.004, 0.013, 0.036, 0.08, 0.148};
+constexpr uint32_t kSymptomsLength = 28;
 
-auto beta_distribution(double alpha, double beta, std::mt19937* gen) -> double {
-  std::gamma_distribution<> X(alpha, 1), Y(beta, 1);
-  double x = X(*gen), y = Y(*gen);
-  return x / (x + y);
-}
+constexpr uint32_t kFactorialLength = 5000;
 
-// For each death probability 'd', calculate 'b', such that 'Pr[B(1, b) > 0.5] = d'.
-std::array<double, kDecadesCount> generate_bs() {
-  constexpr std::array<double, kDecadesCount> kDeathProbabilities = {
-      0.002, 0.002, 0.002, 0.002, 0.004, 0.013, 0.036, 0.08, 0.148};
+// Class containing all the logic for generating people. Each person:
+// * is generated according to population age distribution
+// * has symptoms' severity generated based on their age
+// * has disease length generated based on symptoms severity
+class Stats {
+ public:
+  Stats() : log_factorials_(kFactorialLength), random_generator_(rd_()) {
+    log_factorials_[0] = 0;
+    for (uint32_t i = 1; i < kFactorialLength; i++) {
+      log_factorials_[i] = log_factorials_[i - 1] + std::log(i);
+    }
 
-  std::array<double, kDecadesCount> ret{};
-  for (int i = 0; i < kDecadesCount; i++) {
-    ret[i] = -std::log(kDeathProbabilities[i]) / kLog2;
+    const double kLog2 = std::log(2);
+    for (int i = 0; i < kDecadesCount; i++) {
+      bs_[i] = -std::log(kDeathProbabilities[i]) / kLog2;
+    }
   }
-  return ret;
-}
-const std::array<double, kDecadesCount> bs = generate_bs();
 
-// Quantile 'q' of beta distribution B(1, b).
-auto qbeta(double b, double q) -> double { return 1 - pow(1 - q, 1.0 / b); }
-
-auto generate_age(std::mt19937* generator) -> uint32_t {
-  std::uniform_real_distribution<> dis(0.0, 1.0);
-  double generated = dis(*generator);
-  double sum = 0;
-  uint32_t res = 0;
-  for (; sum + kPopulationAge[res] <= generated; ++res) {
-    sum += kPopulationAge[res];
+  // Logarithm of the distance function. More details in Rado Harman's COR01.pdf.
+  auto LogDistance(uint32_t z, uint32_t c) -> double {
+    if (z + c == 0) {
+      return 0;
+    }
+    assert(z >= 0 && c >= 0);
+    uint32_t max = std::max(z, c) + 1;
+    for (uint32_t i = log_factorials_.size(); i < max; ++i) {
+      log_factorials_.push_back(log_factorials_.back() + std::log(i));
+    }
+    double positive = (z + c) * std::log((z + c) / 2.);
+    double negative = z + c + log_factorials_[z] + log_factorials_[c];
+    return positive - negative;
   }
-  assert(res < kDecadesCount);
-  return res;
-}
 
-// Calculate the logarithms of factorials up to N.
-template <uint32_t N>
-auto generate_log_factorials() -> std::array<double, N> {
-  std::array<double, N> ret{};
-  ret[0] = 0;
-  for (int i = 1; i < N; i++) {
-    ret[i] = ret[i - 1] + std::log(i);
+  // Generates age decade according to Slovak population age distribution
+  auto GenerateAgeDecade() -> uint32_t {
+    std::uniform_real_distribution<> distribution(0.0, 1.0);
+    double generated = distribution(random_generator_);
+    double sum = 0;
+    uint32_t res = 0;
+    for (; sum + kPopulationAge[res] <= generated; ++res) {
+      sum += kPopulationAge[res];
+    }
+    assert(res < kDecadesCount);
+    return res;
   }
-  return ret;
-}
 
-// TODO(lukas): this shouldn't be a constant, since we don't know how big array we will need
-constexpr uint32_t kFactorialLength = 200000;
-const std::array<double, kFactorialLength> log_factorials =
-    generate_log_factorials<kFactorialLength>();
+  // Generates symptoms based on age decage. More details in Rado Harman's COR01.pdf.
+  auto GenerateSymptoms(uint32_t age_decade) -> double {
+    return beta_distribution(1, bs_[age_decade]);
+  }
 
-// Logarithm of the probability used in the distance function.
-auto log_distance_probability(uint32_t z, uint32_t c) -> double {
-  assert(z + c > 0);
-  assert(z < kFactorialLength);
-  assert(c < kFactorialLength);
-  double positive = (z + c) * std::log((z + c) / 2.);
-  double negative = z + c + log_factorials[z] + log_factorials[c];
-  return positive - negative;
-}
+  // Generates disease length based on symptoms. More details in Rado Harman's COR01.pdf.
+  auto DiseaseLength(double symptoms) -> uint32_t {
+    std::uniform_int_distribution<> uniform(0, 14);
+    return std::ceil(symptoms * kSymptomsLength + uniform(random_generator_));
+  }
+
+  // Poisson distribution, only used for testing.
+  auto PoissonDistribution(double mean) -> double {
+    std::poisson_distribution<> poisson(mean);
+    return poisson(random_generator_);
+  }
+
+  // Generates the number of infected based on deltas. See Rado Harman's COR01.pdf for the
+  // definition of delta_t.
+  auto GenerateInfected(const std::vector<double>& deltas, uint32_t count) -> std::vector<uint32_t> {
+    assert(count <= deltas.size());
+    std::vector<uint32_t> infected;
+    for (uint32_t i = 0; i < count; ++i) {
+      infected.push_back(PoissonDistribution(deltas[i]));
+    }
+    return infected;
+  }
+
+  // Calculates threshold for testing, when we are testing 'tested_count' people, given 'b0' (see
+  // Rado Harman's COR01.pdf for the definition of b0).
+  static auto CalculateThreshold(uint32_t b0, uint32_t tested_count) -> double {
+    double quantile = 1 - static_cast<double>(tested_count) / kPopulationSize;
+    return qbeta(b0, quantile);
+  }
+
+ private:
+  auto beta_distribution(double alpha, double beta) -> double {
+    std::gamma_distribution<> X(alpha, 1), Y(beta, 1);
+    double x = X(random_generator_), y = Y(random_generator_);
+    return x / (x + y);
+  }
+
+  // Quantile function of beta distribution B(1, b).
+  static auto qbeta(double b, double q) -> double { return 1 - pow(1 - q, 1.0 / b); }
+
+  std::vector<double> log_factorials_;
+  // For each decade of life 'i', calculate 'bs_[i]', such that
+  // 'Pr[B(1, bs_[i]) > 0.5] = kDeathProbabilities[i]'.
+  std::array<double, kDecadesCount> bs_;
+
+  std::random_device rd_;
+  std::mt19937 random_generator_;
+};

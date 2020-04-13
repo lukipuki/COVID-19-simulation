@@ -5,35 +5,39 @@
 
 #include "stats.h"
 
-TEST(Stats, CalculatesB) {
-  std::random_device rd;
-  std::mt19937 gen(rd());
+constexpr double kDeathThreshold = 0.5;
 
-  std::array<double, 9> kDeathProbabilities = {0.002, 0.002, 0.002, 0.002, 0.004,
-                                               0.013, 0.036, 0.08,  0.148};
+auto beta_distribution(double alpha, double beta, std::mt19937* random_generator) -> double {
+  std::gamma_distribution<> X(alpha, 1), Y(beta, 1);
+  double x = X(*random_generator), y = Y(*random_generator);
+  return x / (x + y);
+}
+
+TEST(Stats, GeneratesSymptoms) {
+  Stats stats;
   constexpr uint32_t kIterations = 1 << 16;
-  for (uint32_t index : {1, 5, 8}) {
-    double b = bs[index];
+  for (uint32_t age_decade : {1, 5, 8}) {
     double sum = 0;
     for (uint32_t i = 0; i < kIterations; ++i) {
-      sum += static_cast<double>(beta_distribution(1, b, &gen) > 0.5);
+      sum += static_cast<uint32_t>(stats.GenerateSymptoms(age_decade) > 0.5);
     }
     double result = sum / kIterations;
-    EXPECT_NEAR(kDeathProbabilities[index], result, 0.05);
+    EXPECT_NEAR(kDeathProbabilities[age_decade], result, 0.02);
   }
 }
 
 TEST(Stats, CalculatesQuantiles) {
   std::random_device rd;
-  std::mt19937 gen(rd());
+  std::mt19937 generator(rd());
   constexpr uint32_t kIterations = 1 << 20;
 
-  double quantile = 0.999;  // 99.9-th percentile of population
+  double quantile = 1 - 5450 / kPopulationSize;  // 99.9-th percentile of population
   constexpr double kBeta = 80;
-  double value = qbeta(kBeta, quantile);
+  Stats stats;
+  double threshold = stats.CalculateThreshold(kBeta, quantile);
   double sum = 0;
   for (uint32_t i = 0; i < kIterations; ++i) {
-    sum += static_cast<double>(beta_distribution(1, kBeta, &gen) < value);
+    sum += static_cast<double>(beta_distribution(1, kBeta, &generator) < threshold);
   }
 
   sum /= kIterations;
@@ -41,12 +45,11 @@ TEST(Stats, CalculatesQuantiles) {
 }
 
 TEST(Stats, GeneratesAgeAccordingToPopulation) {
-  std::random_device rd;
-  std::mt19937 gen(rd());
-  constexpr uint32_t kIterations = 1 << 20;
+  constexpr uint32_t kIterations = 1 << 22;
   std::vector<double> occurences(kDecadesCount, 0.0);
+  Stats stats;
   for (uint32_t i = 0; i < kIterations; ++i) {
-    occurences[generate_age(&gen)] += 1;
+    occurences[stats.GenerateAgeDecade()] += 1;
   }
   for (auto& occurence : occurences) occurence /= kIterations;
   for (uint32_t i = 0; i < kDecadesCount; ++i) {
@@ -55,16 +58,13 @@ TEST(Stats, GeneratesAgeAccordingToPopulation) {
 }
 
 TEST(Stats, GeneratesAccordingToPoisson) {
-  std::random_device rd;
-  std::mt19937 gen(rd());
-
-  constexpr uint32_t kIterations = 1 << 23;
-  constexpr uint32_t kSentinel = 1 << 20;
+  constexpr uint32_t kIterations = 1 << 20;
+  constexpr uint32_t kSentinel = 1 << 18;
   std::vector<uint32_t> occurences(kSentinel, 0);
   constexpr uint32_t kPairSum = 22;
+  Stats stats;
   for (uint32_t i = 0; i < kIterations; ++i) {
-    std::poisson_distribution<> poisson(kPairSum / 2.0);
-    uint32_t generated = poisson(gen);
+    uint32_t generated = stats.PoissonDistribution(kPairSum / 2.0);
     if (generated < kSentinel) {
       ++occurences[generated];
     }
@@ -76,7 +76,7 @@ TEST(Stats, GeneratesAccordingToPoisson) {
   }
 
   for (uint32_t z = 0; z <= kPairSum; ++z) {
-    EXPECT_NEAR(std::exp(log_distance_probability(z, kPairSum - z)),
-                probabilities[z] * probabilities[kPairSum - z], 0.0001);
+    EXPECT_NEAR(std::exp(stats.LogDistance(z, kPairSum - z)),
+                probabilities[z] * probabilities[kPairSum - z], 0.001);
   }
 }

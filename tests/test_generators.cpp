@@ -43,8 +43,7 @@ TEST(Generators, Polynomial) {
       // second_step * (std::pow(3, kPolynomialDegree) * std::exp(-3 / kPolynomialDecay) -
       //                std::pow(2, kPolynomialDegree) * std::exp(-2 / kPolynomialDecay))
       second_step * (std::pow(2, kPolynomialDegree) - std::pow(1, kPolynomialDegree)),
-      second_step * (std::pow(3, kPolynomialDegree) - std::pow(2, kPolynomialDegree))
-  };
+      second_step * (std::pow(3, kPolynomialDegree) - std::pow(2, kPolynomialDegree))};
 
   EXPECT_THAT(deltas, ElementsAre(DoubleNear(1.0, kEps), DoubleNear(kGamma1, kEps),
                                   DoubleNear(power_law_sequence[0], kEps),

@@ -18,13 +18,13 @@ constexpr double kDeathThreshold = 0.5;
 constexpr uint32_t kSymptomsLength = 28;
 constexpr uint32_t kFactorialLength = 5000;
 
-// Class containing all the logic for generating people. Each person:
+// Class containing all the logic for generating people and their symptoms. Each person:
 // * is generated according to population age distribution
 // * has symptoms' severity generated based on their age
 // * has disease length generated based on symptoms severity
-class Stats {
+class PopulationModel {
  public:
-  Stats() : log_factorials_(kFactorialLength), random_generator_(rd_()) {
+  PopulationModel() : log_factorials_(kFactorialLength), random_generator_(std::random_device{}()) {
     log_factorials_[0] = 0;
     for (uint32_t i = 1; i < kFactorialLength; i++) {
       log_factorials_[i] = log_factorials_[i - 1] + std::log(i);
@@ -32,7 +32,7 @@ class Stats {
 
     const double kLog2 = std::log(2);
     for (int i = 0; i < kDecadesCount; i++) {
-      bs_[i] = -std::log(kDeathProbabilities[i]) / kLog2;
+      b_[i] = -std::log(kDeathProbabilities[i]) / kLog2;
     }
   }
 
@@ -66,7 +66,7 @@ class Stats {
 
   // Generates symptoms based on age decage. More details in Rado Harman's COR01.pdf.
   auto GenerateSymptoms(uint32_t age_decade) -> double {
-    return beta_distribution(1, bs_[age_decade]);
+    return beta_distribution(1, b_[age_decade]);
   }
 
   // Generates disease length based on symptoms. More details in Rado Harman's COR01.pdf.
@@ -75,7 +75,7 @@ class Stats {
     return std::ceil(symptoms * kSymptomsLength + uniform(random_generator_));
   }
 
-  // Poisson distribution, only used for testing.
+  // Poisson distribution.
   auto PoissonDistribution(double mean) -> double {
     std::poisson_distribution<> poisson(mean);
     return poisson(random_generator_);
@@ -111,10 +111,9 @@ class Stats {
   static auto qbeta(double b, double quantile) -> double { return 1 - pow(1 - quantile, 1.0 / b); }
 
   std::vector<double> log_factorials_;
-  // For each decade of life 'i', calculate 'bs_[i]', such that
-  // 'Pr[B(1, bs_[i]) > 0.5] = kDeathProbabilities[i]'.
-  std::array<double, kDecadesCount> bs_;
+  // For each decade of life 'i', calculate 'b_[i]', such that
+  // 'Pr[B(1, b_[i]) > 0.5] = kDeathProbabilities[i]'. 'B()' is the beta distribution.
+  std::array<double, kDecadesCount> b_;
 
-  std::random_device rd_;
   std::mt19937 random_generator_;
 };

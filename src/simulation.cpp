@@ -10,8 +10,8 @@
 #include "country_data.pb.h"
 #include "generators.h"
 #include "person.h"
+#include "population_model.h"
 #include "simulation_results.pb.h"
-#include "stats.h"
 
 // #define EXPONENTIAL_GROWTH
 // constexpr bool kExponentialGrowth = true;
@@ -40,7 +40,7 @@ class Simulator {
   // Simulates the model for the configuration (b0, prefix_length, deltas).
   // Note that deltas could be generated as an exponential sequence or a polynomial sequence.
   auto Simulate(double beta0) -> SimulationResult::OneRun {
-    std::vector<uint32_t> infected = stats_.GenerateInfected(deltas_, positive_.size());
+    std::vector<uint32_t> infected = population_model_.GenerateInfected(deltas_, positive_.size());
     SimulationResult::OneRun run;
     *run.mutable_daily_infected() = {infected.begin(), infected.end()};
 
@@ -51,7 +51,7 @@ class Simulator {
     uint32_t days = positive_.size();
     for (uint32_t day = 0; day < days; ++day) {
       for (uint32_t i = 0; i < infected[day]; ++i) {
-        persons.emplace_back(&stats_, day);
+        persons.emplace_back(&population_model_, day);
         if (persons.back().DateOfDeath().has_value()) {
           uint32_t date = *persons.back().DateOfDeath();
           if (dead_count.size() <= date) {
@@ -63,14 +63,14 @@ class Simulator {
 
       assert(day < tested_.size());
 
-      double threshold = Stats::CalculateThreshold(beta0, tested_[day]);
+      double threshold = PopulationModel::CalculateThreshold(beta0, tested_[day]);
       auto iter = std::partition(
           persons.begin(), persons.end(),
           [day, threshold](const Person& ca) { return ca.CurrentSymptoms(day) < threshold; });
 
       run.add_daily_positive(persons.end() - iter);
       cumulative_positive += persons.end() - iter;
-      error -= stats_.LogDistance(cumulative_positive, positive_[day]);
+      error -= population_model_.LogDistance(cumulative_positive, positive_[day]);
 
       persons.resize(iter - persons.begin());
     }
@@ -92,7 +92,7 @@ class Simulator {
   // See Rado Harman's COR01.pdf for the definition of delta_t.
   std::vector<double> deltas_;
 
-  Stats stats_;
+  PopulationModel population_model_;
 };
 
 int main(int argc, char* argv[]) {

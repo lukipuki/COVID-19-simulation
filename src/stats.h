@@ -14,8 +14,8 @@ constexpr std::array<double, kDecadesCount> kPopulationAge = {0.11, 0.10, 0.12, 
                                                               0.13, 0.13, 0.07, 0.03};
 constexpr std::array<double, kDecadesCount> kDeathProbabilities = {
     0.002, 0.002, 0.002, 0.002, 0.004, 0.013, 0.036, 0.08, 0.148};
+constexpr double kDeathThreshold = 0.5;
 constexpr uint32_t kSymptomsLength = 28;
-
 constexpr uint32_t kFactorialLength = 5000;
 
 // Class containing all the logic for generating people. Each person:

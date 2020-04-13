@@ -5,8 +5,6 @@
 
 #include "stats.h"
 
-constexpr double kDeathThreshold = 0.5;
-
 auto beta_distribution(double alpha, double beta, std::mt19937* random_generator) -> double {
   std::gamma_distribution<> X(alpha, 1), Y(beta, 1);
   double x = X(*random_generator), y = Y(*random_generator);

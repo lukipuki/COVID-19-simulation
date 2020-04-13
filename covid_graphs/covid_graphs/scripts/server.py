@@ -70,4 +70,4 @@ def covid19_heatmap_exponential():
     return covid19_heatmap_exponential_app.index()
 
 
-server.run(host="0.0.0.0", port=8080, debug=True, extra_files=glob.glob(f'{args.data_dir}/*.data'))
+server.run(host="0.0.0.0", port=8081, debug=True, extra_files=glob.glob(f'{args.data_dir}/*.data'))

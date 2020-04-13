@@ -6,7 +6,7 @@ In the root directory of the repository, run `docker-compose`.
 ```sh
 docker-compose up --build # Optionally add -d for deamon
 ```
-You can then access the server locally at `http://127.0.0.1:8081`.
+You can then access the server locally at [localhost:8081](http://127.0.0.1:8081).
 
 
 ### Running without Docker

@@ -24,6 +24,7 @@ setup(
     entry_points={
         "console_scripts": [
             "covid_graphs.run_server = covid_graphs.scripts.server:run_server",
+            "covid_graphs.country = covid_graphs.country:main",
             "covid_graphs.scatter_plot = covid_graphs.scatter_plot:main",
             "covid_graphs.prepare_data = covid_graphs.prepare_data:main"
         ]

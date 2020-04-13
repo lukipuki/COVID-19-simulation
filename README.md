@@ -21,7 +21,7 @@ build/simulation data/Slovakia.data
 cat results.pb | protoc --decode SimulationResults src/simulation_results.proto
 ```
 
-You can also visualize the results, see the [graphs README](graphs/README.md) for examples.
+You can also visualize the results, see the [covid_graphs README](covid_graphs/README.md) for examples.
 
 # Building using Conan
 

@@ -7,7 +7,8 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import math
-import simulation_results_pb2
+
+from .pb import simulation_results_pb2
 
 
 class GrowthType(Enum):

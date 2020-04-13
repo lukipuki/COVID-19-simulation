@@ -2,13 +2,13 @@ version: "2.2"
 
 services:
   dash_server:
-    build: graphs/
+    build: covid_graphs/
     image: accu_dash
     volumes:
-      - "./graphs:/covid19/graphs:ro"
+      - "./covid_graphs:/covid19/covid_graphs:ro"
       - "./data:/covid19/data:ro"
     working_dir: "/covid19"
     ports:
-      - 127.0.0.1:8081:8080
+      - 127.0.0.1:8081:8081
     restart: always
-    command: "/covid19/graphs/server.py data/ data/results-poly.pb data/results-exp.pb"
+    command: "/covid19/covid_graphs/covid_graphs/scripts/server.py data/ data/results-poly.pb data/results-exp.pb"

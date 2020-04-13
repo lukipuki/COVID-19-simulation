@@ -83,12 +83,12 @@ class PopulationModel {
 
   // Generates the number of infected based on deltas. See Rado Harman's COR01.pdf for the
   // definition of delta_t.
-  auto GenerateInfected(const std::vector<double>& deltas, uint32_t count)
+  auto GenerateInfected(const std::vector<double>& deltas)
       -> std::vector<uint32_t> {
     assert(count <= deltas.size());
     std::vector<uint32_t> infected;
-    for (uint32_t i = 0; i < count; ++i) {
-      infected.push_back(PoissonDistribution(deltas[i]));
+    for (double mean : deltas) {
+      infected.push_back(PoissonDistribution(mean));
     }
     return infected;
   }

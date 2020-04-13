@@ -40,7 +40,7 @@ class Simulator {
   // Simulates the model for the configuration (b0, prefix_length, deltas).
   // Note that deltas could be generated as an exponential sequence or a polynomial sequence.
   auto Simulate(double beta0) -> SimulationResult::OneRun {
-    std::vector<uint32_t> infected = population_model_.GenerateInfected(deltas_, positive_.size());
+    std::vector<uint32_t> infected = population_model_.GenerateInfected(deltas_);
     SimulationResult::OneRun run;
     *run.mutable_daily_infected() = {infected.begin(), infected.end()};
 

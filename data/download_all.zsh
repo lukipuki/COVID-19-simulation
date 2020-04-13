@@ -1,16 +1,18 @@
-#!/bin/zsh -x
+#!/bin/zsh -xe
 
 declare -A short_names
 short_names["US"]=USA
 short_names["United Kingdom"]=UK
 
-#TODO: get rid of PYTHONPATH
-export PYTHONPATH=../graphs
+python3.7 -m venv venv && source venv/bin/activate
+pip install $1/
 for country in France Germany Iran Italy Spain "United Kingdom" US
 do
   if [[ -z $short_names["${country}"] ]]; then
-    ./prepare_data.py $country
+    covid_graphs.prepare_data $country
   else
-    ./prepare_data.py $country --short_name $short_names["${country}"]
+    covid_graphs.prepare_data $country --short_name $short_names["${country}"]
   fi
 done
+
+deactivate && rm -rf venv

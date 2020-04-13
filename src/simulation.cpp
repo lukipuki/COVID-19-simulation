@@ -37,6 +37,8 @@ class Simulator {
     std::partial_sum(positive_.begin(), positive_.end(), positive_.begin());
   }
 
+  // Simulates the model for the configuration (b0, prefix_length, deltas).
+  // Note that deltas could be generated as an exponential sequence or a polynomial sequence.
   auto Simulate(double beta0) -> SimulationResult::OneRun {
     std::vector<uint32_t> infected = stats_.GenerateInfected(deltas_, positive_.size());
     SimulationResult::OneRun run;
@@ -61,7 +63,7 @@ class Simulator {
 
       assert(day < tested_.size());
 
-      double threshold = stats_.CalculateThreshold(beta0, tested_[day]);
+      double threshold = Stats::CalculateThreshold(beta0, tested_[day]);
       auto iter = std::partition(
           persons.begin(), persons.end(),
           [day, threshold](const Person& ca) { return ca.CurrentSymptoms(day) < threshold; });
@@ -78,7 +80,7 @@ class Simulator {
     return run;
   }
 
-  std::vector<double> get_deltas() { return deltas_; }
+  auto get_deltas() -> std::vector<double> { return deltas_; }
 
  private:
   uint32_t t0_;

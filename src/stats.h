@@ -83,7 +83,8 @@ class Stats {
 
   // Generates the number of infected based on deltas. See Rado Harman's COR01.pdf for the
   // definition of delta_t.
-  auto GenerateInfected(const std::vector<double>& deltas, uint32_t count) -> std::vector<uint32_t> {
+  auto GenerateInfected(const std::vector<double>& deltas, uint32_t count)
+      -> std::vector<uint32_t> {
     assert(count <= deltas.size());
     std::vector<uint32_t> infected;
     for (uint32_t i = 0; i < count; ++i) {
@@ -107,7 +108,7 @@ class Stats {
   }
 
   // Quantile function of beta distribution B(1, b).
-  static auto qbeta(double b, double q) -> double { return 1 - pow(1 - q, 1.0 / b); }
+  static auto qbeta(double b, double quantile) -> double { return 1 - pow(1 - quantile, 1.0 / b); }
 
   std::vector<double> log_factorials_;
   // For each decade of life 'i', calculate 'bs_[i]', such that

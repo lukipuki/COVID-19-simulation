@@ -18,6 +18,7 @@ cmake --build .
 
 ```
 build/simulation data/Slovakia.data
+# The simulation creates a proto file 'results.pb', which can be examined
 cat results.pb | protoc --decode SimulationResults src/simulation_results.proto
 ```
 

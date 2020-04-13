@@ -27,6 +27,6 @@ For quick development or data examination, running standalone graphs is useful.
 
 ```sh
 covid_graphs.country data Spain
-covid_graphs.scatter_plot data/Slovakia.data build/results.pb
-covid_graphs/covid_graphs/heat_map.py build/results.pb
+covid_graphs.scatter_plot data/Slovakia.data results.pb
+covid_graphs.heat_map results.pb
 ```

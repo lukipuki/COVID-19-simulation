@@ -66,7 +66,7 @@ class PopulationModel {
 
   // Generates symptoms based on age decage. More details in Rado Harman's COR01.pdf.
   auto GenerateSymptoms(uint32_t age_decade) -> double {
-    return beta_distribution(1, b_[age_decade]);
+    return BetaDistribution(1, b_[age_decade]);
   }
 
   // Generates disease length based on symptoms. More details in Rado Harman's COR01.pdf.
@@ -97,18 +97,20 @@ class PopulationModel {
   // Rado Harman's COR01.pdf for the definition of b0).
   static auto CalculateThreshold(uint32_t b0, uint32_t tested_count) -> double {
     double quantile = 1 - static_cast<double>(tested_count) / kPopulationSize;
-    return qbeta(b0, quantile);
+    return BetaQuantile(b0, quantile);
   }
 
  private:
-  auto beta_distribution(double alpha, double beta) -> double {
+  auto BetaDistribution(double alpha, double beta) -> double {
     std::gamma_distribution<> X(alpha, 1), Y(beta, 1);
     double x = X(random_generator_), y = Y(random_generator_);
     return x / (x + y);
   }
 
   // Quantile function of beta distribution B(1, b).
-  static auto qbeta(double b, double quantile) -> double { return 1 - pow(1 - quantile, 1.0 / b); }
+  static auto BetaQuantile(double b, double quantile) -> double {
+    return 1 - pow(1 - quantile, 1.0 / b);
+  }
 
   std::vector<double> log_factorials_;
   // For each decade of life 'i', calculate 'b_[i]', such that

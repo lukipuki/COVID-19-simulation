@@ -41,8 +41,9 @@ countries = [
     Country('Germany',
             [ATG_formula(6.7, 3773), ATG_formula(5.99, 5086, 5.79, 274)]),
     Country('UK', [ATG_formula(7.2, 2719)]),
+    Country('Switzerland', [ATG_formula(4.19, 16.65, 7.78, 28)]),
 ]
-
+ 
 
 class CountryGraph:
     """Constructs a graph for a given country"""
@@ -225,5 +226,5 @@ def main():
     args = parser.parse_args()
 
     country = next(c for c in countries if c.name == args.country)
-    country_graph = CountryGraph(args.data_dir, country, GraphType.LogLog)
+    country_graph = CountryGraph(args.data_dir, country, GraphType.Normal)
     country_graph.create_country_figure().show()

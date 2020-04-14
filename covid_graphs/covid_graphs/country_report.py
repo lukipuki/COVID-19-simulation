@@ -11,14 +11,14 @@ class CountryReport:
             country_data = CountryData()
             text_format.Parse(f.read(), country_data)
             self.name = country_data.name
-            positive = np.array([day.positive for day in country_data.stats])
-            self.dead = np.array([day.dead for day in country_data.stats])
-            self.recovered = np.array([day.recovered for day in country_data.stats])
-            self.active = positive - self.recovered - self.dead
+            daily_positive = np.array([day.positive for day in country_data.stats])
+            self.daily_dead = np.array([day.dead for day in country_data.stats])
+            self.daily_recovered = np.array([day.recovered for day in country_data.stats])
+            self.daily_active = daily_positive - self.daily_recovered - self.daily_dead
             self.date_list = [
                 f"{day.date.year}-{day.date.month:02d}-{day.date.day:02d}"
                 for day in country_data.stats
             ]
 
-        self.cumulative_active = np.add.accumulate(self.active)
+        self.cumulative_active = np.add.accumulate(self.daily_active)
         self.min_case_count = min(formula.min_case_count for formula in country_tuple.formulas)

@@ -1,19 +1,19 @@
 from collections import namedtuple
 from enum import Enum
 from plotly.graph_objs import Figure, Layout, Scatter
-import argparse
+import click
+import click_pathlib
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+from flask import Flask
 import numpy as np
-import os
+from pathlib import Path
 
-from .country_report import CountryReport
+from .country_report import Country, CountryReport
 from .formula import ATG_formula, EvaluatedFormula, Formula, XAxisType
 
 PREDICTION_DATE = '2020-03-29'
-
-Country = namedtuple('Country', ['name', 'formulas'])
 
 
 class GraphType(Enum):
@@ -55,14 +55,14 @@ countries = [
 
 class CountryGraph:
     """Constructs a graph for a given country"""
-    def __init__(self, data_dir, country_tuple, graph_type=GraphType.Normal):
+    def __init__(self, data_dir: Path, country: Country, graph_type: GraphType=GraphType.Normal):
         self.graph_type = graph_type
         # Due to plotly limitations, we can only have graphs with dates on the x-axis when we
         # aren't using logs.
         axis_type = XAxisType.Dated if graph_type == GraphType.Normal else XAxisType.Numbered
-        report = CountryReport(data_dir, country_tuple)
+        report = CountryReport(data_dir=data_dir, country=country)
         first_idx, last_idx, self.evaluated_formulas = EvaluatedFormula.evaluate_formulas(
-            country_tuple.formulas, report.cumulative_active, report.date_list[0], axis_type)
+            country.formulas, report.cumulative_active, report.date_list[0], axis_type)
         self.name = report.name
         self.min_case_count = report.min_case_count
         self.cumulative_active = report.cumulative_active[first_idx:].copy()
@@ -153,10 +153,10 @@ class CountryGraph:
         return figure
 
     @staticmethod
-    def create_dashboard(data_dir, server, graph_type=GraphType.Normal):
+    def create_dashboard(data_dir: Path, server: Flask, graph_type: GraphType=GraphType.Normal):
         country_graphs = [
             CountryGraph(data_dir, country, graph_type) for country in countries
-            if os.path.isfile(os.path.join(data_dir, f'{country.name}.data'))
+            if (data_dir / f'{country.name}.data').is_file()
         ]
 
         app = dash.Dash(
@@ -224,15 +224,18 @@ class CountryGraph:
         return app
 
 
-def main():
-    parser = argparse.ArgumentParser(description='COVID-19 country growth visualization')
-    parser.add_argument('data_dir',
-                        metavar='data_dir',
-                        type=str,
-                        help=f"Directory with country proto files")
-    parser.add_argument('country', metavar='country', type=str, help=f"Country name")
-    args = parser.parse_args()
-
-    country = next(c for c in countries if c.name == args.country)
-    country_graph = CountryGraph(args.data_dir, country, GraphType.Normal)
+@click.command(help='COVID-19 country growth visualization')
+@click.argument(
+    "data_dir",
+    required=True,
+    type=click_pathlib.Path(exists=True),
+)
+@click.argument(
+    "country_name",
+    required=True,
+    type=str,
+)
+def show_country_plot(data_dir: Path, country_name: str):
+    country = next(c for c in countries if c.name == country_name)
+    country_graph = CountryGraph(data_dir=data_dir, country=country, graph_type=GraphType.Normal)
     country_graph.create_country_figure().show()

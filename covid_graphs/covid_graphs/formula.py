@@ -21,19 +21,22 @@ class XAxisType(Enum):
 def ATG_formula(TG, A, exponent=EXPONENT, min_case_count=200):
     text = r'$\frac{_A}{_TG} \cdot \left(\frac{t}{_TG}\right)^{_expon} / e^{t/_TG}$'
     text = text.replace("_A", f"{A}").replace("_TG", f"{TG}").replace("_expon", f"{exponent}")
-    # Second inflection point day
+    # Day of the second inflection point
     second_ip_day = math.ceil(TG * (exponent + math.sqrt(exponent)))
     return Formula(lambda t: (A / TG) * (t / TG)**exponent / np.exp(t / TG), text, second_ip_day,
                    min_case_count)
 
 
 class EvaluatedFormula():
-    def __init__(self,
-                 formula,
-                 cumulative_active,
-                 first_idx,
-                 last_idx,
-                 first_date, xaxis_type):
+    """Class containing an evaluated formula.
+
+        cumulative_active - list of cumulative active cases
+        first_idx - 0-based index where the graph starts, so from cumulative_active[first_idx:].
+        last_idx - 0-based index where the graph ends
+        first_date - date corresponding to cumulative_active[0]
+        xaxis_type - whether we label with numbers or dates
+    """
+    def __init__(self, formula, cumulative_active, first_idx, last_idx, first_date, xaxis_type):
         self.text = formula.text
         # First index: t=1
         start_idx = np.argmax(cumulative_active >= formula.min_case_count)
@@ -50,6 +53,7 @@ class EvaluatedFormula():
 
     @staticmethod
     def evaluate_formulas(formulas, cumulative_active, first_date, xaxis_type=XAxisType.Dated):
+        """Evaluates a list of formulas and finds a suitable range in the graph"""
         first_idx = min(
             np.argmax(cumulative_active >= formula.min_case_count) for formula in formulas)
         last_idx = max(
@@ -59,6 +63,5 @@ class EvaluatedFormula():
         first_date_parsed = datetime.strptime(first_date, '%Y-%m-%d')
         return (first_idx, last_idx, [
             EvaluatedFormula(formula, cumulative_active, first_idx, last_idx, first_date_parsed,
-                             xaxis_type)
-            for formula in formulas
+                             xaxis_type) for formula in formulas
         ])

@@ -11,6 +11,7 @@ import numpy as np
 import os
 from google.protobuf import text_format
 
+from .fit_atg_model import fit_atg_model
 from .pb.country_data_pb2 import CountryData
 
 EXPONENT = 6.23
@@ -143,6 +144,39 @@ class CountryReport:
                         'color': color
                     },
                 ))
+
+        count = len(self.cumulative_active)
+        fit = fit_atg_model(self.x[:count], self.cumulative_active)
+        name = r'$\frac{_A}{_TG} \cdot \left(\frac{t-_X0}{_TG}\right)^{6.23} / e^\frac{t-_X0}{_TG}$'
+        name = name.replace("_A", f"{fit.a}").replace("_TG", f"{fit.tg}").replace("_X0", f"{fit.x0}")
+        figure.add_trace(
+            Scatter(
+                x=x,
+                y=[fit.predict(x) for x in self.x],
+                mode='lines',
+                name=name,
+                line={
+                    'dash': 'dash',
+                    'width': 2,
+                    'color': 'rgb(239, 85, 59)',
+                },
+            ))
+
+        fit = fit_atg_model(self.x[count - 14:count], self.cumulative_active[count - 14:])
+        name = r'$\frac{_A}{_TG} \cdot \left(\frac{t-_X0}{_TG}\right)^{6.23} / e^\frac{t-_X0}{_TG}$'
+        name = name.replace("_A", f"{fit.a}").replace("_TG", f"{fit.tg}").replace("_X0", f"{fit.x0}")
+        figure.add_trace(
+            Scatter(
+                x=x,
+                y=[fit.predict(x) for x in self.x],
+                mode='lines',
+                name=name,
+                line={
+                    'dash': 'dash',
+                    'width': 2,
+                    'color': 'rgb(244, 146, 128)',
+                },
+            ))
 
         figure.add_trace(
             Scatter(x=x,

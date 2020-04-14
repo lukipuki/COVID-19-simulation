@@ -7,10 +7,9 @@ import dash_core_components as dcc
 import dash_html_components as html
 import numpy as np
 import os
-from google.protobuf import text_format
 
-from .pb.country_data_pb2 import CountryData
-from .formula import ATG_formula, EvaluatedFormula, Formula
+from .country_report import CountryReport
+from .formula import ATG_formula, EvaluatedFormula, Formula, XAxisType
 
 PREDICTION_DATE = '2020-03-29'
 
@@ -45,50 +44,39 @@ countries = [
 ]
 
 
-class CountryReport:
-    def __init__(self, data_dir, country_tuple):
-        with open(os.path.join(data_dir, f'{country_tuple.name}.data'), "rb") as f:
-            country_data = CountryData()
-            text_format.Parse(f.read(), country_data)
-            self.name = country_data.name
-            positive = np.array([day.positive for day in country_data.stats])
-            self.dead = np.array([day.dead for day in country_data.stats])
-            self.recovered = np.array([day.recovered for day in country_data.stats])
-            self.active = positive - self.recovered - self.dead
-            self.date_list = [
-                f"{day.date.year}-{day.date.month:02d}-{day.date.day:02d}"
-                for day in country_data.stats
-            ]
-
-        self.cumulative_active = np.add.accumulate(self.active)
+class CountryGraph:
+    def __init__(self, data_dir, country_tuple, graph_type=GraphType.Normal):
+        self.graph_type = graph_type
+        axis_type = XAxisType.Dated if graph_type == GraphType.Normal else XAxisType.Numbered
+        report = CountryReport(data_dir, country_tuple)
         first_idx, last_idx, self.evaluated_formulas = EvaluatedFormula.evaluate_formulas(
-            country_tuple.formulas, self.cumulative_active, self.date_list[0])
-        self.cumulative_active = self.cumulative_active[first_idx:].copy()
-        self.date_list = self.date_list[first_idx:]
-        if True:
+            country_tuple.formulas, report.cumulative_active, report.date_list[0], axis_type)
+        self.name = report.name
+        self.min_case_count = report.min_case_count
+        self.cumulative_active = report.cumulative_active[first_idx:].copy()
+        self.date_list = report.date_list[first_idx:]
+        if axis_type == XAxisType.Dated:
             self.t = self.date_list
         else:
             self.t = np.arange(len(self.cumulative_active)) + 1
 
-        self.min_case_count = min(formula.min_case_count for formula in country_tuple.formulas)
-
-    def create_country_figure(self, graph_type=GraphType.Normal):
+    def create_country_figure(self):
         shapes = [
             dict(type="line",
                  yref="paper",
-                 x0=ef.t[ef.maximal_idx],
+                 x0=evaluated_formula.t[evaluated_formula.maximal_idx],
                  y0=0,
-                 x1=ef.t[ef.maximal_idx],
+                 x1=evaluated_formula.t[evaluated_formula.maximal_idx],
                  y1=1,
-                 line=dict(width=2, dash='dot')) for ef in self.evaluated_formulas
+                 line=dict(width=2, dash='dot')) for evaluated_formula in self.evaluated_formulas
         ]
         try:
             prediction_date = self.date_list.index(PREDICTION_DATE)
             shapes.append(
                 dict(type="rect",
                      yref="paper",
-                     x0=self.date_list[0],
-                     x1=self.date_list[prediction_date],
+                     x0=self.t[0],
+                     x1=self.t[prediction_date],
                      y0=0,
                      y1=1,
                      fillcolor="LightGreen",
@@ -140,20 +128,20 @@ class CountryReport:
                     },
                     marker={'size': 8}))
 
-        if graph_type == GraphType.Normal:
+        if self.graph_type == GraphType.Normal:
             figure.update_yaxes(type="linear")
-        elif graph_type == GraphType.SemiLog:
+        elif self.graph_type == GraphType.SemiLog:
             figure.update_xaxes(type="linear")
             figure.update_yaxes(type="log")
-        elif graph_type == GraphType.LogLog:
+        elif self.graph_type == GraphType.LogLog:
             figure.update_xaxes(type="log")
             figure.update_yaxes(type="log")
         return figure
 
     @staticmethod
     def create_dashboard(data_dir, server, graph_type=GraphType.Normal):
-        country_reports = [
-            CountryReport(data_dir, country) for country in countries
+        country_graphs = [
+            CountryGraph(data_dir, country, graph_type) for country in countries
             if os.path.isfile(os.path.join(data_dir, f'{country.name}.data'))
         ]
 
@@ -169,9 +157,9 @@ class CountryReport:
             app.title += f' on a {graph_type} graph'
 
         graphs = [
-            dcc.Graph(id=f'{country_data.name} {graph_type}',
-                      figure=country_data.create_country_figure(graph_type))
-            for country_data in country_reports
+            dcc.Graph(id=f'{country_graph.name} {graph_type}',
+                      figure=country_graph.create_country_figure())
+            for country_graph in country_graphs
         ]
 
         prediction_link = "https://www.facebook.com/permalink.php?"\
@@ -234,5 +222,5 @@ def main():
     args = parser.parse_args()
 
     country = next(c for c in countries if c.name == args.country)
-    country_data = CountryReport(args.data_dir, country)
-    country_data.create_country_figure().show()
+    country_graph = CountryGraph(args.data_dir, country, GraphType.LogLog)
+    country_graph.create_country_figure().show()

@@ -8,7 +8,6 @@ import dash_core_components as dcc
 import dash_html_components as html
 from flask import Flask
 import numpy as np
-import os
 from pathlib import Path
 
 from .country_report import Country, CountryReport
@@ -149,7 +148,7 @@ class CountryGraph:
     def create_dashboard(data_dir: Path, server: Flask, graph_type: GraphType=GraphType.Normal):
         country_graphs = [
             CountryGraph(data_dir, country, graph_type) for country in countries
-            if os.path.isfile(os.path.join(data_dir, f'{country.name}.data'))
+            if (data_dir / f'{country.name}.data').is_file()
         ]
 
         app = dash.Dash(

@@ -40,7 +40,7 @@ class EvaluatedFormula():
         self.text = formula.text
         # First index: t=1
         start_idx = np.argmax(cumulative_active >= formula.min_case_count)
-        length = last_idx - start_idx
+        length = last_idx - start_idx + 1
         self.y = formula.lambd(np.arange(length) + 1)
         self.date_list = [(first_date + timedelta(days=d)).strftime('%Y-%m-%d')
                           for d in range(start_idx, last_idx + 1)]

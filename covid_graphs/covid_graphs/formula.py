@@ -4,8 +4,6 @@ import numpy as np
 from collections import namedtuple
 from enum import Enum
 
-EXPONENT = 6.23
-
 # TODO(lukas): Move to dataclass?
 Formula = namedtuple('Formula', ['lambd', 'text', 'second_ip_day', 'min_case_count'])
 
@@ -18,7 +16,7 @@ class XAxisType(Enum):
         return self.value
 
 
-def ATG_formula(TG, A, exponent=EXPONENT, min_case_count=200):
+def ATG_formula(TG, A, exponent, min_case_count=200):
     text = r'$\frac{_A}{_TG} \cdot \left(\frac{t}{_TG}\right)^{_expon} / e^{t/_TG}$'
     text = text.replace("_A", f"{A}").replace("_TG", f"{TG}").replace("_expon", f"{exponent}")
     # Day of the second inflection point

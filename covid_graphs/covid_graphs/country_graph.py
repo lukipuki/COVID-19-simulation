@@ -27,23 +27,31 @@ class GraphType(Enum):
 
 countries = [
     Country('Slovakia', [Formula(lambda t: 8 * t**1.28, r'$8 \cdot t^{1.28}$', 40, 10)]),
-    Country('Italy',
-            [ATG_formula(9.67, 30080, 5.26), ATG_formula(7.8, 4417)]),
-    Country('USA', [ATG_formula(12.8, 1406000, 4.3, 1083),
-                    ATG_formula(10.2, 72329)]),
+    Country('Italy', [
+        ATG_formula(7.8, 4417, 6.23),
+        ATG_formula(9.67, 30080, 5.26),
+    ]),
+    Country('USA', [
+        ATG_formula(10.2, 72329, 6.23),
+        ATG_formula(12.8, 1406000, 4.3, 1083),
+    ]),
     # The following two are for the blog post
     # Country('Italy', Formula(lambda t: 2.5 * t**3, r'$2.5 \cdot t^{3}$', 60, 200)),
     # Country('Italy', Formula(lambda t: (229/1.167) * 1.167**t, r'$196 \cdot 1.167^t$', 60, 200)),
     #
     # Spain and Germany seem to have better fits as of 2020-04-06
-    Country('Spain',
-            [ATG_formula(6.4, 3665), ATG_formula(5.93, 1645, 6.54, 155)]),
-    Country('Germany',
-            [ATG_formula(6.7, 3773), ATG_formula(5.99, 5086, 5.79, 274)]),
-    Country('UK', [ATG_formula(7.2, 2719)]),
+    Country('Spain', [
+        ATG_formula(6.4, 3665, 6.23),
+        ATG_formula(5.93, 1645, 6.54, 155),
+    ]),
+    Country('Germany', [
+        ATG_formula(6.7, 3773, 6.23),
+        ATG_formula(5.99, 5086, 5.79, 274),
+    ]),
+    Country('UK', [ATG_formula(7.2, 2719, 6.23)]),
     Country('Switzerland', [ATG_formula(4.19, 16.65, 7.78, 28)]),
 ]
- 
+
 
 class CountryGraph:
     """Constructs a graph for a given country"""

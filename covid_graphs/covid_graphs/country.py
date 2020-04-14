@@ -1,23 +1,20 @@
 from collections import namedtuple
-from datetime import datetime, timedelta
 from enum import Enum
 from plotly.graph_objs import Figure, Layout, Scatter
 import argparse
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import math
 import numpy as np
 import os
 from google.protobuf import text_format
 
 from .pb.country_data_pb2 import CountryData
+from .formula import ATG_formula, EvaluatedFormula, Formula
 
-EXPONENT = 6.23
 PREDICTION_DATE = '2020-03-29'
 
-Country = namedtuple('Country', ['name', 'formulas', 'min_case_count'])
-Formula = namedtuple('Formula', ['lambd', 'text', 'maximal_day', 'second_ip_day'])
+Country = namedtuple('Country', ['name', 'formulas'])
 
 
 class GraphType(Enum):
@@ -29,29 +26,22 @@ class GraphType(Enum):
         return self.value
 
 
-def ATG_formula(TG, A, exponent=EXPONENT):
-    text = r'$\frac{_A}{_TG} \cdot \left(\frac{t}{_TG}\right)^{_expon} / e^{t/_TG}$'
-    text = text.replace("_A", f"{A}").replace("_TG", f"{TG}").replace("_expon", f"{exponent}")
-    # Second inflection point day
-    second_ip_day = math.ceil(TG * (exponent + math.sqrt(exponent)))
-    return Formula(lambda t: (A / TG) * (t / TG)**exponent / np.exp(t / TG), text, exponent * TG,
-                   second_ip_day)
-
-
 countries = [
     Country('Slovakia', [Formula(lambda t: 8 * t**1.28, r'$8 \cdot t^{1.28}$', 40, 10)]),
-    Country(
-        'Italy',
-        [ATG_formula(7.8, 4417, 6.23), ATG_formula(9.67, 30080, 5.26)]),
-    Country('USA', [
-        ATG_formula(10.2, 72329, 6.23),
-        ATG_formula(12.8, 1406000, 4.3, 1083),
-    ]),
-    Country('Spain', [ATG_formula(6.4, 3665, 6.23),
-                      ATG_formula(5.93, 1645, 6.54, 155)]),
-    Country('Germany', [ATG_formula(6.7, 3773, 6.23),
-                        ATG_formula(5.99, 5086, 5.79, 274)]),
-    Country('UK', [ATG_formula(7.2, 2719, 6.23)]),
+    Country('Italy',
+            [ATG_formula(9.67, 30080, 5.26), ATG_formula(7.8, 4417)]),
+    Country('USA', [ATG_formula(12.8, 1406000, 4.3, 1083),
+                    ATG_formula(10.2, 72329)]),
+    # The following two are for the blog post
+    # Country('Italy', Formula(lambda t: 2.5 * t**3, r'$2.5 \cdot t^{3}$', 60, 200)),
+    # Country('Italy', Formula(lambda t: (229/1.167) * 1.167**t, r'$196 \cdot 1.167^t$', 60, 200)),
+    #
+    # Spain and Germany seem to have better fits as of 2020-04-06
+    Country('Spain',
+            [ATG_formula(6.4, 3665), ATG_formula(5.93, 1645, 6.54, 155)]),
+    Country('Germany',
+            [ATG_formula(6.7, 3773), ATG_formula(5.99, 5086, 5.79, 274)]),
+    Country('UK', [ATG_formula(7.2, 2719)]),
 ]
 
 
@@ -70,40 +60,35 @@ class CountryReport:
                 for day in country_data.stats
             ]
 
-        self.formulas = country_tuple.formulas
-        self.min_case_count = country_tuple.min_case_count
-        self.cumulative_active = np.array(
-            list(filter(lambda x: x >= self.min_case_count, np.add.accumulate(self.active))))
-        self.date_list = self.date_list[len(self.active) - len(self.cumulative_active):]
-        self.x = np.arange(max(f.second_ip_day for f in self.formulas)) + 1
-        self.y = [formula.lambd(self.x) for formula in self.formulas]
-        self.maximal_dates = [y.argmax() for y in self.y]
+        self.cumulative_active = np.add.accumulate(self.active)
+        first_idx, last_idx, self.evaluated_formulas = EvaluatedFormula.evaluate_formulas(
+            country_tuple.formulas, self.cumulative_active, self.date_list[0])
+        self.cumulative_active = self.cumulative_active[first_idx:].copy()
+        self.date_list = self.date_list[first_idx:]
+        if True:
+            self.t = self.date_list
+        else:
+            self.t = np.arange(len(self.cumulative_active)) + 1
 
-        self.last_date = datetime.strptime(self.date_list[-1], '%Y-%m-%d')
-        self.date_list += [(self.last_date + timedelta(days=d)).strftime('%Y-%m-%d')
-                           for d in range(1,
-                                          len(self.x) - len(self.date_list) + 1)]
-        self.x = self.x[:len(self.date_list)]
+        self.min_case_count = min(formula.min_case_count for formula in country_tuple.formulas)
 
     def create_country_figure(self, graph_type=GraphType.Normal):
-
-        x = self.x if graph_type != GraphType.Normal else self.date_list
         shapes = [
             dict(type="line",
                  yref="paper",
-                 x0=x[maximal_date],
+                 x0=ef.t[ef.maximal_idx],
                  y0=0,
-                 x1=x[maximal_date],
+                 x1=ef.t[ef.maximal_idx],
                  y1=1,
-                 line=dict(width=2, dash='dot')) for maximal_date in self.maximal_dates
+                 line=dict(width=2, dash='dot')) for ef in self.evaluated_formulas
         ]
         try:
             prediction_date = self.date_list.index(PREDICTION_DATE)
             shapes.append(
                 dict(type="rect",
                      yref="paper",
-                     x0=x[0],
-                     x1=x[prediction_date],
+                     x0=self.date_list[0],
+                     x1=self.date_list[prediction_date],
                      y0=0,
                      y1=1,
                      fillcolor="LightGreen",
@@ -128,15 +113,15 @@ class CountryReport:
                         legend=dict(x=0.01, y=0.99, borderwidth=1))
 
         figure = Figure(layout=layout)
-        colors = ['rgb(31, 119, 180)', '#bcbd22', 'violet'][:len(self.formulas)]
-        for color, formula in zip(colors, self.formulas):
+        colors = ['rgb(31, 119, 180)', '#bcbd22', 'violet'][:len(self.evaluated_formulas)]
+        for color, evaluated_formula in zip(colors, self.evaluated_formulas):
             figure.add_trace(
                 Scatter(
-                    x=x,
-                    y=formula.lambd(self.x),
-                    text=self.date_list,
+                    x=evaluated_formula.t,
+                    y=evaluated_formula.y,
+                    text=evaluated_formula.date_list,
                     mode='lines',
-                    name=formula.text,
+                    name=evaluated_formula.text,
                     line={
                         'dash': 'dash',
                         'width': 2,
@@ -145,10 +130,10 @@ class CountryReport:
                 ))
 
         figure.add_trace(
-            Scatter(x=x,
+            Scatter(x=self.t,
                     y=self.cumulative_active,
                     mode='lines+markers',
-                    name=f"Active cases",
+                    name="Active cases",
                     line={
                         'width': 3,
                         'color': 'rgb(239, 85, 59)',

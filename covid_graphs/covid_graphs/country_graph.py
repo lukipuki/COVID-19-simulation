@@ -45,8 +45,11 @@ countries = [
 
 
 class CountryGraph:
+    """Constructs a graph for a given country"""
     def __init__(self, data_dir, country_tuple, graph_type=GraphType.Normal):
         self.graph_type = graph_type
+        # Due to plotly limitations, we can only have graphs with dates on the x-axis when we
+        # aren't using logs.
         axis_type = XAxisType.Dated if graph_type == GraphType.Normal else XAxisType.Numbered
         report = CountryReport(data_dir, country_tuple)
         first_idx, last_idx, self.evaluated_formulas = EvaluatedFormula.evaluate_formulas(
@@ -62,6 +65,7 @@ class CountryGraph:
 
     def create_country_figure(self):
         shapes = [
+            # Add vertical dotted lines marking the maxima
             dict(type="line",
                  yref="paper",
                  x0=evaluated_formula.t[evaluated_formula.maximal_idx],
@@ -72,6 +76,7 @@ class CountryGraph:
         ]
         try:
             prediction_date = self.date_list.index(PREDICTION_DATE)
+            # Add green zone marking the data available at the prediction date.
             shapes.append(
                 dict(type="rect",
                      yref="paper",

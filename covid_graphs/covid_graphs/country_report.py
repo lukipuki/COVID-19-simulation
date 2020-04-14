@@ -1,4 +1,3 @@
-from datetime import datetime, timedelta
 import numpy as np
 import os
 from google.protobuf import text_format
@@ -6,6 +5,7 @@ from .pb.country_data_pb2 import CountryData
 
 
 class CountryReport:
+    """Constructs a numpy representation of data read from 'data_dir' a given country."""
     def __init__(self, data_dir, country_tuple):
         with open(os.path.join(data_dir, f'{country_tuple.name}.data'), "rb") as f:
             country_data = CountryData()

@@ -9,9 +9,13 @@ import dash_html_components as html
 from flask import Flask
 import numpy as np
 from pathlib import Path
+from typing import List
 
-from .country_report import Country, CountryReport
+from . import predictions
+from .predictions import CountryPrediction
+from .country_report import CountryReport
 from .formula import ATG_formula, EvaluatedFormula, Formula, XAxisType
+
 
 PREDICTION_DATE = '2020-03-29'
 
@@ -25,44 +29,21 @@ class GraphType(Enum):
         return self.value
 
 
-countries = [
-    Country('Slovakia', [Formula(lambda t: 8 * t**1.28, r'$8 \cdot t^{1.28}$', 40, 10)]),
-    Country('Italy', [
-        ATG_formula(7.8, 4417, 6.23),
-        ATG_formula(9.67, 30080, 5.26),
-    ]),
-    Country('USA', [
-        ATG_formula(10.2, 72329, 6.23),
-        ATG_formula(12.8, 1406000, 4.3, 1083),
-    ]),
-    # The following two are for the blog post
-    # Country('Italy', Formula(lambda t: 2.5 * t**3, r'$2.5 \cdot t^{3}$', 60, 200)),
-    # Country('Italy', Formula(lambda t: (229/1.167) * 1.167**t, r'$196 \cdot 1.167^t$', 60, 200)),
-    #
-    # Spain and Germany seem to have better fits as of 2020-04-06
-    Country('Spain', [
-        ATG_formula(6.4, 3665, 6.23),
-        ATG_formula(5.93, 1645, 6.54, 155),
-    ]),
-    Country('Germany', [
-        ATG_formula(6.7, 3773, 6.23),
-        ATG_formula(5.99, 5086, 5.79, 274),
-    ]),
-    Country('UK', [ATG_formula(7.2, 2719, 6.23)]),
-    Country('Switzerland', [ATG_formula(4.19, 16.65, 7.78, 28)]),
-]
-
-
 class CountryGraph:
     """Constructs a graph for a given country"""
-    def __init__(self, data_dir: Path, country: Country, graph_type: GraphType=GraphType.Normal):
+    def __init__(self, data_dir: Path, country_name: str, graph_type: GraphType=GraphType.Normal):
+        country_predictions = predictions.predictions_for_country(country=country_name)
         self.graph_type = graph_type
         # Due to plotly limitations, we can only have graphs with dates on the x-axis when we
         # aren't using logs.
         axis_type = XAxisType.Dated if graph_type == GraphType.Normal else XAxisType.Numbered
-        report = CountryReport(data_dir=data_dir, country=country)
+        report = CountryReport(data_dir=data_dir, country_predictions=country_predictions)
         first_idx, last_idx, self.evaluated_formulas = EvaluatedFormula.evaluate_formulas(
-            country.formulas, report.cumulative_active, report.date_list[0], axis_type)
+            [prediction.formula for prediction in country_predictions],
+            report.cumulative_active,
+            report.date_list[0],
+            axis_type,
+        )
         self.name = report.name
         self.min_case_count = report.min_case_count
         self.cumulative_active = report.cumulative_active[first_idx:].copy()
@@ -155,8 +136,8 @@ class CountryGraph:
     @staticmethod
     def create_dashboard(data_dir: Path, server: Flask, graph_type: GraphType=GraphType.Normal):
         country_graphs = [
-            CountryGraph(data_dir, country, graph_type) for country in countries
-            if (data_dir / f'{country.name}.data').is_file()
+            CountryGraph(data_dir, country_name, graph_type) for country_name in predictions.country_list
+            if (data_dir / f'{country_name}.data').is_file()
         ]
 
         app = dash.Dash(
@@ -236,6 +217,5 @@ class CountryGraph:
     type=str,
 )
 def show_country_plot(data_dir: Path, country_name: str):
-    country = next(c for c in countries if c.name == country_name)
-    country_graph = CountryGraph(data_dir=data_dir, country=country, graph_type=GraphType.Normal)
+    country_graph = CountryGraph(data_dir=data_dir, country_name=country_name, graph_type=GraphType.Normal)
     country_graph.create_country_figure().show()

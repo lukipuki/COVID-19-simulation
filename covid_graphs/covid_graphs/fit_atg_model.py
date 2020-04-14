@@ -18,9 +18,10 @@ class AtgModelFit:
     """
     a: float
     tg: float
+    x0: float
 
     def predict(self, x: float) -> float:
-        ys = _model(params=[self.a, self.tg], xs=[x])
+        ys = _model(params=[self.a, self.tg, self.x0], xs=np.array([x]))
         return ys[0]
 
 
@@ -31,10 +32,11 @@ def fit_atg_model(xs: np.ndarray, ys: np.ndarray) -> AtgModelFit:
     assert len(xs) == len(ys), "Inconsistent number of datapoints to fit."
     assert np.all(xs > 0), "No support for non-positive values for `xs`."
     assert np.all(ys >= 0), "No support for negative values for `ys`."
-    a0 = 2000.0
-    tg0 = 7.0
-    least_squares_result = least_squares(fun=_residuals, x0=[a0, tg0], args=(xs, ys))
-    return AtgModelFit(a=least_squares_result.x[0], tg=least_squares_result.x[1])
+    a0 = 10000.0
+    tg0 = 8.0
+    x00 = 0.0
+    least_squares_result = least_squares(fun=_residuals, x0=[a0, tg0, x00], bounds=([0, 0, -np.inf], np.inf), args=(xs, ys))
+    return AtgModelFit(a=least_squares_result.x[0], tg=least_squares_result.x[1], x0=least_squares_result.x[2])
 
 
 def _residuals(params: List[float], xs: np.ndarray, ys: np.ndarray) -> float:
@@ -54,7 +56,8 @@ def _model(params: List[float], xs: np.ndarray) -> np.ndarray:
         y = (a/tg) * (x/tg)^6.23 * e^(-x/tg)
     with parameters `params` for the values `x` in `xs`, where `a=params[0]` and `tg=params[1]`.
     """
-    a, tg = params
+    a, tg, x0 = params
     # Note(miskosz): Optimise `tg` in logspace if the following line becomes a problem.
     assert tg > 0, f"No support for non-positive values for `tg` (tg={tg})."
+    xs = np.where(xs < x0, 0, xs - x0)
     return (a/tg) * (xs/tg)**EXPONENT * np.exp(-xs/tg)

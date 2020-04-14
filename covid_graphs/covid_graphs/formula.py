@@ -33,8 +33,7 @@ class EvaluatedFormula():
                  cumulative_active,
                  first_idx,
                  last_idx,
-                 first_date,
-                 xaxis_type=XAxisType.Dated):
+                 first_date, xaxis_type):
         self.text = formula.text
         # First index: t=1
         start_idx = np.argmax(cumulative_active >= formula.min_case_count)
@@ -59,6 +58,7 @@ class EvaluatedFormula():
 
         first_date_parsed = datetime.strptime(first_date, '%Y-%m-%d')
         return (first_idx, last_idx, [
-            EvaluatedFormula(formula, cumulative_active, first_idx, last_idx, first_date_parsed)
+            EvaluatedFormula(formula, cumulative_active, first_idx, last_idx, first_date_parsed,
+                             xaxis_type)
             for formula in formulas
         ])

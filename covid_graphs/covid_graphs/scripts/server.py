@@ -1,10 +1,9 @@
 import click
 import click_pathlib
 from flask import Flask, render_template, redirect, url_for
-import glob
 from pathlib import Path
 
-from covid_graphs.country import CountryReport, GraphType
+from covid_graphs.country_graph import CountryGraph, GraphType
 from covid_graphs.heat_map import HeatMap
 
 
@@ -38,9 +37,9 @@ def run_server(data_dir: Path, simulated_polynomial: Path, simulated_exponential
     server = Flask(__name__, template_folder=CURRENT_DIR)
 
     # TODO(miskosz): Make the functions consume Path objects instead of strings.
-    covid19_normal_app = CountryReport.create_dashboard(str(data_dir), server, GraphType.Normal)
-    covid19_semilog_app = CountryReport.create_dashboard(str(data_dir), server, GraphType.SemiLog)
-    covid19_loglog_app = CountryReport.create_dashboard(str(data_dir), server, GraphType.LogLog)
+    covid19_normal_app = CountryGraph.create_dashboard(str(data_dir), server, GraphType.Normal)
+    covid19_semilog_app = CountryGraph.create_dashboard(str(data_dir), server, GraphType.SemiLog)
+    covid19_loglog_app = CountryGraph.create_dashboard(str(data_dir), server, GraphType.LogLog)
     covid19_heatmap_app = HeatMap(str(simulated_polynomial)).create_app(server)
     covid19_heatmap_exponential_app = HeatMap(str(simulated_exponential)).create_app(server)
 

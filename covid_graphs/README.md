@@ -26,7 +26,7 @@ Run `covid_graphs.run_server --help` for help on command parameters.
 For quick development or data examination, running standalone graphs is useful.
 
 ```sh
-covid_graphs.country data Spain
-covid_graphs.scatter_plot data/Slovakia.data results.pb
-covid_graphs.heat_map results.pb
+covid_graphs.show_country_plot data Spain
+covid_graphs.show_scatter_plot data/Slovakia.data results.pb
+covid_graphs.show_heat_map results.pb
 ```

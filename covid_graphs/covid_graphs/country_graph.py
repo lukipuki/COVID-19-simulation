@@ -199,11 +199,9 @@ class CountryGraph:
 
                 * Dashed lines are the predictions, solid red lines are the real active
                   cases. Black dotted lines mark the predicted maximums.
-                * 8 days after the prediction, it's apparent that Spain and Germany do better
-                  than predicted. We've now added a second curve with <em>T<sub>G</sub></em> equal
-                  to 6.2 and 6.3 respectively.
-                * France included data [from nursing homes all at once on
-                  2020-04-04]({france_link}), which makes the graph look strange.
+                * We've now added new prediction made on 2020-04-13 by the same authors. There's a
+                  second dashed line for Italy, Spain, USA and Germany.
+                * France has been excluded, since they [screwed up daily data reporting]({france_link}).
                 """,
                          dangerously_allow_html=True)
         ] + graphs

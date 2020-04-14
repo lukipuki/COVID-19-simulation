@@ -18,8 +18,8 @@ class CountryReport:
     def __init__(self, data_dir: Path, country: Country):
         """Constructs a numpy representation of data read from 'data_dir' a given country."""
         country_data = CountryData()
-        data_file = Path(data_dir / f'{country.name}.data')
-        text_format.Parse(data_file.read_text(), country_data)
+        data_file_path = Path(data_dir / f'{country.name}.data')
+        text_format.Parse(data_file_path.read_text(), country_data)
 
         self.name = country.name
         self.date_list = [

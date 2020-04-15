@@ -31,19 +31,29 @@ def ATG_formula(TG, A, exponent, min_case_count=200):
                    min_case_count)
 
 
-class Curve():
-    """Class containing an curve derived from a formula.
+def first_day_of_curve(cumulative_active, formula):
+    """
+    Returns the first day of the curve formed by 'formula'.
 
-        cumulative_active - list of cumulative active cases
-        first_idx - 0-based index where the graph starts, so from cumulative_active[first_idx:].
-        last_idx - 0-based index where the graph ends
-        first_date - date corresponding to cumulative_active[0]
-        xaxis_type - whether we label with numbers or dates
+    It's the first day for which the number of cumulative active is more than
+    formula.min_case_count.
+    """
+    return np.argmax(cumulative_active > formula.min_case_count)
+
+
+class Curve():
+    """
+    Class containing a curve derived from a formula.
+
+    cumulative_active - list of cumulative active cases
+    first_idx - 0-based index where the graph starts, so from cumulative_active[first_idx:].
+    last_idx - 0-based index where the graph ends
+    first_date - date corresponding to cumulative_active[0]
+    xaxis_type - whether we label with numbers or dates
     """
     def __init__(self, formula, cumulative_active, first_idx, last_idx, first_date, xaxis_type):
         self.text = formula.text
-        # First index: t=1
-        start_idx = np.argmax(cumulative_active >= formula.min_case_count)
+        start_idx = first_day_of_curve(cumulative_active, formula)
         length = last_idx - start_idx + 1
         self.y = formula.lambd(np.arange(length) + 1)
         self.date_list = [(first_date + timedelta(days=d)).strftime('%Y-%m-%d')
@@ -58,14 +68,9 @@ class Curve():
     @staticmethod
     def create_curves(formulas, cumulative_active, first_date, xaxis_type=XAxisType.Dated):
         """Evaluates a list of formulas and finds a suitable range in the graph"""
-        # The graph starts where the first curve starts. And each curve starts when the number of
-        # active cases exceeds 'min_case_count'.
-        first_idx = min(
-            np.argmax(cumulative_active >= formula.min_case_count) for formula in formulas)
-        # The graph ends where the last curve ends. Each curve ends at its second inflection
-        # point.
+        first_idx = min(first_day_of_curve(cumulative_active, formula) for formula in formulas)
         last_idx = max(
-            np.argmax(cumulative_active >= formula.min_case_count) + formula.second_ip_day
+            first_day_of_curve(cumulative_active, formula) + formula.second_ip_day
             for formula in formulas)
 
         return (first_idx, last_idx, [

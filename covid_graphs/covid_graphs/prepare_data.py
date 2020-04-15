@@ -25,13 +25,13 @@ def main():
         return a
 
     data = {}
+    country_name_JHU = args.country if args.country != "United States" else "US"
     for typ in ["deaths", "recovered", "confirmed"]:
         url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/" \
             f"csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_{typ}_global.csv"
         table = pd.read_csv(url)
-        row = table.loc[(table["Country/Region"] == args.country)
-                        & (table["Province/State"].isnull())]
-        data[typ] = diff(row.iloc[:, 4:].values.tolist()[0])
+        row = table.loc[table["Country/Region"] == country_name_JHU].iloc[:, 4:].sum()
+        data[typ] = diff(row.values.tolist())
 
     start_day = datetime(2020, 1, 22)
     delta = -1 if args.country == 'Slovakia' else 0

@@ -14,7 +14,7 @@ class CountryReport:
         data_file_path = Path(data_dir / f'{country_name}.data')
         text_format.Parse(data_file_path.read_text(), country_data)
 
-        self.name = country_name
+        self.name = country_data.name
         self.date_list = [
             f"{day.date.year}-{day.date.month:02d}-{day.date.day:02d}"
             for day in country_data.stats

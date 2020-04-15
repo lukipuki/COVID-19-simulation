@@ -44,7 +44,7 @@ class CountryGraph:
             report.date_list[0],
             axis_type,
         )
-        self.name = country_name
+        self.name = report.name
         self.min_case_count = min(prediction.formula.min_case_count for prediction in country_predictions)
 
         self.cumulative_active = report.cumulative_active[first_idx:].copy()

@@ -62,15 +62,19 @@ class CountryGraph:
             self.t = np.arange(len(self.cumulative_active)) + 1
 
     def create_country_figure(self):
+        colors = ['rgb(31, 119, 180)', '#bcbd22', 'violet'][:len(self.curves)]
+
+        # max_y = max(curve.maximal_y for curve in self.curves)
+        # bottom_y_margin = 0.08 * max_y
         shapes = [
             # Add vertical dotted lines marking the maxima
             dict(type="line",
-                 yref="paper",
                  x0=curve.t[curve.maximal_idx],
                  y0=0,
                  x1=curve.t[curve.maximal_idx],
-                 y1=1,
-                 line=dict(width=2, dash='dot')) for curve in self.curves
+                 y1=curve.maximal_y,
+                 line=dict(width=2, dash='dash', color=color))
+            for color, curve in zip(colors, self.curves)
         ]
         try:
             prediction_date = self.date_list.index(self.prediction_date)
@@ -89,22 +93,28 @@ class CountryGraph:
         except ValueError:
             pass
 
-        layout = Layout(title=f"Active cases in {self.name}",
-                        xaxis=dict(
-                            autorange=True,
-                            title=f'Day [starting at the {self.min_case_count}th case]',
-                        ),
-                        yaxis=dict(autorange=True,
-                                   title=f'COVID-19 active cases in {self.name}',
-                                   tickformat='.0f'),
-                        height=700,
-                        shapes=shapes,
-                        hovermode='x',
-                        font=dict(size=20),
-                        legend=dict(x=0.01, y=0.99, borderwidth=1))
+        layout = Layout(
+            title=f"Active cases in {self.name}",
+            xaxis=dict(
+                autorange=True,
+                title=f'Day [starting at the {self.min_case_count}th case]',
+                showgrid=False,
+            ),
+            yaxis=dict(
+                autorange=True,
+                title=f'COVID-19 active cases in {self.name}',
+                gridcolor='LightGray',
+                zerolinecolor='gray',
+            ),
+            height=700,
+            shapes=shapes,
+            hovermode='x',
+            font=dict(size=20),
+            legend=dict(x=0.01, y=0.99, borderwidth=1),
+            plot_bgcolor='rgba(0,0,0,0)',
+        )
 
         figure = Figure(layout=layout)
-        colors = ['rgb(31, 119, 180)', '#bcbd22', 'violet'][:len(self.curves)]
         for color, curve in zip(colors, self.curves):
             figure.add_trace(
                 Scatter(

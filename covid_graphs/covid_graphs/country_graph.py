@@ -37,7 +37,8 @@ class CountryGraph:
         # Due to plotly limitations, we can only have graphs with dates on the x-axis when we
         # aren't using logs.
         axis_type = XAxisType.Dated if graph_type == GraphType.Normal else XAxisType.Numbered
-        report = CountryReport(data_dir=data_dir, country_name=country_name)
+
+        report = CountryReport(Path(data_dir / f'{country_name}.data'))
         first_idx, last_idx, self.evaluated_formulas = EvaluatedFormula.evaluate_formulas(
             [prediction.formula for prediction in country_predictions],
             report.cumulative_active,

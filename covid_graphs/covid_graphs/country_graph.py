@@ -23,10 +23,10 @@ class GraphType(Enum):
 class CountryGraph:
     """Constructs a graph for a given country"""
     def __init__(
-        self,
-        data_dir: Path,
-        country_predictions: List[CountryPrediction],
-        graph_type: GraphType = GraphType.Normal,
+            self,
+            data_dir: Path,
+            country_predictions: List[CountryPrediction],
+            graph_type: GraphType = GraphType.Normal,
     ):
         self.graph_type = graph_type
 
@@ -62,10 +62,8 @@ class CountryGraph:
             self.t = np.arange(len(self.cumulative_active)) + 1
 
     def create_country_figure(self):
-        colors = ['rgb(31, 119, 180)', '#bcbd22', 'violet'][:len(self.curves)]
+        colors = ['SteelBlue', 'Purple', 'Green'][:len(self.curves)]
 
-        # max_y = max(curve.maximal_y for curve in self.curves)
-        # bottom_y_margin = 0.08 * max_y
         shapes = [
             # Add vertical dotted lines marking the maxima
             dict(type="line",
@@ -73,7 +71,7 @@ class CountryGraph:
                  y0=0,
                  x1=curve.t[curve.maximal_idx],
                  y1=curve.maximal_y,
-                 line=dict(width=2, dash='dash', color=color))
+                 line=dict(width=2, dash="dash", color=color))
             for color, curve in zip(colors, self.curves)
         ]
         try:
@@ -87,7 +85,7 @@ class CountryGraph:
                      y0=0,
                      y1=1,
                      fillcolor="LightGreen",
-                     opacity=0.5,
+                     opacity=0.3,
                      layer="below",
                      line_width=0))
         except ValueError:
@@ -102,16 +100,17 @@ class CountryGraph:
             ),
             yaxis=dict(
                 autorange=True,
+                tickformat='.0f',
                 title=f'COVID-19 active cases in {self.name}',
                 gridcolor='LightGray',
-                zerolinecolor='gray',
+                zerolinecolor='Gray',
             ),
             height=700,
             shapes=shapes,
             hovermode='x',
-            font=dict(size=20),
+            font=dict(size=18),
             legend=dict(x=0.01, y=0.99, borderwidth=1),
-            plot_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='White',
         )
 
         figure = Figure(layout=layout)
@@ -124,22 +123,20 @@ class CountryGraph:
                     mode='lines',
                     name=curve.text,
                     line={
-                        'dash': 'dash',
                         'width': 2,
                         'color': color
                     },
                 ))
 
         figure.add_trace(
-            Scatter(x=self.t,
-                    y=self.cumulative_active,
-                    mode='lines+markers',
-                    name="Active cases",
-                    line={
-                        'width': 3,
-                        'color': 'rgb(239, 85, 59)',
-                    },
-                    marker={'size': 8}))
+            Scatter(
+                x=self.t,
+                y=self.cumulative_active,
+                mode='lines+markers',
+                name="Active cases",
+                marker=dict(size=8),
+                line=dict(width=3, color='rgb(239, 85, 59)'),
+            ))
 
         if self.graph_type == GraphType.Normal:
             figure.update_yaxes(type="linear")

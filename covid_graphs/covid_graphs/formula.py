@@ -63,7 +63,7 @@ class Curve():
         else:
             self.t = self.date_list
 
-        self.maximal_y = max(self.y)
+        self.maximal_y = self.y.max()
         self.maximal_idx = self.y.argmax()
 
     @staticmethod

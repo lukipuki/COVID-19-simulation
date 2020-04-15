@@ -126,14 +126,14 @@ class SimulationReport():
 @click.argument(
     "country_data",
     required=True,
-    type=click_pathlib.Path(exists=True)
-    # help=f"Protobuf file with country data")
+    type=click_pathlib.Path(exists=True),
+    # help="Protobuf file with country data"
 )
 @click.argument(
     "simulation_protofile",
     required=True,
-    type=click_pathlib.Path(exists=True)
-    # help=f"Protobuf file with simulation results")
+    type=click_pathlib.Path(exists=True),
+    # help="Protobuf file with simulation results"
 )
 def show_scatter_plot(country_data: Path, simulation_protofile: Path):
     SimulationReport(country_data, simulation_protofile).create_scatter_plot().show()

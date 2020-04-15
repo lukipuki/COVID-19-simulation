@@ -19,7 +19,7 @@ class CountryReport:
             datetime(day=day.date.day, month=day.date.month, year=day.date.year)
             for day in country_data.stats
         ]
-        self.date_list = map(lambda d: d.strftime("%Y-%m-%d"), self.dates)
+        self.dates_str = list(map(lambda d: d.strftime("%Y-%m-%d"), self.dates))
 
         self.daily_positive = np.array([day.positive for day in country_data.stats])
         self.daily_dead = np.array([day.dead for day in country_data.stats])

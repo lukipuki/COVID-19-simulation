@@ -2,9 +2,9 @@ import math
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 import numpy as np
-from collections import namedtuple
 from enum import Enum
 from typing import Callable
+
 
 @dataclass
 class Formula:
@@ -31,8 +31,8 @@ def ATG_formula(TG, A, exponent, min_case_count=200):
                    min_case_count)
 
 
-class EvaluatedFormula():
-    """Class containing an evaluated formula.
+class Curve():
+    """Class containing an curve derived from a formula.
 
         cumulative_active - list of cumulative active cases
         first_idx - 0-based index where the graph starts, so from cumulative_active[first_idx:].
@@ -56,16 +56,19 @@ class EvaluatedFormula():
         self.maximal_idx = self.y.argmax()
 
     @staticmethod
-    def evaluate_formulas(formulas, cumulative_active, first_date, xaxis_type=XAxisType.Dated):
+    def create_curves(formulas, cumulative_active, first_date, xaxis_type=XAxisType.Dated):
         """Evaluates a list of formulas and finds a suitable range in the graph"""
+        # The graph starts where the first curve starts. And each curve starts when the number of
+        # active cases exceeds 'min_case_count'.
         first_idx = min(
             np.argmax(cumulative_active >= formula.min_case_count) for formula in formulas)
+        # The graph ends where the last curve ends. Each curve ends at its second inflection
+        # point.
         last_idx = max(
             np.argmax(cumulative_active >= formula.min_case_count) + formula.second_ip_day
             for formula in formulas)
 
-        first_date_parsed = datetime.strptime(first_date, '%Y-%m-%d')
         return (first_idx, last_idx, [
-            EvaluatedFormula(formula, cumulative_active, first_idx, last_idx, first_date_parsed,
-                             xaxis_type) for formula in formulas
+            Curve(formula, cumulative_active, first_idx, last_idx, first_date, xaxis_type)
+            for formula in formulas
         ])

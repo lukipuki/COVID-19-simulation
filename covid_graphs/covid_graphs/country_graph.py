@@ -11,12 +11,12 @@ import numpy as np
 from pathlib import Path
 from typing import List
 
-from . import predictions
-from .predictions import CountryPrediction
+from .predictions import CountryPrediction, prediction_db
 from .country_report import CountryReport
 from .formula import ATG_formula, EvaluatedFormula, Formula, XAxisType
 
 
+# TODO: Remove after graph display refactoring.
 PREDICTION_DATE = '2020-03-29'
 
 
@@ -32,20 +32,21 @@ class GraphType(Enum):
 class CountryGraph:
     """Constructs a graph for a given country"""
     def __init__(self, data_dir: Path, country_name: str, graph_type: GraphType=GraphType.Normal):
-        country_predictions = predictions.predictions_for_country(country=country_name)
+        country_predictions = prediction_db.predictions_for_country(country=country_name)
         self.graph_type = graph_type
         # Due to plotly limitations, we can only have graphs with dates on the x-axis when we
         # aren't using logs.
         axis_type = XAxisType.Dated if graph_type == GraphType.Normal else XAxisType.Numbered
-        report = CountryReport(data_dir=data_dir, country_predictions=country_predictions)
+        report = CountryReport(data_dir=data_dir, country_name=country_name)
         first_idx, last_idx, self.evaluated_formulas = EvaluatedFormula.evaluate_formulas(
             [prediction.formula for prediction in country_predictions],
             report.cumulative_active,
             report.date_list[0],
             axis_type,
         )
-        self.name = report.name
-        self.min_case_count = report.min_case_count
+        self.name = country_name
+        self.min_case_count = min(prediction.formula.min_case_count for prediction in country_predictions)
+
         self.cumulative_active = report.cumulative_active[first_idx:].copy()
         self.date_list = report.date_list[first_idx:]
         if axis_type == XAxisType.Dated:
@@ -135,8 +136,9 @@ class CountryGraph:
 
     @staticmethod
     def create_dashboard(data_dir: Path, server: Flask, graph_type: GraphType=GraphType.Normal):
+        countries = sorted(prediction_db.get_countries())
         country_graphs = [
-            CountryGraph(data_dir, country_name, graph_type) for country_name in predictions.country_list
+            CountryGraph(data_dir, country_name, graph_type) for country_name in countries
             if (data_dir / f'{country_name}.data').is_file()
         ]
 

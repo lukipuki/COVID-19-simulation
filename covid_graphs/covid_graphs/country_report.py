@@ -9,14 +9,10 @@ from .pb.country_data_pb2 import CountryData
 
 
 class CountryReport:
-    def __init__(self, data_dir: Path, country_predictions: List[CountryPrediction]):
+    def __init__(self, data_dir: Path, country_name: str):
         """Constructs a numpy representation of data read from 'data_dir' a given country."""
-
-        # TODO: Check that there is only one country.
-        country_name = country_predictions[0].country
-        data_file_path = Path(data_dir / f'{country_name}.data')
-
         country_data = CountryData()
+        data_file_path = Path(data_dir / f'{country_name}.data')
         text_format.Parse(data_file_path.read_text(), country_data)
 
         self.name = country_name
@@ -31,4 +27,3 @@ class CountryReport:
         self.daily_active = daily_positive - self.daily_recovered - self.daily_dead
 
         self.cumulative_active = np.add.accumulate(self.daily_active)
-        self.min_case_count = min(prediction.formula.min_case_count for prediction in country_predictions)

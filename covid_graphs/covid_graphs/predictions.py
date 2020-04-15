@@ -21,9 +21,9 @@ class CountryPrediction:
 
 BK_20200329 = PredictionEvent(name="bk_20200329", date=datetime.date(2020, 3, 29))
 BK_20200413 = PredictionEvent(name="bk_20200413", date=datetime.date(2020, 4, 13))
-OTHER = PredictionEvent(name="other", date=datetime.date(2020, 4, 13)) # TODO: When did we add SVK prediction?
+OTHER = PredictionEvent(name="other", date=datetime.date(2020, 4, 1))
 
-predictions_database = [
+_prediction_database = [
     # OTHER
     CountryPrediction(
         prediction_event=OTHER,
@@ -86,16 +86,29 @@ predictions_database = [
     ),
 ]
 
-prediction_event_list: List[PredictionEvent] = list(set(p.prediction_event for p in predictions_database))
-country_list: List[str] = list(set(p.country for p in predictions_database))
+
+# TODO(miskosz): Really really add tests in another PR.
+class PredictionsDb:
+    """Interface to access prediction data."""
+
+    def __init__(self, country_predictions: List[CountryPrediction]) -> None:
+        self._prediction_database = country_predictions
+        self._prediction_events = list(set(p.prediction_event for p in self._prediction_database))
+        self._countries = list(set(p.country for p in self._prediction_database))
+
+    def get_prediction_events(self) -> List[PredictionEvent]:
+        """Returns an unordered list of all prediction events."""
+        return self._prediction_events
+
+    def get_countries(self) -> List[str]:
+        """Returns an unordered list of all countries."""
+        return self._countries
+
+    def predictions_for_event(self, prediction_event: PredictionEvent) -> List[CountryPrediction]:
+        return [p for p in self._prediction_database if p.prediction_event == prediction_event]
+
+    def predictions_for_country(self, country: str) ->  List[CountryPrediction]:
+        return [p for p in self._prediction_database if p.country == country]
 
 
-def predictions_for_event(prediction_event: PredictionEvent) -> List[CountryPrediction]:
-    return [p for p in predictions_database if p.prediction_event == prediction_event]
-
-
-def predictions_for_country(country: str) ->  List[CountryPrediction]:
-    return [p for p in predictions_database if p.country == country]
-
-
-# TODO(miskosz): A separate file with tests.
+prediction_db = PredictionsDb(country_predictions=_prediction_database)

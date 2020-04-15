@@ -10,13 +10,13 @@ pip install $1/
 
 countries=("United Kingdom" Korea Austria Iceland Jordan Switzerland Croatia Australia Canada
   Germany Israel Italy Malaysia "New Zealand" Spain Belgium Chile Czechia Latvia
-  Lithuania Netherlands Norway Portugal US)
+  Lithuania Netherlands Norway Portugal "United States")
 for country in $countries
 do
-  if [[ -z $short_names[${(p)country}] ]]; then
+  if [[ -z $short_names["${country}"] ]]; then
     covid_graphs.prepare_data ${(p)country}
   else
-    covid_graphs.prepare_data ${(p)country} --short_name $short_names[${(p)country}]
+    covid_graphs.prepare_data ${(p)country} --short_name $short_names["${country}"]
   fi
 done
 

@@ -43,7 +43,7 @@ def first_day_of_curve(cumulative_active, formula):
 
 class Curve():
     """
-    Class containing an curve derived from a formula.
+    Class containing a curve derived from a formula.
 
     cumulative_active - list of cumulative active cases
     first_idx - 0-based index where the graph starts, so from cumulative_active[first_idx:].

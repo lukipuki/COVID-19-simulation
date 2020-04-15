@@ -1,4 +1,4 @@
-name: "United Kingdom"
+name: "Switzerland"
 stats {
   date {
     day: 22
@@ -63,7 +63,6 @@ stats {
   }
 }
 stats {
-  positive: 2
   date {
     day: 31
     month: 1
@@ -113,7 +112,6 @@ stats {
   }
 }
 stats {
-  positive: 1
   date {
     day: 7
     month: 2
@@ -135,7 +133,6 @@ stats {
   }
 }
 stats {
-  positive: 5
   date {
     day: 10
     month: 2
@@ -150,8 +147,6 @@ stats {
   }
 }
 stats {
-  positive: 1
-  recovered: 1
   date {
     day: 12
     month: 2
@@ -180,7 +175,6 @@ stats {
   }
 }
 stats {
-  recovered: 7
   date {
     day: 16
     month: 2
@@ -237,7 +231,6 @@ stats {
   }
 }
 stats {
-  positive: 4
   date {
     day: 24
     month: 2
@@ -245,6 +238,7 @@ stats {
   }
 }
 stats {
+  positive: 1
   date {
     day: 25
     month: 2
@@ -259,7 +253,7 @@ stats {
   }
 }
 stats {
-  positive: 2
+  positive: 7
   date {
     day: 27
     month: 2
@@ -267,7 +261,6 @@ stats {
   }
 }
 stats {
-  positive: 5
   date {
     day: 28
     month: 2
@@ -275,7 +268,7 @@ stats {
   }
 }
 stats {
-  positive: 3
+  positive: 10
   date {
     day: 29
     month: 2
@@ -283,7 +276,7 @@ stats {
   }
 }
 stats {
-  positive: 13
+  positive: 9
   date {
     day: 1
     month: 3
@@ -291,7 +284,7 @@ stats {
   }
 }
 stats {
-  positive: 4
+  positive: 15
   date {
     day: 2
     month: 3
@@ -299,7 +292,8 @@ stats {
   }
 }
 stats {
-  positive: 11
+  positive: 14
+  recovered: 2
   date {
     day: 3
     month: 3
@@ -308,6 +302,7 @@ stats {
 }
 stats {
   positive: 34
+  recovered: 1
   date {
     day: 4
     month: 3
@@ -316,7 +311,7 @@ stats {
 }
 stats {
   dead: 1
-  positive: 30
+  positive: 24
   date {
     day: 5
     month: 3
@@ -324,8 +319,7 @@ stats {
   }
 }
 stats {
-  dead: 1
-  positive: 48
+  positive: 100
   date {
     day: 6
     month: 3
@@ -333,8 +327,7 @@ stats {
   }
 }
 stats {
-  positive: 43
-  recovered: 10
+  positive: 54
   date {
     day: 7
     month: 3
@@ -343,7 +336,7 @@ stats {
 }
 stats {
   dead: 1
-  positive: 67
+  positive: 69
   date {
     day: 8
     month: 3
@@ -351,8 +344,7 @@ stats {
   }
 }
 stats {
-  dead: 1
-  positive: 48
+  positive: 37
   date {
     day: 9
     month: 3
@@ -360,8 +352,8 @@ stats {
   }
 }
 stats {
-  dead: 2
-  positive: 61
+  dead: 1
+  positive: 117
   date {
     day: 10
     month: 3
@@ -369,8 +361,9 @@ stats {
   }
 }
 stats {
-  dead: 2
-  positive: 74
+  dead: 1
+  positive: 161
+  recovered: 1
   date {
     day: 11
     month: 3
@@ -385,7 +378,8 @@ stats {
   }
 }
 stats {
-  positive: 342
+  dead: 7
+  positive: 487
   date {
     day: 13
     month: 3
@@ -393,8 +387,8 @@ stats {
   }
 }
 stats {
-  dead: 13
-  positive: 342
+  dead: 2
+  positive: 220
   date {
     day: 14
     month: 3
@@ -402,6 +396,8 @@ stats {
   }
 }
 stats {
+  dead: 1
+  positive: 841
   date {
     day: 15
     month: 3
@@ -409,9 +405,6 @@ stats {
   }
 }
 stats {
-  dead: 34
-  positive: 403
-  recovered: 2
   date {
     day: 16
     month: 3
@@ -419,8 +412,8 @@ stats {
   }
 }
 stats {
-  positive: 407
-  recovered: 32
+  dead: 13
+  positive: 500
   date {
     day: 17
     month: 3
@@ -428,9 +421,9 @@ stats {
   }
 }
 stats {
-  dead: 16
-  positive: 676
-  recovered: 13
+  dead: 1
+  positive: 328
+  recovered: 11
   date {
     day: 18
     month: 3
@@ -438,8 +431,8 @@ stats {
   }
 }
 stats {
-  dead: 66
-  positive: 63
+  dead: 13
+  positive: 1047
   date {
     day: 19
     month: 3
@@ -447,8 +440,8 @@ stats {
   }
 }
 stats {
-  dead: 40
-  positive: 1294
+  dead: 13
+  positive: 1219
   date {
     day: 20
     month: 3
@@ -456,8 +449,8 @@ stats {
   }
 }
 stats {
-  dead: 56
-  positive: 1035
+  dead: 21
+  positive: 1281
   date {
     day: 21
     month: 3
@@ -465,8 +458,9 @@ stats {
   }
 }
 stats {
-  dead: 48
-  positive: 665
+  dead: 23
+  positive: 899
+  recovered: 116
   date {
     day: 22
     month: 3
@@ -474,8 +468,8 @@ stats {
   }
 }
 stats {
-  dead: 54
-  positive: 967
+  dead: 22
+  positive: 1321
   date {
     day: 23
     month: 3
@@ -483,9 +477,8 @@ stats {
   }
 }
 stats {
-  dead: 87
-  positive: 1427
-  recovered: 70
+  dead: 2
+  positive: 1082
   date {
     day: 24
     month: 3
@@ -493,8 +486,8 @@ stats {
   }
 }
 stats {
-  dead: 43
-  positive: 1452
+  dead: 31
+  positive: 1020
   date {
     day: 25
     month: 3
@@ -502,8 +495,8 @@ stats {
   }
 }
 stats {
-  dead: 113
-  positive: 2129
+  dead: 38
+  positive: 914
   date {
     day: 26
     month: 3
@@ -511,8 +504,9 @@ stats {
   }
 }
 stats {
-  dead: 181
-  positive: 2885
+  dead: 40
+  positive: 1117
+  recovered: 1399
   date {
     day: 27
     month: 3
@@ -520,8 +514,8 @@ stats {
   }
 }
 stats {
-  dead: 260
-  positive: 2546
+  dead: 33
+  positive: 1148
   date {
     day: 28
     month: 3
@@ -529,8 +523,9 @@ stats {
   }
 }
 stats {
-  dead: 209
-  positive: 2433
+  dead: 36
+  positive: 753
+  recovered: 65
   date {
     day: 29
     month: 3
@@ -538,8 +533,9 @@ stats {
   }
 }
 stats {
-  dead: 180
-  positive: 2619
+  dead: 59
+  positive: 1093
+  recovered: 228
   date {
     day: 30
     month: 3
@@ -547,8 +543,8 @@ stats {
   }
 }
 stats {
-  dead: 381
-  positive: 3009
+  dead: 74
+  positive: 683
   date {
     day: 31
     month: 3
@@ -556,8 +552,9 @@ stats {
   }
 }
 stats {
-  dead: 563
-  positive: 4324
+  dead: 55
+  positive: 1163
+  recovered: 1144
   date {
     day: 1
     month: 4
@@ -565,8 +562,9 @@ stats {
   }
 }
 stats {
-  dead: 569
-  positive: 4244
+  dead: 48
+  positive: 1059
+  recovered: 1046
   date {
     day: 2
     month: 4
@@ -574,8 +572,9 @@ stats {
   }
 }
 stats {
-  dead: 684
-  positive: 4450
+  dead: 55
+  positive: 779
+  recovered: 833
   date {
     day: 3
     month: 4
@@ -583,8 +582,9 @@ stats {
   }
 }
 stats {
-  dead: 708
-  positive: 3735
+  dead: 75
+  positive: 899
+  recovered: 1569
   date {
     day: 4
     month: 4
@@ -592,8 +592,8 @@ stats {
   }
 }
 stats {
-  dead: 621
-  positive: 5903
+  dead: 49
+  positive: 595
   date {
     day: 5
     month: 4
@@ -601,8 +601,9 @@ stats {
   }
 }
 stats {
-  dead: 439
-  positive: 3802
+  dead: 50
+  positive: 557
+  recovered: 1641
   date {
     day: 6
     month: 4
@@ -610,8 +611,9 @@ stats {
   }
 }
 stats {
-  dead: 786
-  positive: 3634
+  dead: 56
+  positive: 596
+  recovered: 648
   date {
     day: 7
     month: 4
@@ -619,8 +621,9 @@ stats {
   }
 }
 stats {
-  dead: 938
-  positive: 5491
+  dead: 74
+  positive: 1027
+  recovered: 1096
   date {
     day: 8
     month: 4
@@ -628,8 +631,9 @@ stats {
   }
 }
 stats {
-  dead: 881
-  positive: 4344
+  dead: 53
+  positive: 771
+  recovered: 800
   date {
     day: 9
     month: 4
@@ -637,9 +641,9 @@ stats {
   }
 }
 stats {
-  dead: 980
-  positive: 8681
-  recovered: 209
+  dead: 54
+  positive: 500
+  recovered: 500
   date {
     day: 10
     month: 4
@@ -647,8 +651,9 @@ stats {
   }
 }
 stats {
-  dead: 917
-  positive: 5233
+  dead: 34
+  positive: 556
+  recovered: 1000
   date {
     day: 11
     month: 4
@@ -656,8 +661,9 @@ stats {
   }
 }
 stats {
-  dead: 737
-  positive: 5288
+  dead: 70
+  positive: 308
+  recovered: 600
   date {
     day: 12
     month: 4
@@ -665,9 +671,9 @@ stats {
   }
 }
 stats {
-  dead: 717
-  positive: 4342
-  recovered: -344
+  dead: 32
+  positive: 273
+  recovered: 1000
   date {
     day: 13
     month: 4
@@ -675,8 +681,8 @@ stats {
   }
 }
 stats {
-  dead: 778
-  positive: 5252
+  dead: 36
+  positive: 248
   date {
     day: 14
     month: 4

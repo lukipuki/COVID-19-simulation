@@ -88,7 +88,7 @@ _prediction_database = [
 
 
 # TODO(miskosz): Really really add tests in another PR.
-class PredictionsDb:
+class PredictionDb:
     """Interface to access prediction data."""
 
     def __init__(self, country_predictions: List[CountryPrediction]) -> None:
@@ -111,4 +111,4 @@ class PredictionsDb:
         return [p for p in self._prediction_database if p.country == country]
 
 
-prediction_db = PredictionsDb(country_predictions=_prediction_database)
+prediction_db = PredictionDb(country_predictions=_prediction_database)

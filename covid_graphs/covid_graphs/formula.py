@@ -1,11 +1,17 @@
 import math
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 import numpy as np
 from collections import namedtuple
 from enum import Enum
+from typing import Callable
 
-# TODO(lukas): Move to dataclass?
-Formula = namedtuple('Formula', ['lambd', 'text', 'second_ip_day', 'min_case_count'])
+@dataclass
+class Formula:
+    lambd: Callable[[float], float]
+    text: str
+    second_ip_day: int
+    min_case_count: int
 
 
 class XAxisType(Enum):

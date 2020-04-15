@@ -1,4 +1,3 @@
-from collections import namedtuple
 from enum import Enum
 from plotly.graph_objs import Figure, Layout, Scatter
 import click
@@ -9,12 +8,10 @@ import dash_html_components as html
 from flask import Flask
 import numpy as np
 from pathlib import Path
-from typing import List
 
-from .predictions import CountryPrediction, prediction_db
+from .predictions import prediction_db
 from .country_report import CountryReport
-from .formula import ATG_formula, EvaluatedFormula, Formula, XAxisType
-
+from .formula import Curve, XAxisType
 
 # TODO: Remove after graph display refactoring.
 PREDICTION_DATE = '2020-03-29'
@@ -31,21 +28,22 @@ class GraphType(Enum):
 
 class CountryGraph:
     """Constructs a graph for a given country"""
-    def __init__(self, data_dir: Path, country_name: str, graph_type: GraphType=GraphType.Normal):
+    def __init__(self, data_dir: Path, country_name: str, graph_type: GraphType = GraphType.Normal):
         country_predictions = prediction_db.predictions_for_country(country=country_name)
         self.graph_type = graph_type
         # Due to plotly limitations, we can only have graphs with dates on the x-axis when we
         # aren't using logs.
         axis_type = XAxisType.Dated if graph_type == GraphType.Normal else XAxisType.Numbered
         report = CountryReport(data_dir=data_dir, country_name=country_name)
-        first_idx, last_idx, self.evaluated_formulas = EvaluatedFormula.evaluate_formulas(
+        first_idx, last_idx, self.curves = Curve.create_curves(
             [prediction.formula for prediction in country_predictions],
             report.cumulative_active,
             report.date_list[0],
             axis_type,
         )
         self.name = report.name
-        self.min_case_count = min(prediction.formula.min_case_count for prediction in country_predictions)
+        self.min_case_count = min(prediction.formula.min_case_count
+                                  for prediction in country_predictions)
 
         self.cumulative_active = report.cumulative_active[first_idx:].copy()
         self.date_list = report.date_list[first_idx:]
@@ -59,11 +57,11 @@ class CountryGraph:
             # Add vertical dotted lines marking the maxima
             dict(type="line",
                  yref="paper",
-                 x0=evaluated_formula.t[evaluated_formula.maximal_idx],
+                 x0=curve.t[curve.maximal_idx],
                  y0=0,
-                 x1=evaluated_formula.t[evaluated_formula.maximal_idx],
+                 x1=curve.t[curve.maximal_idx],
                  y1=1,
-                 line=dict(width=2, dash='dot')) for evaluated_formula in self.evaluated_formulas
+                 line=dict(width=2, dash='dot')) for curve in self.curves
         ]
         try:
             prediction_date = self.date_list.index(PREDICTION_DATE)
@@ -97,15 +95,15 @@ class CountryGraph:
                         legend=dict(x=0.01, y=0.99, borderwidth=1))
 
         figure = Figure(layout=layout)
-        colors = ['rgb(31, 119, 180)', '#bcbd22', 'violet'][:len(self.evaluated_formulas)]
-        for color, evaluated_formula in zip(colors, self.evaluated_formulas):
+        colors = ['rgb(31, 119, 180)', '#bcbd22', 'violet'][:len(self.curves)]
+        for color, curve in zip(colors, self.curves):
             figure.add_trace(
                 Scatter(
-                    x=evaluated_formula.t,
-                    y=evaluated_formula.y,
-                    text=evaluated_formula.date_list,
+                    x=curve.t,
+                    y=curve.y,
+                    text=curve.date_list,
                     mode='lines',
-                    name=evaluated_formula.text,
+                    name=curve.text,
                     line={
                         'dash': 'dash',
                         'width': 2,
@@ -135,7 +133,7 @@ class CountryGraph:
         return figure
 
     @staticmethod
-    def create_dashboard(data_dir: Path, server: Flask, graph_type: GraphType=GraphType.Normal):
+    def create_dashboard(data_dir: Path, server: Flask, graph_type: GraphType = GraphType.Normal):
         countries = sorted(prediction_db.get_countries())
         country_graphs = [
             CountryGraph(data_dir, country_name, graph_type) for country_name in countries
@@ -219,5 +217,7 @@ class CountryGraph:
     type=str,
 )
 def show_country_plot(data_dir: Path, country_name: str):
-    country_graph = CountryGraph(data_dir=data_dir, country_name=country_name, graph_type=GraphType.Normal)
+    country_graph = CountryGraph(data_dir=data_dir,
+                                 country_name=country_name,
+                                 graph_type=GraphType.Normal)
     country_graph.create_country_figure().show()

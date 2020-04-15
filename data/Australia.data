@@ -1,4 +1,4 @@
-name: "United Kingdom"
+name: "Australia"
 stats {
   date {
     day: 22
@@ -28,6 +28,7 @@ stats {
   }
 }
 stats {
+  positive: 4
   date {
     day: 26
     month: 1
@@ -35,6 +36,7 @@ stats {
   }
 }
 stats {
+  positive: 1
   date {
     day: 27
     month: 1
@@ -49,6 +51,7 @@ stats {
   }
 }
 stats {
+  positive: 1
   date {
     day: 29
     month: 1
@@ -56,6 +59,8 @@ stats {
   }
 }
 stats {
+  positive: 3
+  recovered: 2
   date {
     day: 30
     month: 1
@@ -63,7 +68,6 @@ stats {
   }
 }
 stats {
-  positive: 2
   date {
     day: 31
     month: 1
@@ -71,6 +75,7 @@ stats {
   }
 }
 stats {
+  positive: 3
   date {
     day: 1
     month: 2
@@ -92,6 +97,7 @@ stats {
   }
 }
 stats {
+  positive: 1
   date {
     day: 4
     month: 2
@@ -106,6 +112,7 @@ stats {
   }
 }
 stats {
+  positive: 1
   date {
     day: 6
     month: 2
@@ -135,7 +142,6 @@ stats {
   }
 }
 stats {
-  positive: 5
   date {
     day: 10
     month: 2
@@ -150,8 +156,6 @@ stats {
   }
 }
 stats {
-  positive: 1
-  recovered: 1
   date {
     day: 12
     month: 2
@@ -159,6 +163,7 @@ stats {
   }
 }
 stats {
+  recovered: 6
   date {
     day: 13
     month: 2
@@ -180,7 +185,6 @@ stats {
   }
 }
 stats {
-  recovered: 7
   date {
     day: 16
     month: 2
@@ -188,6 +192,7 @@ stats {
   }
 }
 stats {
+  recovered: 2
   date {
     day: 17
     month: 2
@@ -216,6 +221,7 @@ stats {
   }
 }
 stats {
+  recovered: 1
   date {
     day: 21
     month: 2
@@ -237,7 +243,6 @@ stats {
   }
 }
 stats {
-  positive: 4
   date {
     day: 24
     month: 2
@@ -259,7 +264,6 @@ stats {
   }
 }
 stats {
-  positive: 2
   date {
     day: 27
     month: 2
@@ -267,7 +271,6 @@ stats {
   }
 }
 stats {
-  positive: 5
   date {
     day: 28
     month: 2
@@ -275,7 +278,7 @@ stats {
   }
 }
 stats {
-  positive: 3
+  positive: 10
   date {
     day: 29
     month: 2
@@ -283,7 +286,8 @@ stats {
   }
 }
 stats {
-  positive: 13
+  dead: 1
+  positive: 2
   date {
     day: 1
     month: 3
@@ -291,7 +295,7 @@ stats {
   }
 }
 stats {
-  positive: 4
+  positive: 3
   date {
     day: 2
     month: 3
@@ -299,7 +303,7 @@ stats {
   }
 }
 stats {
-  positive: 11
+  positive: 9
   date {
     day: 3
     month: 3
@@ -307,7 +311,8 @@ stats {
   }
 }
 stats {
-  positive: 35
+  dead: 1
+  positive: 13
   date {
     day: 4
     month: 3
@@ -315,8 +320,8 @@ stats {
   }
 }
 stats {
-  dead: 1
-  positive: 30
+  positive: 3
+  recovered: 10
   date {
     day: 5
     month: 3
@@ -324,8 +329,7 @@ stats {
   }
 }
 stats {
-  dead: 1
-  positive: 48
+  positive: 5
   date {
     day: 6
     month: 3
@@ -333,8 +337,7 @@ stats {
   }
 }
 stats {
-  positive: 43
-  recovered: 10
+  positive: 3
   date {
     day: 7
     month: 3
@@ -343,7 +346,7 @@ stats {
 }
 stats {
   dead: 1
-  positive: 67
+  positive: 13
   date {
     day: 8
     month: 3
@@ -351,8 +354,7 @@ stats {
   }
 }
 stats {
-  dead: 1
-  positive: 48
+  positive: 15
   date {
     day: 9
     month: 3
@@ -360,11 +362,57 @@ stats {
   }
 }
 stats {
-  dead: 2
-  positive: 62
-  recovered: 1
+  positive: 16
   date {
     day: 10
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  positive: 21
+  date {
+    day: 11
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 12
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  positive: 72
+  recovered: 2
+  date {
+    day: 13
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  positive: 50
+  date {
+    day: 14
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  positive: 47
+  date {
+    day: 15
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  positive: 80
+  date {
+    day: 16
     month: 3
     year: 2020
   }
@@ -373,66 +421,14 @@ stats {
   dead: 2
   positive: 75
   date {
-    day: 11
-    month: 3
-    year: 2020
-  }
-}
-stats {
-  date {
-    day: 12
-    month: 3
-    year: 2020
-  }
-}
-stats {
-  positive: 343
-  date {
-    day: 13
-    month: 3
-    year: 2020
-  }
-}
-stats {
-  dead: 13
-  positive: 342
-  date {
-    day: 14
-    month: 3
-    year: 2020
-  }
-}
-stats {
-  positive: 1
-  date {
-    day: 15
-    month: 3
-    year: 2020
-  }
-}
-stats {
-  dead: 35
-  positive: 406
-  recovered: 2
-  date {
-    day: 16
-    month: 3
-    year: 2020
-  }
-}
-stats {
-  positive: 409
-  recovered: 32
-  date {
     day: 17
     month: 3
     year: 2020
   }
 }
 stats {
-  dead: 16
-  positive: 682
-  recovered: 14
+  dead: 1
+  positive: 116
   date {
     day: 18
     month: 3
@@ -440,8 +436,8 @@ stats {
   }
 }
 stats {
-  dead: 66
-  positive: 74
+  positive: 113
+  recovered: 3
   date {
     day: 19
     month: 3
@@ -449,8 +445,8 @@ stats {
   }
 }
 stats {
-  dead: 40
-  positive: 1298
+  dead: 1
+  positive: 110
   date {
     day: 20
     month: 3
@@ -458,8 +454,7 @@ stats {
   }
 }
 stats {
-  dead: 56
-  positive: 1053
+  positive: 280
   date {
     day: 21
     month: 3
@@ -467,8 +462,8 @@ stats {
   }
 }
 stats {
-  dead: 48
-  positive: 678
+  positive: 478
+  recovered: 62
   date {
     day: 22
     month: 3
@@ -476,8 +471,7 @@ stats {
   }
 }
 stats {
-  dead: 54
-  positive: 981
+  positive: 133
   date {
     day: 23
     month: 3
@@ -485,9 +479,9 @@ stats {
   }
 }
 stats {
-  dead: 87
-  positive: 1438
-  recovered: 73
+  dead: 1
+  positive: 362
+  recovered: 27
   date {
     day: 24
     month: 3
@@ -495,8 +489,8 @@ stats {
   }
 }
 stats {
-  dead: 43
-  positive: 1476
+  positive: 320
+  recovered: 4
   date {
     day: 25
     month: 3
@@ -504,9 +498,9 @@ stats {
   }
 }
 stats {
-  dead: 114
-  positive: 2172
-  recovered: 10
+  dead: 5
+  positive: 446
+  recovered: 53
   date {
     day: 26
     month: 3
@@ -514,9 +508,8 @@ stats {
   }
 }
 stats {
-  dead: 181
-  positive: 2933
-  recovered: 1
+  positive: 333
+  recovered: 22
   date {
     day: 27
     month: 3
@@ -524,8 +517,9 @@ stats {
   }
 }
 stats {
-  dead: 260
-  positive: 2567
+  dead: 1
+  positive: 497
+  recovered: 50
   date {
     day: 28
     month: 3
@@ -533,8 +527,8 @@ stats {
   }
 }
 stats {
-  dead: 210
-  positive: 2468
+  dead: 2
+  positive: 344
   date {
     day: 29
     month: 3
@@ -542,9 +536,9 @@ stats {
   }
 }
 stats {
-  dead: 180
-  positive: 2673
-  recovered: 20
+  dead: 1
+  positive: 377
+  recovered: 13
   date {
     day: 30
     month: 3
@@ -552,9 +546,9 @@ stats {
   }
 }
 stats {
-  dead: 382
-  positive: 3028
-  recovered: 8
+  dead: 1
+  positive: 198
+  recovered: 101
   date {
     day: 31
     month: 3
@@ -562,8 +556,9 @@ stats {
   }
 }
 stats {
-  dead: 564
-  positive: 4384
+  dead: 2
+  positive: 303
+  recovered: 64
   date {
     day: 1
     month: 4
@@ -571,9 +566,9 @@ stats {
   }
 }
 stats {
-  dead: 569
-  positive: 4308
-  recovered: 13
+  dead: 4
+  positive: 254
+  recovered: 98
   date {
     day: 2
     month: 4
@@ -581,9 +576,9 @@ stats {
   }
 }
 stats {
-  dead: 685
-  positive: 4516
-  recovered: 16
+  dead: 4
+  positive: 214
+  recovered: 129
   date {
     day: 3
     month: 4
@@ -591,9 +586,9 @@ stats {
   }
 }
 stats {
-  dead: 709
-  positive: 3788
-  recovered: 7
+  dead: 2
+  positive: 220
+  recovered: 52
   date {
     day: 4
     month: 4
@@ -601,9 +596,9 @@ stats {
   }
 }
 stats {
-  dead: 623
-  positive: 5959
-  recovered: 14
+  dead: 5
+  positive: 137
+  recovered: 56
   date {
     day: 5
     month: 4
@@ -611,9 +606,9 @@ stats {
   }
 }
 stats {
-  dead: 442
-  positive: 3843
-  recovered: 58
+  dead: 5
+  positive: 110
+  recovered: 323
   date {
     day: 6
     month: 4
@@ -621,9 +616,8 @@ stats {
   }
 }
 stats {
-  dead: 786
-  positive: 3670
-  recovered: 38
+  dead: 5
+  positive: 98
   date {
     day: 7
     month: 4
@@ -631,9 +625,8 @@ stats {
   }
 }
 stats {
-  dead: 940
-  positive: 5525
-  recovered: 20
+  dead: 5
+  positive: 115
   date {
     day: 8
     month: 4
@@ -641,9 +634,9 @@ stats {
   }
 }
 stats {
-  dead: 882
-  positive: 4398
-  recovered: 14
+  dead: 1
+  positive: 98
+  recovered: 392
   date {
     day: 9
     month: 4
@@ -651,9 +644,9 @@ stats {
   }
 }
 stats {
-  dead: 981
-  positive: 8733
-  recovered: 229
+  dead: 3
+  positive: 107
+  recovered: 321
   date {
     day: 10
     month: 4
@@ -661,9 +654,9 @@ stats {
   }
 }
 stats {
-  dead: 918
-  positive: 5269
-  recovered: 34
+  dead: 3
+  positive: 88
+  recovered: 13
   date {
     day: 11
     month: 4
@@ -671,9 +664,8 @@ stats {
   }
 }
 stats {
-  dead: 737
-  positive: 5332
-  recovered: 4
+  dead: 3
+  positive: 12
   date {
     day: 12
     month: 4
@@ -681,9 +673,8 @@ stats {
   }
 }
 stats {
-  dead: 718
-  positive: 4364
-  recovered: -322
+  dead: 1
+  positive: 36
   date {
     day: 13
     month: 4
@@ -691,9 +682,9 @@ stats {
   }
 }
 stats {
-  dead: 782
-  positive: 5275
-  recovered: 19
+  dead: 1
+  positive: 64
+  recovered: 380
   date {
     day: 14
     month: 4

@@ -34,11 +34,11 @@ class CountryGraph:
         # Due to plotly limitations, we can only have graphs with dates on the x-axis when we
         # aren't using logs.
         axis_type = XAxisType.Dated if graph_type == GraphType.Normal else XAxisType.Numbered
-        report = CountryReport(data_dir=data_dir, country_name=country_name)
+        report = CountryReport(country_data_file=data_dir / f'{country_name}.data')
         first_idx, last_idx, self.curves = Curve.create_curves(
             [prediction.formula for prediction in country_predictions],
             report.cumulative_active,
-            report.date_list[0],
+            report.dates[0],
             axis_type,
         )
         self.name = report.name
@@ -46,7 +46,7 @@ class CountryGraph:
                                   for prediction in country_predictions)
 
         self.cumulative_active = report.cumulative_active[first_idx:].copy()
-        self.date_list = report.date_list[first_idx:]
+        self.date_list = report.dates_str[first_idx:]
         if axis_type == XAxisType.Dated:
             self.t = self.date_list
         else:

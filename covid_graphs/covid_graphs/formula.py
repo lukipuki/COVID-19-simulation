@@ -68,8 +68,7 @@ class Curve():
             np.argmax(cumulative_active >= formula.min_case_count) + formula.second_ip_day
             for formula in formulas)
 
-        first_date_parsed = datetime.strptime(first_date, '%Y-%m-%d')
         return (first_idx, last_idx, [
-            Curve(formula, cumulative_active, first_idx, last_idx, first_date_parsed, xaxis_type)
+            Curve(formula, cumulative_active, first_idx, last_idx, first_date, xaxis_type)
             for formula in formulas
         ])

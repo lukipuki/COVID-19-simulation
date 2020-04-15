@@ -1,11 +1,13 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 from enum import Enum
-from google.protobuf import text_format
 from itertools import accumulate, chain
+import numpy as np
+from pathlib import Path
 from plotly.graph_objs import Figure, Layout, Scatter
-import argparse
+import click
+import click_pathlib
 
-from .pb.country_data_pb2 import CountryData
+from .country_report import CountryReport
 from .pb.simulation_results_pb2 import SimulationResults
 
 
@@ -21,50 +23,44 @@ class GraphType(Enum):
 
 
 class SimulationReport():
-    def __init__(self, simulation_pb2_file, country_proto):
-        with open(simulation_pb2_file, 'rb') as stream:
-            simulation_results = SimulationResults()
-            simulation_results.ParseFromString(stream.read())
+    def __init__(self, country_data_file: Path, simulation_pb2_file: Path):
+        simulation_results = SimulationResults()
+        simulation_results.ParseFromString(simulation_pb2_file.read_bytes())
 
-            self.best_error, self.best_b0, self.best_gamma2 = 1e20, None, None
-            for result in simulation_results.results:
-                if result.summary.error > self.best_error:
-                    continue
-                runs = result.runs
-                self.daily_positive = [run.daily_positive for run in runs]
-                self.positive_days = chain.from_iterable(
-                    range(len(run.daily_positive)) for run in runs)
-                self.daily_infected = [run.daily_infected for run in runs]
-                self.infected_days = chain.from_iterable(
-                    range(len(run.daily_infected)) for run in runs)
+        self.best_error, self.best_b0, self.best_gamma2 = 1e20, None, None
+        for result in simulation_results.results:
+            if result.summary.error > self.best_error:
+                continue
+            runs = result.runs
+            self.simulated_positive = [run.daily_positive for run in runs]
+            self.positive_days = chain.from_iterable(
+                range(len(run.daily_positive)) for run in runs)
+            self.daily_infected = [run.daily_infected for run in runs]
+            self.infected_days = chain.from_iterable(
+                range(len(run.daily_infected)) for run in runs)
 
-                self.deltas = result.deltas
-                self.best_b0 = result.b0
-                self.prefix_length = result.prefix_length
-                if result.HasField("alpha"):
-                    self.param_name = "alpha"
-                    self.best_param = result.alpha
-                else:
-                    self.param_name = "gamma_2"
-                    self.best_param = result.gamma2
+            self.deltas = result.deltas
+            self.best_b0 = result.b0
+            self.prefix_length = result.prefix_length
+            if result.HasField("alpha"):
+                self.param_name = "alpha"
+                self.best_param = result.alpha
+            else:
+                self.param_name = "gamma_2"
+                self.best_param = result.gamma2
 
-                self.best_error = result.summary.error
+            self.best_error = result.summary.error
 
-            print(f"b_0={self.best_b0}, {self.param_name}={self.best_param} is the best fit "
-                  f"for prefix_length={self.prefix_length}, error={self.best_error}")
+        print(f"b_0={self.best_b0}, {self.param_name}={self.best_param} is the best fit "
+              f"for prefix_length={self.prefix_length}, error={self.best_error}")
 
-        with open(country_proto, "rb") as f:
-            country_data = CountryData()
-            text_format.Parse(f.read(), country_data)
-            self.real_positive = [0] * self.prefix_length + [
-                day.positive for day in country_data.stats
-            ]
-            first_date = country_data.stats[0].date
-            first_date = datetime(day=first_date.day, month=first_date.month,
-                                  year=first_date.year) - timedelta(days=self.prefix_length)
-
-            self.date_list = [(first_date + timedelta(days=d)).strftime('%Y-%m-%d')
-                              for d in range(len(self.real_positive) + EXTENSION)]
+        country_report = CountryReport(country_data_file)
+        # TODO: Complete Slovak data, so that we don't have to do this dance
+        self.daily_positive = np.concatenate((np.zeros(self.prefix_length),
+                                             country_report.daily_positive), 0)
+        first_date = country_report.dates[0] - timedelta(days=self.prefix_length)
+        self.date_list = [(first_date + timedelta(days=d)).strftime('%Y-%m-%d')
+                          for d in range(len(self.daily_positive) + EXTENSION)]
 
     def create_scatter_plot(self, graph_type=GraphType.Cumulative):
         if graph_type == GraphType.Cumulative:
@@ -92,7 +88,7 @@ class SimulationReport():
 
         figure.add_trace(
             Scatter(x=[self.date_list[d] for d in self.positive_days],
-                    y=transform(self.daily_positive, graph_type),
+                    y=transform(self.simulated_positive, graph_type),
                     mode='markers',
                     name="Simulated confirmed cases",
                     line={'width': 3},
@@ -101,7 +97,7 @@ class SimulationReport():
         figure.add_trace(
             Scatter(
                 x=self.date_list,
-                y=transform([self.real_positive], graph_type),
+                y=transform([self.daily_positive], graph_type),
                 text=self.date_list,
                 mode='lines',
                 name=r'Real confirmed cases',
@@ -126,16 +122,18 @@ class SimulationReport():
         return figure
 
 
-def main():
-    parser = argparse.ArgumentParser(description='COVID-19 visualization for Slovakia')
-    parser.add_argument('country_data',
-                        metavar='country_data',
-                        type=str,
-                        help=f"Protobuf file with country data")
-    parser.add_argument('simulated',
-                        metavar='simulated',
-                        type=str,
-                        help=f"Protobuf file with simulation results")
-    args = parser.parse_args()
-
-    SimulationReport(args.simulated, args.country_data).create_scatter_plot().show()
+@click.command(help='COVID-19 simulation visualization for Slovakia')
+@click.argument(
+    "country_data",
+    required=True,
+    type=click_pathlib.Path(exists=True),
+    # help="Protobuf file with country data"
+)
+@click.argument(
+    "simulation_protofile",
+    required=True,
+    type=click_pathlib.Path(exists=True),
+    # help="Protobuf file with simulation results"
+)
+def show_scatter_plot(country_data: Path, simulation_protofile: Path):
+    SimulationReport(country_data, simulation_protofile).create_scatter_plot().show()

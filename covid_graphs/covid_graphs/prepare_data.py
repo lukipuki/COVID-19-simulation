@@ -24,8 +24,14 @@ def main():
             a[i] -= a[i - 1]
         return a
 
+    # JHU uses country names that we want to improve.
+    name_map = {
+        "United States": "US",
+        "South Korea": "Korea, South"
+    }
+    country_name_JHU = args.country if args.country not in name_map else name_map[args.country]
     data = {}
-    country_name_JHU = args.country if args.country != "United States" else "US"
+
     for typ in ["deaths", "recovered", "confirmed"]:
         url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/" \
             f"csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_{typ}_global.csv"

@@ -4,12 +4,13 @@ declare -A short_names
 short_names["United States"]=USA
 short_names["United Kingdom"]=UK
 short_names["New Zealand"]=NZ
+short_names["South Korea"]=Korea
 
 python3.7 -m venv --system-site-packages venv && source venv/bin/activate
 pip install $1/
 
-countries=("United Kingdom" Korea Austria Iceland Jordan Switzerland Croatia Australia Canada
-  Germany Israel Italy Malaysia "New Zealand" Spain Belgium Chile Czechia Latvia
+countries=("United Kingdom" "South Korea" Austria Iceland Jordan Switzerland Croatia Australia
+  Canada Germany Israel Italy Malaysia "New Zealand" Spain Belgium Chile Czechia Latvia
   Lithuania Netherlands Norway Portugal "United States")
 for country in $countries
 do

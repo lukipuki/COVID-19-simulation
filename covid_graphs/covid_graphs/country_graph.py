@@ -139,6 +139,7 @@ class CountryGraph:
             CountryGraph(data_dir, country_name, graph_type) for country_name in countries
             if (data_dir / f'{country_name}.data').is_file()
         ]
+        country_graphs.sort(key=lambda country: country.name)
 
         app = dash.Dash(
             name=f'COVID-19 {graph_type}',

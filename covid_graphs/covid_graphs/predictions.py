@@ -197,7 +197,7 @@ class PredictionDb:
     def predictions_for_event(self, prediction_event: PredictionEvent) -> List[CountryPrediction]:
         return [p for p in self._prediction_database if p.prediction_event == prediction_event]
 
-    def predictions_for_country(self, country: str) ->  List[CountryPrediction]:
+    def predictions_for_country(self, country: str) -> List[CountryPrediction]:
         return [p for p in self._prediction_database if p.country == country]
 
 

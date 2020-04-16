@@ -72,6 +72,7 @@ class Curve():
         last_idx = max(
             first_day_of_curve(cumulative_active, formula) + formula.second_ip_day
             for formula in formulas)
+        last_idx = max(last_idx, len(cumulative_active) - 1)
 
         return (first_idx, last_idx, [
             Curve(formula, cumulative_active, first_idx, last_idx, first_date, xaxis_type)

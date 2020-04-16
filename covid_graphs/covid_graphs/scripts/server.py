@@ -6,12 +6,17 @@ import itertools
 import logging
 from pathlib import Path
 
+import os
+import signal
+from time import sleep
+from multiprocessing import Process
+import inotify.adapters
+
 from covid_graphs.country_graph import GraphType
 from covid_graphs.heat_map import HeatMap
 from covid_graphs import predictions
 
 from . import country_dashboard
-
 
 CURRENT_DIR = Path(__file__).parent
 
@@ -97,3 +102,16 @@ def _create_simulation_apps(
     @server.route("/covid19/heatmap/exponential")
     def covid19_heatmap_exponential():
         return covid19_heatmap_exponential_app.index()
+
+    i = inotify.adapters.InotifyTree(str(data_dir))
+
+    p = Process(target=server.run, kwargs=dict(host="0.0.0.0", port=8081))
+    p.start()
+    while (True):
+        events = list(i.event_gen(yield_nones=False, timeout_s=1))
+        if len(events) != 0:
+            os.kill(p.pid, signal.SIGKILL)
+            p.join()
+            p = Process(target=server.run, kwargs=dict(host="0.0.0.0", port=8081))
+            p.start()
+        sleep(3)

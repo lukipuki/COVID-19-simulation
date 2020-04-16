@@ -7,13 +7,20 @@
   </head>
   <body>
     <h1>COVID-19 predictions of Katarína Boďová and Richard Kollár</h1>
-    <p>Predictions for 7 countries plotted on
-      <ul>
-        <li><a href="{{ url_for('covid19_normal') }}">normal graphs</a></li>
-        <li><a href="{{ url_for('covid19_semilog') }}">semi-log graphs</a></li>
-        <li><a href="{{ url_for('covid19_loglog') }}">log-log graphs</a></li>
-      </ul>
-    </p>
+    <ul>
+      <li>
+        Predictions by April 12:
+        (<a href="{{ url_for('covid19_predictions', event='apr12', graph_type='normal') }}">normal graphs</a>)
+        (<a href="{{ url_for('covid19_predictions', event='apr12', graph_type='semilog') }}">semilog graphs</a>)
+        (<a href="{{ url_for('covid19_predictions', event='apr12', graph_type='loglog') }}">loglog graphs</a>)
+      </li>
+      <li>
+        Predictions by March 29:
+        (<a href="{{ url_for('covid19_predictions', event='mar29', graph_type='normal') }}">normal graphs</a>)
+        (<a href="{{ url_for('covid19_predictions', event='mar29', graph_type='semilog') }}">semilog graphs</a>)
+        (<a href="{{ url_for('covid19_predictions', event='mar29', graph_type='loglog') }}">loglog graphs</a>)
+      </li>
+    </ul>
     <h1>
       Visualizations of a COVID-19 stochastic model by Radoslav Harman
     </h1>

@@ -6,8 +6,6 @@ import itertools
 import logging
 from pathlib import Path
 
-import os
-import signal
 from time import sleep
 from multiprocessing import Process
 import inotify.adapters
@@ -110,7 +108,7 @@ def _create_simulation_apps(
     while (True):
         events = list(i.event_gen(yield_nones=False, timeout_s=1))
         if len(events) != 0:
-            os.kill(p.pid, signal.SIGKILL)
+            p.terminate()
             p.join()
             p = Process(target=server.run, kwargs=dict(host="0.0.0.0", port=8081))
             p.start()

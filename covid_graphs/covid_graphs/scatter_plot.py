@@ -9,7 +9,7 @@ import click_pathlib
 import numpy as np
 
 from .country_report import CountryReport
-from .simulation_report import create_simulation_reports
+from .simulation_report import create_simulation_reports, GrowthType
 
 EXTENSION = 10
 
@@ -22,16 +22,20 @@ class GraphType(Enum):
         return self.value
 
 
-def create_dates(list_of_lists: List[List[int]], date_list: List[str]) -> List[str]:
-    day_indexes = chain.from_iterable(range(len(l)) for l in list_of_lists)
-    return [date_list[index] for index in day_indexes]
+def create_dates(simulation_results: List[List[int]], date_list: List[str]) -> List[str]:
+    """
+    Generates a flat list of dates for a list of simulation results.
+
+    Typically used as x-axis labels of the simulation results.
+    """
+    return [date_list[index] for l in simulation_results for index in range(len(l))]
 
 
-class SimulationGraph():
+class SimulationGraph:
     def __init__(self, country_data_file: Path, simulation_pb2_file: Path):
         reports = create_simulation_reports(simulation_pb2_file)
 
-        self.best_error, self.best_b0, self.best_gamma2 = 1e20, None, None
+        self.best_error, self.best_b0, self.best_gamma2 = float("inf"), None, None
         for report in reports:
             if report.error > self.best_error:
                 continue
@@ -41,10 +45,11 @@ class SimulationGraph():
             self.deltas = report.deltas
             self.best_b0 = report.b0
             self.prefix_length = report.prefix_length
-            self.param_name = report.param_name
             self.best_param = report.param
             self.best_error = report.error
+            self.growth_type = report.growth_type
 
+        self.param_name = "alpha" if self.growth_type == GrowthType.Polynomial else "gamma2"
         print(f"b_0={self.best_b0}, {self.param_name}={self.best_param} is the best fit "
               f"for prefix_length={self.prefix_length}, error={self.best_error}")
 

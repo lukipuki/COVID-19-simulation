@@ -1,8 +1,6 @@
 from collections import OrderedDict
-from enum import Enum
 from pathlib import Path
 from plotly.graph_objs import Figure, Layout, Heatmap
-import argparse
 import click
 import click_pathlib
 import dash
@@ -10,15 +8,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import math
 
-from .simulation_report import create_simulation_reports
-
-
-class GrowthType(Enum):
-    Exponential = 'exponential'
-    Polynomial = 'polynomial'
-
-    def __str__(self):
-        return self.value
+from .simulation_report import create_simulation_reports, GrowthType
 
 
 class HeatMap():
@@ -29,8 +19,7 @@ class HeatMap():
         self.growth_type = None
         for report in reports:
             if self.growth_type is None:
-                self.growth_type = GrowthType.Polynomial if report.param_name == "alpha" \
-                                   else GrowthType.Exponential
+                self.growth_type = report.growth_type
                 self.param_name = report.param_name
 
             errors_by_param = self.best_errors.setdefault(report.param, OrderedDict())

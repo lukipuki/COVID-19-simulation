@@ -1,15 +1,15 @@
 from datetime import timedelta
 from enum import Enum
 from itertools import accumulate, chain
-import numpy as np
 from pathlib import Path
 from plotly.graph_objs import Figure, Layout, Scatter
+from typing import List
 import click
 import click_pathlib
+import numpy as np
 
 from .country_report import CountryReport
-from .pb.simulation_results_pb2 import SimulationResults
-
+from .simulation_report import create_simulation_reports
 
 EXTENSION = 10
 
@@ -22,42 +22,36 @@ class GraphType(Enum):
         return self.value
 
 
-class SimulationReport():
+def create_dates(list_of_lists: List[List[int]], date_list: List[str]) -> List[str]:
+    day_indexes = chain.from_iterable(range(len(l)) for l in list_of_lists)
+    return [date_list[index] for index in day_indexes]
+
+
+class SimulationGraph():
     def __init__(self, country_data_file: Path, simulation_pb2_file: Path):
-        simulation_results = SimulationResults()
-        simulation_results.ParseFromString(simulation_pb2_file.read_bytes())
+        reports = create_simulation_reports(simulation_pb2_file)
 
         self.best_error, self.best_b0, self.best_gamma2 = 1e20, None, None
-        for result in simulation_results.results:
-            if result.summary.error > self.best_error:
+        for report in reports:
+            if report.error > self.best_error:
                 continue
-            runs = result.runs
-            self.simulated_positive = [run.daily_positive for run in runs]
-            self.positive_days = chain.from_iterable(
-                range(len(run.daily_positive)) for run in runs)
-            self.daily_infected = [run.daily_infected for run in runs]
-            self.infected_days = chain.from_iterable(
-                range(len(run.daily_infected)) for run in runs)
+            self.simulated_positive = report.daily_positive
+            self.simulated_infected = report.daily_infected
 
-            self.deltas = result.deltas
-            self.best_b0 = result.b0
-            self.prefix_length = result.prefix_length
-            if result.HasField("alpha"):
-                self.param_name = "alpha"
-                self.best_param = result.alpha
-            else:
-                self.param_name = "gamma_2"
-                self.best_param = result.gamma2
-
-            self.best_error = result.summary.error
+            self.deltas = report.deltas
+            self.best_b0 = report.b0
+            self.prefix_length = report.prefix_length
+            self.param_name = report.param_name
+            self.best_param = report.param
+            self.best_error = report.error
 
         print(f"b_0={self.best_b0}, {self.param_name}={self.best_param} is the best fit "
               f"for prefix_length={self.prefix_length}, error={self.best_error}")
 
         country_report = CountryReport(country_data_file)
         # TODO: Complete Slovak data, so that we don't have to do this dance
-        self.daily_positive = np.concatenate((np.zeros(self.prefix_length),
-                                             country_report.daily_positive), 0)
+        self.daily_positive = np.concatenate(
+            (np.zeros(self.prefix_length), country_report.daily_positive))
         first_date = country_report.dates[0] - timedelta(days=self.prefix_length)
         self.date_list = [(first_date + timedelta(days=d)).strftime('%Y-%m-%d')
                           for d in range(len(self.daily_positive) + EXTENSION)]
@@ -87,7 +81,7 @@ class SimulationReport():
                 return list(chain.from_iterable(list_2d))
 
         figure.add_trace(
-            Scatter(x=[self.date_list[d] for d in self.positive_days],
+            Scatter(x=create_dates(self.simulated_positive, self.date_list),
                     y=transform(self.simulated_positive, graph_type),
                     mode='markers',
                     name="Simulated confirmed cases",
@@ -104,8 +98,8 @@ class SimulationReport():
             ))
 
         figure.add_trace(
-            Scatter(x=[self.date_list[d] for d in self.infected_days],
-                    y=transform(self.daily_infected, graph_type),
+            Scatter(x=create_dates(self.simulated_infected, self.date_list),
+                    y=transform(self.simulated_infected, graph_type),
                     mode='markers',
                     name="Simulated total infected",
                     line={'width': 3},
@@ -136,4 +130,4 @@ class SimulationReport():
     # help="Protobuf file with simulation results"
 )
 def show_scatter_plot(country_data: Path, simulation_protofile: Path):
-    SimulationReport(country_data, simulation_protofile).create_scatter_plot().show()
+    SimulationGraph(country_data, simulation_protofile).create_scatter_plot().show()

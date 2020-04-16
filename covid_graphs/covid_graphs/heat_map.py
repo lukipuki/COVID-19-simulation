@@ -1,13 +1,16 @@
 from collections import OrderedDict
 from enum import Enum
+from pathlib import Path
 from plotly.graph_objs import Figure, Layout, Heatmap
 import argparse
+import click
+import click_pathlib
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import math
 
-from .pb import simulation_results_pb2
+from .simulation_report import create_simulation_reports
 
 
 class GrowthType(Enum):
@@ -19,35 +22,24 @@ class GrowthType(Enum):
 
 
 class HeatMap():
-    def __init__(self, simulation_proto):
-        with open(simulation_proto, "rb") as f:
-            read_simulation_results = simulation_results_pb2.SimulationResults()
-            read_simulation_results.ParseFromString(f.read())
+    def __init__(self, simulation_pb2_file: Path):
+        reports = create_simulation_reports(simulation_pb2_file)
 
-            self.best_errors = OrderedDict()
-            self.growth_type = None
-            for result in read_simulation_results.results:
+        self.best_errors = OrderedDict()
+        self.growth_type = None
+        for report in reports:
+            if self.growth_type is None:
+                self.growth_type = GrowthType.Polynomial if report.param_name == "alpha" \
+                                   else GrowthType.Exponential
+                self.param_name = report.param_name
 
-                if self.growth_type is None:
-                    if result.HasField("alpha"):
-                        self.growth_type = GrowthType.Polynomial
-                        self.param_name = "alpha"
-                    else:
-                        self.growth_type = GrowthType.Exponential
-                        self.param_name = "gamma2"
+            errors_by_param = self.best_errors.setdefault(report.param, OrderedDict())
+            errors = errors_by_param.setdefault(report.prefix_length, [])
+            errors.append((report.b0, report.error))
 
-                if self.growth_type == GrowthType.Polynomial:
-                    self.param = result.alpha
-                else:
-                    self.param = result.gamma2
-
-                errors_by_param = self.best_errors.setdefault(self.param, OrderedDict())
-                errors = errors_by_param.setdefault(result.prefix_length, [])
-                errors.append((result.b0, result.summary.error))
-
-    def create_heatmap(self, param, gamma_dict):
+    def create_heatmap(self, param, prefix_dict):
         data = []
-        for key, value in gamma_dict.items():
+        for key, value in prefix_dict.items():
             value.sort()
             b0_set = [x[0] for x in value]
             data.append([math.log(x[1]) for x in value])
@@ -62,7 +54,7 @@ class HeatMap():
         figure.add_trace(
             Heatmap(z=data,
                     x=b0_set,
-                    y=list(gamma_dict.keys()),
+                    y=list(prefix_dict.keys()),
                     reversescale=True,
                     colorscale='Viridis',
                     hovertemplate='b0: %{x}<br>prefix_len: %{y}<br>'
@@ -102,13 +94,12 @@ class HeatMap():
         return app
 
 
-def main():
-    parser = argparse.ArgumentParser(description='COVID-19 visualization for Slovakia')
-    parser.add_argument('simulated',
-                        metavar='simulated',
-                        type=str,
-                        help=f"Protobuf file with simulation results")
-    args = parser.parse_args()
-
-    app = HeatMap(args.simulated).create_app(True)
+@click.command(help='COVID-19 simulation heat map for Slovakia')
+@click.argument(
+    "simulation_protofile",
+    required=True,
+    type=click_pathlib.Path(exists=True),
+)
+def show_heat_map(simulation_protofile):
+    app = HeatMap(simulation_protofile).create_app(True)
     app.run_server(host="0.0.0.0", port=8080)

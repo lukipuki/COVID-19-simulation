@@ -20,7 +20,7 @@ class HeatMap():
         for report in reports:
             if self.growth_type is None:
                 self.growth_type = report.growth_type
-                self.param_name = report.param_name
+                self.param_name = "alpha" if self.growth_type == GrowthType.Polynomial else "gamma2"
 
             errors_by_param = self.best_errors.setdefault(report.param, OrderedDict())
             errors = errors_by_param.setdefault(report.prefix_length, [])

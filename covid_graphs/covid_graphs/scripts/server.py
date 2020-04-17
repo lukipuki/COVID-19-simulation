@@ -1,14 +1,11 @@
+from flask import Flask, render_template, redirect, url_for
+from inotify import adapters, constants
+from multiprocessing import Process
+from pathlib import Path
+from time import sleep
 import click
 import click_pathlib
-from dash.dash import Dash
-from flask import Flask, render_template, redirect, url_for
 import itertools
-import logging
-from pathlib import Path
-
-from time import sleep
-from multiprocessing import Process
-import inotify.adapters
 
 from covid_graphs.country_graph import GraphType
 from covid_graphs.heat_map import HeatMap
@@ -39,23 +36,21 @@ def run_server(data_dir: Path) -> None:
     def covid19_redirect():
         return redirect(url_for("covid19_predictions", event="apr12", graph_type="normal"))
 
-    _run_flask_server(server=server, data_dir=data_dir)
-    # The restarting functionality is broken (listens to open events, which creates an infinite
-    # loop)
-    #
-    # i = inotify.adapters.InotifyTree(str(data_dir))
-    # p = Process(target=_run_flask_server, kwargs=dict(server=server, data_dir=data_dir))
-    # p.start()
-    # while (True):
-    #     events = list(i.event_gen(yield_nones=False, timeout_s=1))
-    #     if len(events) != 0:
-    #         print("Data changed. Restarting server...")
-    #         p.terminate()
-    #         p.join()
-    #         p = Process(target=_run_flask_server, kwargs=dict(server=server, data_dir=data_dir))
-    #         p.start()
-    #         print("Server restarted.")
-    #     sleep(3)
+    i = adapters.InotifyTree(str(data_dir),
+                             mask=(constants.IN_MODIFY | constants.IN_DELETE
+                                   | constants.IN_CREATE))
+    p = Process(target=_run_flask_server, kwargs=dict(server=server, data_dir=data_dir))
+    p.start()
+    while (True):
+        events = list(i.event_gen(yield_nones=False, timeout_s=1))
+        if len(events) != 0:
+            print("Data changed. Restarting server...")
+            p.terminate()
+            p.join()
+            p = Process(target=_run_flask_server, kwargs=dict(server=server, data_dir=data_dir))
+            p.start()
+            print("Server restarted.")
+        sleep(10)
 
 
 def _run_flask_server(server: Flask, data_dir: Path):

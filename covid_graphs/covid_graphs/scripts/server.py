@@ -49,7 +49,7 @@ def run_server(data_dir: Path, simulated_polynomial: Path, simulated_exponential
     def home():
         return render_template("index.html")
 
-    @server.route("/covid19/")
+    @server.route("/covid19/normal")
     def covid19_redirect():
         return redirect(url_for("covid19_predictions", event="apr12", graph_type="normal"))
 

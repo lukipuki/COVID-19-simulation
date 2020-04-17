@@ -13,7 +13,14 @@ from .simulation_report import create_simulation_reports, GrowthType
 
 class HeatMap():
     def __init__(self, simulation_pb2_file: Path):
-        reports = create_simulation_reports(simulation_pb2_file)
+        try:
+            reports = create_simulation_reports(simulation_pb2_file)
+            self.parsed_reports = True
+        except:
+            self.growth_type = GrowthType.Exponential
+            self.simulation_pb2_file = simulation_pb2_file
+            self.parsed_reports = False
+            return
 
         self.best_errors = OrderedDict()
         self.growth_type = None
@@ -59,7 +66,16 @@ class HeatMap():
             external_scripts=[
                 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML'
             ])
-        app.title = 'Visualizations of a COVID-19 stochastic model, with {self.growth_type} growth'
+        app.title = 'Heat map of a COVID-19 stochastic model, with {self.growth_type} growth'
+        if not self.parsed_reports:
+            app.layout = html.Div(
+                dcc.Markdown(f"""
+                # Error in parsing simulation proto file
+
+                The file `{self.simulation_pb2_file}` failed to parse or doesn't exist. Please
+                contact the site administrator.
+                """))
+            return app
 
         graphs = [
             dcc.Graph(id=f'{key}', figure=self.create_heatmap(key, value))

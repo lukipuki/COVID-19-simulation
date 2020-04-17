@@ -10,4 +10,4 @@ services:
     ports:
       - 127.0.0.1:8081:8081
     restart: always
-    command: "covid_graphs.run_server --data-dir data/ --simulated-polynomial data/results-poly.pb --simulated-exponential data/results-exp.pb"
+    command: "covid_graphs.run_server --data-dir data

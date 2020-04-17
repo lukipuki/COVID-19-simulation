@@ -39,8 +39,8 @@ conan install -g deploy 'protoc_installer/[>=0]@bincrafters/stable
 
 ```sh
 COVID-19-simulation/bin/simulation data/Slovakia.data
-# The simulation creates a proto file 'results.pb', which can be examined
-cat results.pb | protoc --decode SimulationResults src/simulation_results.proto
+# The simulation creates a proto file 'polynomial.sim' or 'exponential.sim', which can be examined
+cat polynomial.sim | protoc --decode SimulationResults src/simulation_results.proto
 ```
 
 You can also visualize the results. See the [covid_graphs README](covid_graphs/README.md) for examples.

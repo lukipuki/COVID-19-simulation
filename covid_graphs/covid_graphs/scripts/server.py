@@ -87,8 +87,8 @@ def _create_prediction_apps(data_dir: Path, server: Flask):
 def _create_simulation_apps(
     server: Flask, simulated_polynomial: Path, simulated_exponential: Path
 ):
-    covid19_heatmap_app = HeatMap(str(simulated_polynomial)).create_app(server)
-    covid19_heatmap_exponential_app = HeatMap(str(simulated_exponential)).create_app(server)
+    covid19_heatmap_app = HeatMap(simulated_polynomial).create_app(server)
+    covid19_heatmap_exponential_app = HeatMap(simulated_exponential).create_app(server)
 
     @server.route("/covid19/heatmap/polynomial")
     def covid19_heatmap_polynomial():

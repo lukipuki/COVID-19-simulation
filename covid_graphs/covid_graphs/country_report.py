@@ -3,7 +3,6 @@ from google.protobuf import text_format
 from datetime import datetime
 import numpy as np
 from pathlib import Path
-from typing import List
 
 from .pb.country_data_pb2 import CountryData
 

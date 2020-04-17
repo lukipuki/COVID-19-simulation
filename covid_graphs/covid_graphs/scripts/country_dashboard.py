@@ -35,7 +35,7 @@ def create_dashboard(
             'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML'
         ],
     )
-    app.title = 'COVID-19 predictions'
+    app.title = 'COVID-19 predictions of Boďová and Kollár'
     if graph_type != GraphType.Normal:
         app.title += f' on a {graph_type} graph'
 
@@ -45,13 +45,13 @@ def create_dashboard(
         for country_graph in country_graphs
     ]
 
-    content = _get_header_content(prediction_event) + graphs
+    content = _get_header_content(prediction_event, app.title) + graphs
 
     app.layout = html.Div(children=content, style={'font-family': 'sans-serif'})
     return app
 
 
-def _get_header_content(prediction_event: PredictionEvent):
+def _get_header_content(prediction_event: PredictionEvent, title: str):
     # TODO: Rewrite the header to be general for both prediction pages.
     # TODO: Description in the text of this date is wrong.
     prediction_date_str = prediction_event.date.strftime("%Y-%m-%d")
@@ -60,7 +60,7 @@ def _get_header_content(prediction_event: PredictionEvent):
     france_link = "https://www.reuters.com/article/us-health-coronavirus-france-toll/" \
         "french-coronavirus-cases-jump-above-chinas-after-including-nursing-home-tally-idUSKBN21L3BG"
     return [
-        html.H1(children='COVID-19 predictions of Boďová and Kollár'),
+        html.H1(children=title),
         html.P(children=[
             'On 2020-03-30, mathematicians Katarína Boďová and Richard Kollár ',
             html.A('made predictions about 7 countries', href=prediction_link),

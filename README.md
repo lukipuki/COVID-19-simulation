@@ -30,7 +30,7 @@ conan install -g deploy 'COVID-19-simulation/1.0.0@'
 You can also use Conan to install `protoc`.
 
 ```sh
-conan install -g deploy 'protoc_installer/[>=0]@bincrafters/stable
+conan install -g deploy 'protoc_installer/[>=0]@bincrafters/stable'
 ./protoc_installer/bin/protoc --decode ...  # More information on protoc usage below
 ```
 

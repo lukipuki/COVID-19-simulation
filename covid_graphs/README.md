@@ -17,7 +17,7 @@ python3.7 -m venv your/path/to/venv
 source your/path/to/venv/bin/activate
 pip install --upgrade setuptools
 pip install -e . # With -e the package will automatically reload with any local changes.
-covid_graphs.run_server --data-dir data/ --simulated-polynomial data/results-poly.pb --simulated-exponential data/results-exp.pb
+covid_graphs.run_server --data-dir data
 ```
 Run `covid_graphs.run_server --help` for help on command parameters.
 
@@ -28,6 +28,6 @@ For quick development or data examination, running standalone graphs is useful.
 
 ```sh
 covid_graphs.show_country_plot data Spain
-covid_graphs.show_scatter_plot data/Slovakia.data results.pb
-covid_graphs.show_heat_map results.pb
+covid_graphs.show_scatter_plot data/Slovakia.data polynomial.sim
+covid_graphs.show_heat_map exponential.sim
 ```

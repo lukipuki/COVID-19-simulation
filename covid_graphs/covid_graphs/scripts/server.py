@@ -25,28 +25,11 @@ CURRENT_DIR = Path(__file__).parent
     "--data-dir",
     required=True,
     type=click_pathlib.Path(exists=True),
-    help="Directory with country proto files",
+    help="Directory with country and simulation proto files",
 )
-@click.option(
-    "-p",
-    "--simulated-polynomial",
-    required=True,
-    type=click_pathlib.Path(exists=True),
-    help="Proto file with simulation results of polynomial growth",
-)
-@click.option(
-    "-e",
-    "--simulated-exponential",
-    required=True,
-    type=click_pathlib.Path(exists=True),
-    help="Proto file with simulation results of exponential growth",
-)
-def run_server(data_dir: Path, simulated_polynomial: Path, simulated_exponential: Path) -> None:
+def run_server(data_dir: Path) -> None:
     """Creates and runs a flask server."""
     server = Flask(__name__, template_folder=CURRENT_DIR)
-
-    _create_prediction_apps(server=server, data_dir=data_dir)
-    _create_simulation_apps(server, simulated_polynomial, simulated_exponential)
 
     @server.route("/")
     def home():
@@ -56,20 +39,29 @@ def run_server(data_dir: Path, simulated_polynomial: Path, simulated_exponential
     def covid19_redirect():
         return redirect(url_for("covid19_predictions", event="apr12", graph_type="normal"))
 
-    i = inotify.adapters.InotifyTree(str(data_dir))
+    _run_flask_server(server=server, data_dir=data_dir)
+    # The restarting functionality is broken (listens to open events, which creates an infinite
+    # loop)
+    #
+    # i = inotify.adapters.InotifyTree(str(data_dir))
+    # p = Process(target=_run_flask_server, kwargs=dict(server=server, data_dir=data_dir))
+    # p.start()
+    # while (True):
+    #     events = list(i.event_gen(yield_nones=False, timeout_s=1))
+    #     if len(events) != 0:
+    #         print("Data changed. Restarting server...")
+    #         p.terminate()
+    #         p.join()
+    #         p = Process(target=_run_flask_server, kwargs=dict(server=server, data_dir=data_dir))
+    #         p.start()
+    #         print("Server restarted.")
+    #     sleep(3)
 
-    p = Process(target=server.run, kwargs=dict(host="0.0.0.0", port=8081))
-    p.start()
-    while (True):
-        events = list(i.event_gen(yield_nones=False, timeout_s=1))
-        if len(events) != 0:
-            print("Data changed. Restarting server...")
-            p.terminate()
-            p.join()
-            p = Process(target=server.run, kwargs=dict(host="0.0.0.0", port=8081))
-            p.start()
-            print("Server restarted.")
-        sleep(60)
+
+def _run_flask_server(server: Flask, data_dir: Path):
+    _create_prediction_apps(server=server, data_dir=data_dir)
+    _create_simulation_apps(server=server, data_dir=data_dir)
+    server.run(host="0.0.0.0", port=8081)
 
 
 def _create_prediction_apps(data_dir: Path, server: Flask):
@@ -98,13 +90,15 @@ def _create_prediction_apps(data_dir: Path, server: Flask):
         return prediction_apps[(event, graph_type)].index()
 
 
-def _create_simulation_apps(server: Flask, simulated_polynomial: Path, simulated_exponential: Path):
-    covid19_heatmap_app = HeatMap(simulated_polynomial).create_app(server)
+def _create_simulation_apps(server: Flask, data_dir: Path):
+    simulated_polynomial = data_dir / "polynomial.sim"
+    simulated_exponential = data_dir / "exponential.sim"
+    covid19_heatmap_polynomial_app = HeatMap(simulated_polynomial).create_app(server)
     covid19_heatmap_exponential_app = HeatMap(simulated_exponential).create_app(server)
 
     @server.route("/covid19/heatmap/polynomial")
     def covid19_heatmap_polynomial():
-        return covid19_heatmap_app.index()
+        return covid19_heatmap_polynomial_app.index()
 
     @server.route("/covid19/heatmap/exponential")
     def covid19_heatmap_exponential():

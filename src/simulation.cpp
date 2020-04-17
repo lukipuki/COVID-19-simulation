@@ -185,7 +185,8 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  std::fstream output("results.pb", std::ios::out | std::ios::trunc | std::ios::binary);
+  std::string growth_type = kExponentialGrowth ? "exponential" : "polynomial";
+  std::fstream output(growth_type + ".sim", std::ios::out | std::ios::trunc | std::ios::binary);
   if (!results.SerializeToOstream(&output)) {
     std::cerr << "Failed to write results" << std::endl;
   }

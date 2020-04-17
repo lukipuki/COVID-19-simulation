@@ -11,6 +11,7 @@ setup(
         "click_pathlib",
         "dash",
         "Flask",
+        "inotify",
         "numpy",
         "pandas",
         "protobuf",

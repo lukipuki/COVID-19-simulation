@@ -56,7 +56,20 @@ def run_server(data_dir: Path, simulated_polynomial: Path, simulated_exponential
     def covid19_redirect():
         return redirect(url_for("covid19_predictions", event="apr12", graph_type="normal"))
 
-    server.run(host="0.0.0.0", port=8081, debug=True, extra_files=data_dir.glob("*.data"))
+    i = inotify.adapters.InotifyTree(str(data_dir))
+
+    p = Process(target=server.run, kwargs=dict(host="0.0.0.0", port=8081))
+    p.start()
+    while (True):
+        events = list(i.event_gen(yield_nones=False, timeout_s=1))
+        if len(events) != 0:
+            print("Data changed. Restarting server...")
+            p.terminate()
+            p.join()
+            p = Process(target=server.run, kwargs=dict(host="0.0.0.0", port=8081))
+            p.start()
+            print("Server restarted.")
+        sleep(60)
 
 
 def _create_prediction_apps(data_dir: Path, server: Flask):
@@ -72,24 +85,20 @@ def _create_prediction_apps(data_dir: Path, server: Flask):
     }
     route_pairs = itertools.product(event_by_route.keys(), graph_type_by_route.keys())
 
-    prediction_apps = {
-        (event_route, graph_type_route): country_dashboard.create_dashboard(
-            data_dir=data_dir,
-            server=server,
-            prediction_event=event_by_route[event_route],
-            graph_type=graph_type_by_route[graph_type_route],
-        )
-        for event_route, graph_type_route in route_pairs
-    }
+    prediction_apps = {(event_route, graph_type_route): country_dashboard.create_dashboard(
+        data_dir=data_dir,
+        server=server,
+        prediction_event=event_by_route[event_route],
+        graph_type=graph_type_by_route[graph_type_route],
+    )
+                       for event_route, graph_type_route in route_pairs}
 
     @server.route("/covid19/predictions/<event>/<graph_type>")
     def covid19_predictions(event: str, graph_type: str):
         return prediction_apps[(event, graph_type)].index()
 
 
-def _create_simulation_apps(
-    server: Flask, simulated_polynomial: Path, simulated_exponential: Path
-):
+def _create_simulation_apps(server: Flask, simulated_polynomial: Path, simulated_exponential: Path):
     covid19_heatmap_app = HeatMap(simulated_polynomial).create_app(server)
     covid19_heatmap_exponential_app = HeatMap(simulated_exponential).create_app(server)
 
@@ -100,18 +109,3 @@ def _create_simulation_apps(
     @server.route("/covid19/heatmap/exponential")
     def covid19_heatmap_exponential():
         return covid19_heatmap_exponential_app.index()
-
-    i = inotify.adapters.InotifyTree(str(data_dir))
-
-    p = Process(target=server.run, kwargs=dict(host="0.0.0.0", port=8081))
-    p.start()
-    while (True):
-        events = list(i.event_gen(yield_nones=False, timeout_s=1))
-        if len(events) != 0:
-            print("Data changed. Restarting server...")
-            p.terminate()
-            p.join()
-            p = Process(target=server.run, kwargs=dict(host="0.0.0.0", port=8081))
-            p.start()
-            print("Server restarted.")
-        sleep(60)

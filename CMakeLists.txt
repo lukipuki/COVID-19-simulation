@@ -20,6 +20,10 @@ target_link_libraries(simulation PRIVATE $<$<BOOL:${OpenMP_FOUND}>:OpenMP::OpenM
   protobuf::libprotobuf)
 target_include_directories(simulation PRIVATE src/ ${CMAKE_CURRENT_BINARY_DIR}/)
 
+install(TARGETS simulation
+  RUNTIME DESTINATION bin
+)
+
 enable_testing()
 find_package(GTest REQUIRED)
 include(GoogleTest)

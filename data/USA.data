@@ -498,7 +498,7 @@ stats {
 }
 stats {
   dead: 140
-  positive: 10571
+  positive: 10567
   date {
     day: 23
     month: 3
@@ -517,7 +517,7 @@ stats {
 }
 stats {
   dead: 236
-  positive: 12038
+  positive: 12042
   recovered: 13
   date {
     day: 25
@@ -686,7 +686,7 @@ stats {
   }
 }
 stats {
-  dead: 1877
+  dead: 1876
   positive: 29861
   recovered: 2480
   date {
@@ -731,6 +731,16 @@ stats {
   recovered: 4333
   date {
     day: 15
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 4591
+  positive: 31451
+  recovered: 2607
+  date {
+    day: 16
     month: 4
     year: 2020
   }

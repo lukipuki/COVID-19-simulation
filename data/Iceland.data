@@ -670,3 +670,21 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 7
+  recovered: 88
+  date {
+    day: 15
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  positive: 12
+  recovered: 67
+  date {
+    day: 16
+    month: 4
+    year: 2020
+  }
+}

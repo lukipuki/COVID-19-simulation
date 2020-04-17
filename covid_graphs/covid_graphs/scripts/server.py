@@ -108,8 +108,10 @@ def _create_simulation_apps(
     while (True):
         events = list(i.event_gen(yield_nones=False, timeout_s=1))
         if len(events) != 0:
+            print("Data changed. Restarting server...")
             p.terminate()
             p.join()
             p = Process(target=server.run, kwargs=dict(host="0.0.0.0", port=8081))
             p.start()
-        sleep(3)
+            print("Server restarted.")
+        sleep(60)

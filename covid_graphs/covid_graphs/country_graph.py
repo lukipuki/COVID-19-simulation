@@ -10,9 +10,6 @@ from .predictions import prediction_db, CountryPrediction
 from .country_report import CountryReport
 from .formula import Curve, XAxisType
 
-# TODO: Remove after graph display refactoring.
-PREDICTION_DATE = '2020-03-29'
-
 
 class GraphType(Enum):
     Normal = 'normal'
@@ -36,6 +33,10 @@ class CountryGraph:
         # TODO(miskosz): We assume there is only one country.
         # This might change soon though if we want to have a country dropdown in one graph.
         country_name = country_predictions[0].country
+
+        # TODO(lukas): Figure out better strategy for more predictions
+        if len(country_predictions) >= 1:
+            self.prediction_date = country_predictions[0].prediction_event.date.strftime("%Y-%m-%d")
 
         # Due to plotly limitations, we can only have graphs with dates on the x-axis when we
         # aren't using logs.
@@ -72,7 +73,7 @@ class CountryGraph:
                  line=dict(width=2, dash='dot')) for curve in self.curves
         ]
         try:
-            prediction_date = self.date_list.index(PREDICTION_DATE)
+            prediction_date = self.date_list.index(self.prediction_date)
             # Add green zone marking the data available at the prediction date.
             shapes.append(
                 dict(type="rect",

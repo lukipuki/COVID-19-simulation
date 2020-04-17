@@ -26,50 +26,48 @@ class CountryGraph:
             self,
             data_dir: Path,
             country_predictions: List[CountryPrediction],
-            graph_type: GraphType = GraphType.Normal,
     ):
-        self.graph_type = graph_type
-
         # TODO(miskosz): We assume there is only one country.
         # This might change soon though if we want to have a country dropdown in one graph.
-        country_name = country_predictions[0].country
+        self.short_name = country_predictions[0].country
+        self.min_case_count = min(prediction.formula.min_case_count
+                                  for prediction in country_predictions)
 
         # TODO(lukas): Figure out better strategy for more predictions
         if len(country_predictions) >= 1:
             self.prediction_date = country_predictions[0].prediction_event.date.strftime("%Y-%m-%d")
 
-        # Due to plotly limitations, we can only have graphs with dates on the x-axis when we
-        # aren't using logs.
-        axis_type = XAxisType.Dated if graph_type == GraphType.Normal else XAxisType.Numbered
-
-        report = CountryReport(country_data_file=data_dir / f'{country_name}.data')
+        report = CountryReport(country_data_file=data_dir / f'{self.short_name}.data')
+        self.long_name = report.name
 
         first_idx, last_idx, self.curves = Curve.create_curves(
             [prediction.formula for prediction in country_predictions],
             report.cumulative_active,
             report.dates[0],
-            axis_type,
         )
-        self.name = report.name
-        self.min_case_count = min(prediction.formula.min_case_count
-                                  for prediction in country_predictions)
-
         self.cumulative_active = report.cumulative_active[first_idx:].copy()
         self.date_list = report.dates_str[first_idx:]
-        if axis_type == XAxisType.Dated:
-            self.t = self.date_list
-        else:
-            self.t = np.arange(len(self.cumulative_active)) + 1
+        self.t = np.arange(len(self.cumulative_active)) + 1
 
-    def create_country_figure(self):
+    def create_country_figure(self, graph_type: GraphType):
+
+        # Due to plotly limitations, we can only have graphs with dates on the x-axis when we
+        # aren't using logs.
+        axis_type = XAxisType.Dated if graph_type == GraphType.Normal else XAxisType.Numbered
+
+        def pick_xaxis_labels(object):
+            if axis_type == XAxisType.Dated:
+                return object.date_list
+            else:
+                return object.t
+
         colors = ['SteelBlue', 'Purple', 'Green'][:len(self.curves)]
-
         shapes = [
             # Add vertical dotted lines marking the maxima
             dict(type="line",
-                 x0=curve.t[curve.maximal_idx],
-                 y0=0,
-                 x1=curve.t[curve.maximal_idx],
+                 x0=pick_xaxis_labels(curve)[curve.maximal_idx],
+                 y0=1,
+                 x1=pick_xaxis_labels(curve)[curve.maximal_idx],
                  y1=curve.maximal_y,
                  line=dict(width=2, dash="dash", color=color))
             for color, curve in zip(colors, self.curves)
@@ -80,8 +78,8 @@ class CountryGraph:
             shapes.append(
                 dict(type="rect",
                      yref="paper",
-                     x0=self.t[0],
-                     x1=self.t[prediction_date],
+                     x0=pick_xaxis_labels(self)[0],
+                     x1=pick_xaxis_labels(self)[prediction_date],
                      y0=0,
                      y1=1,
                      fillcolor="LightGreen",
@@ -91,18 +89,21 @@ class CountryGraph:
         except ValueError:
             pass
 
+        maximal_y = max(max(curve.maximal_y for curve in self.curves), max(self.cumulative_active))
         layout = Layout(
-            title=f"Active cases in {self.name}",
+            title=f"Active cases in {self.long_name}",
             xaxis=dict(
                 autorange=True,
                 title=f'Day [starting at the {self.min_case_count}th case]',
                 showgrid=False,
             ),
             yaxis=dict(
-                autorange=True,
                 tickformat=',.0f',
-                title=f'COVID-19 active cases in {self.name}',
+                title=f'COVID-19 active cases in {self.short_name}',
                 gridcolor='LightGray',
+                autorange=True,
+                # setting range fails on log-scale graphs
+                # range=[1, maximal_y],
                 zerolinecolor='Gray',
             ),
             height=700,
@@ -117,7 +118,7 @@ class CountryGraph:
         for color, curve in zip(colors, self.curves):
             figure.add_trace(
                 Scatter(
-                    x=curve.t,
+                    x=pick_xaxis_labels(curve),
                     y=curve.y,
                     text=curve.date_list,
                     mode='lines',
@@ -130,7 +131,7 @@ class CountryGraph:
 
         figure.add_trace(
             Scatter(
-                x=self.t,
+                x=pick_xaxis_labels(curve),
                 y=self.cumulative_active,
                 mode='lines+markers',
                 name="Active cases",
@@ -138,12 +139,12 @@ class CountryGraph:
                 line=dict(width=3, color='rgb(239, 85, 59)'),
             ))
 
-        if self.graph_type == GraphType.Normal:
+        if graph_type == GraphType.Normal:
             figure.update_yaxes(type="linear")
-        elif self.graph_type == GraphType.SemiLog:
+        elif graph_type == GraphType.SemiLog:
             figure.update_xaxes(type="linear")
             figure.update_yaxes(type="log")
-        elif self.graph_type == GraphType.LogLog:
+        elif graph_type == GraphType.LogLog:
             figure.update_xaxes(type="log")
             figure.update_yaxes(type="log")
         return figure
@@ -162,7 +163,5 @@ class CountryGraph:
 )
 def show_country_plot(data_dir: Path, country_name: str):
     country_predictions = prediction_db.predictions_for_country(country=country_name)
-    country_graph = CountryGraph(data_dir=data_dir,
-                                 country_predictions=country_predictions,
-                                 graph_type=GraphType.Normal)
-    country_graph.create_country_figure().show()
+    country_graph = CountryGraph(data_dir=data_dir, country_predictions=country_predictions)
+    country_graph.create_country_figure(GraphType.Normal).show()

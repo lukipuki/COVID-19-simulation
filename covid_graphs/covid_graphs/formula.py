@@ -41,7 +41,7 @@ def first_day_of_curve(cumulative_active, formula):
     return np.argmax(cumulative_active > formula.min_case_count)
 
 
-class Curve():
+class Curve:
     """
     Class containing a curve derived from a formula.
 
@@ -51,23 +51,20 @@ class Curve():
     first_date - date corresponding to cumulative_active[0]
     xaxis_type - whether we label with numbers or dates
     """
-    def __init__(self, formula, cumulative_active, first_idx, last_idx, first_date, xaxis_type):
+    def __init__(self, formula, cumulative_active, first_idx, last_idx, first_date):
         self.text = formula.text
         start_idx = first_day_of_curve(cumulative_active, formula)
         length = last_idx - start_idx + 1
         self.y = formula.lambd(np.arange(length) + 1)
+        self.t = np.arange(length) + 1 + (start_idx - first_idx)
         self.date_list = [(first_date + timedelta(days=d)).strftime('%Y-%m-%d')
                           for d in range(start_idx, last_idx + 1)]
-        if xaxis_type == XAxisType.Numbered:
-            self.t = np.arange(length) + 1 + (start_idx - first_idx)
-        else:
-            self.t = self.date_list
 
         self.maximal_y = self.y.max()
         self.maximal_idx = self.y.argmax()
 
     @staticmethod
-    def create_curves(formulas, cumulative_active, first_date, xaxis_type=XAxisType.Dated):
+    def create_curves(formulas, cumulative_active, first_date):
         """Evaluates a list of formulas and finds a suitable range in the graph"""
         first_idx = min(first_day_of_curve(cumulative_active, formula) for formula in formulas)
         last_idx = max(
@@ -76,6 +73,6 @@ class Curve():
         last_idx = max(last_idx, len(cumulative_active) - 1)
 
         return (first_idx, last_idx, [
-            Curve(formula, cumulative_active, first_idx, last_idx, first_date, xaxis_type)
+            Curve(formula, cumulative_active, first_idx, last_idx, first_date)
             for formula in formulas
         ])

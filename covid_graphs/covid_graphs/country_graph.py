@@ -2,19 +2,13 @@ from enum import Enum
 from plotly.graph_objs import Figure, Layout, Scatter
 import click
 import click_pathlib
-import dash
-import dash_core_components as dcc
-import dash_html_components as html
-from flask import Flask
 import numpy as np
 from pathlib import Path
+from typing import List
 
-from .predictions import prediction_db
+from .predictions import prediction_db, CountryPrediction
 from .country_report import CountryReport
 from .formula import Curve, XAxisType
-
-# TODO: Remove after graph display refactoring.
-PREDICTION_DATE = '2020-03-29'
 
 
 class GraphType(Enum):
@@ -28,13 +22,28 @@ class GraphType(Enum):
 
 class CountryGraph:
     """Constructs a graph for a given country"""
-    def __init__(self, data_dir: Path, country_name: str, graph_type: GraphType = GraphType.Normal):
-        country_predictions = prediction_db.predictions_for_country(country=country_name)
+    def __init__(
+        self,
+        data_dir: Path,
+        country_predictions: List[CountryPrediction],
+        graph_type: GraphType = GraphType.Normal,
+    ):
         self.graph_type = graph_type
+
+        # TODO(miskosz): We assume there is only one country.
+        # This might change soon though if we want to have a country dropdown in one graph.
+        country_name = country_predictions[0].country
+
+        # TODO(lukas): Figure out better strategy for more predictions
+        if len(country_predictions) >= 1:
+            self.prediction_date = country_predictions[0].prediction_event.date.strftime("%Y-%m-%d")
+
         # Due to plotly limitations, we can only have graphs with dates on the x-axis when we
         # aren't using logs.
         axis_type = XAxisType.Dated if graph_type == GraphType.Normal else XAxisType.Numbered
+
         report = CountryReport(country_data_file=data_dir / f'{country_name}.data')
+
         first_idx, last_idx, self.curves = Curve.create_curves(
             [prediction.formula for prediction in country_predictions],
             report.cumulative_active,
@@ -64,7 +73,7 @@ class CountryGraph:
                  line=dict(width=2, dash='dot')) for curve in self.curves
         ]
         try:
-            prediction_date = self.date_list.index(PREDICTION_DATE)
+            prediction_date = self.date_list.index(self.prediction_date)
             # Add green zone marking the data available at the prediction date.
             shapes.append(
                 dict(type="rect",
@@ -132,79 +141,6 @@ class CountryGraph:
             figure.update_yaxes(type="log")
         return figure
 
-    @staticmethod
-    def create_dashboard(data_dir: Path, server: Flask, graph_type: GraphType = GraphType.Normal):
-        countries = sorted(prediction_db.get_countries())
-        country_graphs = [
-            CountryGraph(data_dir, country_name, graph_type) for country_name in countries
-            if (data_dir / f'{country_name}.data').is_file()
-        ]
-        country_graphs.sort(key=lambda country: country.name)
-
-        app = dash.Dash(
-            name=f'COVID-19 {graph_type}',
-            url_base_pathname=f'/covid19/{graph_type}/',
-            server=server,
-            external_scripts=[
-                'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML'
-            ])
-        app.title = 'COVID-19 predictions'
-        if graph_type != GraphType.Normal:
-            app.title += f' on a {graph_type} graph'
-
-        graphs = [
-            dcc.Graph(id=f'{country_graph.name} {graph_type}',
-                      figure=country_graph.create_country_figure())
-            for country_graph in country_graphs
-        ]
-
-        prediction_link = "https://www.facebook.com/permalink.php?"\
-            "story_fbid=10113020662000793&id=2247644"
-        france_link = "https://www.reuters.com/article/us-health-coronavirus-france-toll/" \
-            "french-coronavirus-cases-jump-above-chinas-after-including-nursing-home-tally-idUSKBN21L3BG"
-        content = [
-            html.H1(children='COVID-19 predictions of Boďová and Kollár'),
-            html.P(children=[
-                'On 2020-03-30, mathematicians Katarína Boďová and Richard Kollár ',
-                html.A('made predictions about 7 countries', href=prediction_link),
-                f'. The data available up to that point (until {PREDICTION_DATE}) is in the ',
-                html.Span('green zone', style={'color': 'green'}),
-                f'. Data coming after {PREDICTION_DATE} is in the ',
-                html.Span('blue zone.', style=dict(color='blue')),
-                dcc.Markdown("""
-                The predicted number of active cases <em>N</em>(<em>t</em>) on day <em>t</em> is
-                calculated as follows (constants <em>A</em> and <em>T</em><sub><em>G</em></sub>
-                are country-specific):
-                <em>N</em>(<em>t</em>) = (<em>A</em>/<em>T</em><sub><em>G</em></sub>) ⋅
-                (<em>t</em>/<em>T</em><sub><em>G</em></sub>)<sup>6.23</sup> /
-                e<sup><em>t</em>/<em>T</em><sub><em>G</em></sub></sup>
-                """,
-                             dangerously_allow_html=True)
-            ]),
-            dcc.Markdown("""
-                ### References
-                * [Polynomial growth in age-dependent branching processes with diverging
-                  reproductive number](https://arxiv.org/abs/cond-mat/0505116) by Alexei Vazquez
-                * [Fractal kinetics of COVID-19 pandemic]
-                  (https://www.medrxiv.org/content/10.1101/2020.02.16.20023820v2.full.pdf)
-                  by Robert Ziff and Anna Ziff
-                * Unpublished manuscript by Katarína Boďová and Richard Kollár
-                """),
-            dcc.Markdown(f"""
-                ### Notes about the graphs
-
-                * Dashed lines are the predictions, solid red lines are the real active
-                  cases. Black dotted lines mark the predicted maximums.
-                * We've now added new prediction made on 2020-04-13 by the same authors. There's a
-                  second dashed line for Italy, Spain, USA and Germany.
-                * France has been excluded, since they [screwed up daily data reporting]({france_link}).
-                """,
-                         dangerously_allow_html=True)
-        ] + graphs
-
-        app.layout = html.Div(children=content, style={'font-family': 'sans-serif'})
-        return app
-
 
 @click.command(help='COVID-19 country growth visualization')
 @click.argument(
@@ -218,7 +154,8 @@ class CountryGraph:
     type=str,
 )
 def show_country_plot(data_dir: Path, country_name: str):
+    country_predictions = prediction_db.predictions_for_country(country=country_name)
     country_graph = CountryGraph(data_dir=data_dir,
-                                 country_name=country_name,
+                                 country_predictions=country_predictions,
                                  graph_type=GraphType.Normal)
     country_graph.create_country_figure().show()

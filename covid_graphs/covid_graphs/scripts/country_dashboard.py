@@ -1,6 +1,7 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+from dash.dependencies import Input, Output
 from flask import Flask
 from pathlib import Path
 
@@ -9,45 +10,73 @@ from covid_graphs.predictions import prediction_db, PredictionEvent
 
 
 def create_dashboard(
-    data_dir: Path,
-    server: Flask,
-    prediction_event: PredictionEvent,
-    graph_type: GraphType,
+        data_dir: Path,
+        server: Flask,
+        prediction_event: PredictionEvent,
 ):
     # TODO(miskosz): Don't use print.
-    print(f"Creating dashboard for {prediction_event.name} {graph_type} graphs.")
+    print(f"Creating dashboard for {prediction_event.name} graphs.")
 
     predictions = prediction_db.predictions_for_event(prediction_event)
 
     # Note: We silently assume there is only one prediction per country.
     country_graphs = [
-        CountryGraph(data_dir, [country_prediction], graph_type)
-        for country_prediction in predictions
+        CountryGraph(data_dir, [country_prediction]) for country_prediction in predictions
         if (data_dir / f'{country_prediction.country}.data').is_file()
     ]
-    country_graphs.sort(key=lambda graph: graph.name)
+    country_graphs.sort(key=lambda graph: graph.short_name)
 
     app = dash.Dash(
-        name=f'COVID-19 {graph_type}',
-        url_base_pathname=f'/covid19/{prediction_event.name}/{graph_type}/',
+        name=f'COVID-19 predictions {prediction_event.name}',
+        url_base_pathname=f'/covid19/{prediction_event.name}/',
         server=server,
         external_scripts=[
             'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML'
         ],
     )
     app.title = 'COVID-19 predictions of Boďová and Kollár'
-    if graph_type != GraphType.Normal:
-        app.title += f' on a {graph_type} graph'
 
-    graphs = [
-        dcc.Graph(id=f'{country_graph.name} {graph_type}',
-                  figure=country_graph.create_country_figure())
-        for country_graph in country_graphs
+    content = _get_header_content(prediction_event, app.title)
+    content += [html.Hr()]
+    buttons = [
+        dcc.Dropdown(id='country',
+                     options=[
+                         dict(label=graph.short_name, value=graph.short_name)
+                         for graph in country_graphs
+                     ],
+                     value='Italy',
+                     style={'width': '30%'}),
+        dcc.RadioItems(id='graph-type',
+                       options=[{
+                           'label': str(graph_type),
+                           'value': str(graph_type),
+                       } for graph_type in [GraphType.Normal, GraphType.SemiLog, GraphType.LogLog]],
+                       value='normal',
+                       labelStyle={'display': 'inline-block'})
     ]
-
-    content = _get_header_content(prediction_event, app.title) + graphs
+    content += buttons
+    content += [dcc.Graph(id='country-graph', figure=dict(layout=dict(height=700)))]
 
     app.layout = html.Div(children=content, style={'font-family': 'sans-serif'})
+
+    @app.callback(
+        Output('country-graph', component_property='figure'),
+        [Input('graph-type', 'value'), Input('country', 'value')])
+    def update_graph(graph_type_str, country):
+        #TODO: figure out a way of skipping this mess
+        graph_type = GraphType.Normal
+        if graph_type_str == 'semi-log':
+            graph_type = GraphType.SemiLog
+        elif graph_type_str == 'log-log':
+            graph_type = GraphType.LogLog
+
+        graphs = [
+            country_graph for country_graph in country_graphs if country_graph.short_name == country
+        ]
+
+        figure = graphs[0].create_country_figure(graph_type)
+        return figure
+
     return app
 
 

@@ -2,22 +2,19 @@ os: linux
 language: python
 python: "3.7"
 dist: bionic
-install:
-  - pip install conan
-  - conan user
-  - conan profile new default --detect
-  - conan profile update settings.compiler.libcxx=libstdc++11 default
-  - pip install -r covid_graphs/dev_requirements.txt
-  - pip install covid_graphs/
-jobs:
+matrix:
   include:
-    - stage:
-      - name: "C++ tests"
-        script:
+    - install:
+        - pip install conan
+        - conan user
+        - conan profile new default --detect
+        - conan profile update settings.compiler.libcxx=libstdc++11 default
+      script:
         - conan create -b gtest -b missing .
-      - name: "Python tests"
-        script:
+    - install:
+        - pip install -r covid_graphs/dev_requirements.txt
+        - pip install covid_graphs/
+      script:
         - pushd covid_graphs/
         - ./run_tests.sh
         - popd
-script: echo "hello"

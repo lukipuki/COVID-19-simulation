@@ -13,12 +13,15 @@ find_package(Protobuf REQUIRED)
 protobuf_generate_cpp(SRCS_SIMULATION HDRS_SIMULATION src/simulation_results.proto)
 protobuf_generate_cpp(SRCS_COUNTRY HDRS_COUNTRY src/country_data.proto)
 
+option(C19_EXPONENTIAL_GROWTH "Run with exponential growth" OFF)
+
 add_executable(simulation src/simulation.cpp ${SRCS_SIMULATION} ${SRCS_COUNTRY} ${HDRS_SIMULATION}
   ${HDRS_COUNTRY})
 target_compile_features(simulation PRIVATE cxx_std_17)
 target_link_libraries(simulation PRIVATE $<$<BOOL:${OpenMP_FOUND}>:OpenMP::OpenMP_CXX>
   protobuf::libprotobuf)
 target_include_directories(simulation PRIVATE src/ ${CMAKE_CURRENT_BINARY_DIR}/)
+target_compile_definitions(simulation PUBLIC $<$<BOOL:${C19_EXPONENTIAL_GROWTH}>:EXPONENTIAL_GROWTH>)
 
 install(TARGETS simulation
   RUNTIME DESTINATION bin

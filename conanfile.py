@@ -14,11 +14,15 @@ class COVID19Simulation(ConanFile):
         "url": "auto"
     }
 
+    options = {'growth_type': ['exponential', 'polynomial']}
+    default_options = dict(growth_type='polynomial')
+
     build_requires = "gtest/1.8.1", "protoc_installer/3.9.1@bincrafters/stable"
     requires = "protobuf/3.9.1"
 
     def build(self):
         cmake = CMake(self)
+        cmake.definitions['C19_EXPONENTIAL_GROWTH'] = self.options.growth_type == 'exponential'
         cmake.configure()
 
         if self.should_build:

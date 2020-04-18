@@ -377,3 +377,67 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 27
+  recovered: 84
+  tested: 1324
+  date {
+    day: 12
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  positive: 66
+  recovered: 6
+  tested: 1302
+  date {
+    day: 13
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 4
+  positive: 28
+  recovered: 38
+  tested: 1439
+  date {
+    day: 14
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 114
+  recovered: 16
+  tested: 2967
+  date {
+    day: 15
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 72
+  recovered: 8
+  tested: 3351
+  date {
+    day: 16
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 40
+  recovered: 38
+  tested: 3144
+  date {
+    day: 17
+    month: 4
+    year: 2020
+  }
+}

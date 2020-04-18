@@ -24,7 +24,8 @@ Conan is able to download the dependencies and compile the project. However, you
 ```sh
 conan create -b gtest -b missing $PATH_TO_THIS_REPOSITORY
 conan install -g deploy 'COVID-19-simulation/1.0.0@'
-# The simulation binary is in COVID-19-simulation/bin
+# Alternatively, adding '-o growth_type=exponential' creates a binary with simulated exponential growth.
+# The simulation binary will be in COVID-19-simulation/bin.
 ```
 
 You can also use Conan to install `protoc`.

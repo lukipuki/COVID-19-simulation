@@ -13,16 +13,18 @@
 #include "population_model.h"
 #include "simulation_results.pb.h"
 
-// #define EXPONENTIAL_GROWTH
-// constexpr bool kExponentialGrowth = true;
+#ifdef EXPONENTIAL_GROWTH
+constexpr bool kExponentialGrowth = true;
+#else
 constexpr bool kExponentialGrowth = false;
+#endif
 
 constexpr uint32_t kRestrictionDay = 8 + static_cast<int>(kExponentialGrowth) * 3;
 constexpr double kGamma1 = 1.25;
 constexpr uint32_t kExtraDays = 10;  // Extra simulated days of infections
 
 // Only serialize good parameters, scoring below kScoreThreshold
-constexpr double kScoreThreshold = 300;
+constexpr double kScoreThreshold = 380;
 
 class Simulator {
  public:
@@ -122,10 +124,10 @@ int main(int argc, char* argv[]) {
 #pragma omp parallel for shared(positive, tested)
 #ifdef EXPONENTIAL_GROWTH
   // Yes, it's #ifdef, because 'if constexpr' sucks
-  for (uint32_t g = 96; g <= 106; g += 2) {
+  for (uint32_t g = 99; g <= 105; g += 1) {
     auto generator = ExponentialGenerator(kGamma1, g / 100.0);
 #else
-  for (uint32_t g = 126; g <= 132; g += 2) {
+  for (uint32_t g = 128; g <= 136; g += 2) {
     auto generator = PolynomialGenerator(kGamma1, g / 100.0);
 #endif
     double param = g / 100.0;

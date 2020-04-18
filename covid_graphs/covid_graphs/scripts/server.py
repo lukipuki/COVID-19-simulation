@@ -25,7 +25,7 @@ CURRENT_DIR = Path(__file__).parent
 )
 def run_server(data_dir: Path) -> None:
     """Creates and runs a flask server."""
-    server = Flask(__name__, template_folder=CURRENT_DIR)
+    server = Flask(__name__, template_folder=str(CURRENT_DIR))
 
     @server.route("/")
     def home():

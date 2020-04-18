@@ -42,7 +42,7 @@ def create_dashboard(
     buttons = [
         dcc.Dropdown(id='country-short-name',
                      options=[
-                         dict(label=graph.short_name, value=graph.short_name)
+                         dict(label=graph.long_name, value=graph.short_name)
                          for graph in country_graphs
                      ],
                      value='Italy',

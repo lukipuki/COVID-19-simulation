@@ -5,10 +5,8 @@ from pathlib import Path
 from time import sleep
 import click
 import click_pathlib
-import itertools
 
 from covid_graphs import predictions
-from covid_graphs.country_graph import GraphType
 from covid_graphs.heat_map import create_heat_map_dashboard
 from covid_graphs.simulation_report import GrowthType
 
@@ -35,7 +33,7 @@ def run_server(data_dir: Path) -> None:
 
     @server.route("/covid19/normal")
     def covid19_redirect():
-        return redirect(url_for("covid19_predictions", event="apr12", graph_type="normal"))
+        return redirect(url_for("covid19_predictions", event="apr12"))
 
     i = adapters.InotifyTree(str(data_dir),
                              mask=(constants.IN_MODIFY | constants.IN_DELETE
@@ -66,24 +64,19 @@ def _create_prediction_apps(data_dir: Path, server: Flask):
         "mar29": predictions.BK_20200329,
         "apr12": predictions.BK_20200412,
     }
-    graph_type_by_route = {
-        "normal": GraphType.Normal,
-        "semilog": GraphType.SemiLog,
-        "loglog": GraphType.LogLog,
+
+    prediction_apps = {
+        event_route:
+        country_dashboard.create_dashboard(data_dir=data_dir,
+                                           server=server,
+                                           prediction_event=event_by_route[event_route])
+        for event_route in event_by_route
     }
-    route_pairs = itertools.product(event_by_route.keys(), graph_type_by_route.keys())
 
-    prediction_apps = {(event_route, graph_type_route): country_dashboard.create_dashboard(
-        data_dir=data_dir,
-        server=server,
-        prediction_event=event_by_route[event_route],
-        graph_type=graph_type_by_route[graph_type_route],
-    )
-                       for event_route, graph_type_route in route_pairs}
-
-    @server.route("/covid19/predictions/<event>/<graph_type>")
-    def covid19_predictions(event: str, graph_type: str):
-        return prediction_apps[(event, graph_type)].index()
+    # TODO(lukas): add redirect @server.route("/covid19/predictions/latest")
+    @server.route("/covid19/predictions/<event>")
+    def covid19_predictions(event: str):
+        return prediction_apps[event].index()
 
 
 def _create_simulation_apps(server: Flask, data_dir: Path):

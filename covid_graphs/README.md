@@ -24,11 +24,9 @@ Run `covid_graphs.run_server --help` for help on command parameters.
 ## Local development
 
 This script creates a virtual environment with all development dependencies.
-Don't forget to activate the environment:
 ```sh
 ./create_dev_venv.sh
-source .venv/bin/activate
-```
+source .venv/bin/activate # Don't forget to activate the environment
 
 To run tests, simply run:
 ```sh

@@ -12,9 +12,9 @@ from .formula import Curve, XAxisType
 
 
 class GraphType(Enum):
-    Normal = 'normal'
-    SemiLog = 'semi-log'
-    LogLog = 'log-log'
+    Normal = "normal"
+    SemiLog = "semi-log"
+    LogLog = "log-log"
 
     def __str__(self):
         return self.value
@@ -22,22 +22,22 @@ class GraphType(Enum):
 
 class CountryGraph:
     """Constructs a graph for a given country"""
+
     def __init__(
-            self,
-            data_dir: Path,
-            country_predictions: List[CountryPrediction],
+        self, data_dir: Path, country_predictions: List[CountryPrediction],
     ):
         # TODO(miskosz): We assume there is only one country.
         # This might change soon though if we want to have a country dropdown in one graph.
         self.short_name = country_predictions[0].country
-        self.min_case_count = min(prediction.formula.min_case_count
-                                  for prediction in country_predictions)
+        self.min_case_count = min(
+            prediction.formula.min_case_count for prediction in country_predictions
+        )
 
         # TODO(lukas): Figure out better strategy for more predictions
         if len(country_predictions) >= 1:
             self.prediction_date = country_predictions[0].prediction_event.date.strftime("%Y-%m-%d")
 
-        report = CountryReport(country_data_file=data_dir / f'{self.short_name}.data')
+        report = CountryReport(country_data_file=data_dir / f"{self.short_name}.data")
         self.long_name = report.name
 
         first_idx, last_idx, self.curves = Curve.create_curves(
@@ -61,31 +61,36 @@ class CountryGraph:
             else:
                 return object.t
 
-        colors = ['SteelBlue', 'Purple', 'Green'][:len(self.curves)]
+        colors = ["SteelBlue", "Purple", "Green"][: len(self.curves)]
         shapes = [
             # Add vertical dotted lines marking the maxima
-            dict(type="line",
-                 x0=pick_xaxis_labels(curve)[curve.maximal_idx],
-                 y0=1,
-                 x1=pick_xaxis_labels(curve)[curve.maximal_idx],
-                 y1=curve.maximal_y,
-                 line=dict(width=2, dash="dash", color=color))
+            dict(
+                type="line",
+                x0=pick_xaxis_labels(curve)[curve.maximal_idx],
+                y0=1,
+                x1=pick_xaxis_labels(curve)[curve.maximal_idx],
+                y1=curve.maximal_y,
+                line=dict(width=2, dash="dash", color=color),
+            )
             for color, curve in zip(colors, self.curves)
         ]
         try:
             prediction_date = self.date_list.index(self.prediction_date)
             # Add green zone marking the data available at the prediction date.
             shapes.append(
-                dict(type="rect",
-                     yref="paper",
-                     x0=pick_xaxis_labels(self)[0],
-                     x1=pick_xaxis_labels(self)[prediction_date],
-                     y0=0,
-                     y1=1,
-                     fillcolor="LightGreen",
-                     opacity=0.3,
-                     layer="below",
-                     line_width=0))
+                dict(
+                    type="rect",
+                    yref="paper",
+                    x0=pick_xaxis_labels(self)[0],
+                    x1=pick_xaxis_labels(self)[prediction_date],
+                    y0=0,
+                    y1=1,
+                    fillcolor="LightGreen",
+                    opacity=0.4,
+                    layer="below",
+                    line_width=0,
+                )
+            )
         except ValueError:
             pass
 
@@ -94,24 +99,24 @@ class CountryGraph:
             title=f"Active cases in {self.long_name}",
             xaxis=dict(
                 autorange=True,
-                title=f'Day [starting at the {self.min_case_count}th case]',
+                title=f"Day [starting at the {self.min_case_count}th case]",
                 showgrid=False,
             ),
             yaxis=dict(
-                tickformat=',.0f',
-                title=f'COVID-19 active cases in {self.short_name}',
-                gridcolor='LightGray',
+                tickformat=",.0f",
+                title=f"COVID-19 active cases in {self.short_name}",
+                gridcolor="LightGray",
                 autorange=True,
                 # setting range fails on log-scale graphs
                 # range=[1, maximal_y],
-                zerolinecolor='Gray',
+                zerolinecolor="Gray",
             ),
             height=700,
             shapes=shapes,
-            hovermode='x',
+            hovermode="x",
             font=dict(size=18),
             legend=dict(x=0.01, y=0.99, borderwidth=1),
-            plot_bgcolor='White',
+            plot_bgcolor="White",
         )
 
         figure = Figure(layout=layout)
@@ -121,23 +126,22 @@ class CountryGraph:
                     x=pick_xaxis_labels(curve),
                     y=curve.y,
                     text=curve.date_list,
-                    mode='lines',
+                    mode="lines",
                     name=curve.text,
-                    line={
-                        'width': 2,
-                        'color': color
-                    },
-                ))
+                    line={"width": 2, "color": color},
+                )
+            )
 
         figure.add_trace(
             Scatter(
                 x=pick_xaxis_labels(curve),
                 y=self.cumulative_active,
-                mode='lines+markers',
+                mode="lines+markers",
                 name="Active cases",
                 marker=dict(size=8),
-                line=dict(width=3, color='rgb(239, 85, 59)'),
-            ))
+                line=dict(width=3, color="rgb(239, 85, 59)"),
+            )
+        )
 
         if graph_type == GraphType.Normal:
             figure.update_yaxes(type="linear")
@@ -150,16 +154,12 @@ class CountryGraph:
         return figure
 
 
-@click.command(help='COVID-19 country growth visualization')
+@click.command(help="COVID-19 country growth visualization")
 @click.argument(
-    "data_dir",
-    required=True,
-    type=click_pathlib.Path(exists=True),
+    "data_dir", required=True, type=click_pathlib.Path(exists=True),
 )
 @click.argument(
-    "country_name",
-    required=True,
-    type=str,
+    "country_name", required=True, type=str,
 )
 def show_country_plot(data_dir: Path, country_name: str):
     country_predictions = prediction_db.predictions_for_country(country=country_name)

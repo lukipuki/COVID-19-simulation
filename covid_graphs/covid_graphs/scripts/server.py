@@ -33,7 +33,7 @@ def run_server(data_dir: Path) -> None:
 
     @server.route("/covid19/normal")
     def covid19_redirect():
-        return redirect(url_for("covid19_predictions", event="apr12"))
+        return redirect(url_for("covid19_predictions", event="apr11"))
 
     i = adapters.InotifyTree(str(data_dir),
                              mask=(constants.IN_MODIFY | constants.IN_DELETE
@@ -62,7 +62,7 @@ def _create_prediction_apps(data_dir: Path, server: Flask):
     # Note: Event route strings might become part the PredictionEvent class.
     event_by_route = {
         "mar29": predictions.BK_20200329,
-        "apr12": predictions.BK_20200412,
+        "apr11": predictions.BK_20200411,
     }
 
     prediction_apps = {

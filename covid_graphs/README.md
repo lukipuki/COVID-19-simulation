@@ -15,7 +15,6 @@ environment, install the `covid_graphs` package an run the server.
 ```sh
 python3.7 -m venv your/path/to/venv
 source your/path/to/venv/bin/activate
-pip install --upgrade setuptools
 pip install -e . # With -e the package will automatically reload with any local changes.
 covid_graphs.run_server --data-dir data
 ```

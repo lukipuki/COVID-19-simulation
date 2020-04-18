@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from setuptools import find_namespace_packages, setup
+from setuptools import find_packages, setup
 
 setup(
     name="covid_graphs",
@@ -21,7 +21,7 @@ setup(
     ],
     dependency_links=[],
     python_requires=">=3.7",
-    packages=find_namespace_packages(),
+    packages=find_packages(),
     entry_points={
         "console_scripts": [
             "covid_graphs.run_server = covid_graphs.scripts.server:run_server",

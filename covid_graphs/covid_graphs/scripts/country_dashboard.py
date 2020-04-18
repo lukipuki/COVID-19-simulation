@@ -2,6 +2,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
+from datetime import timedelta
 from flask import Flask
 from pathlib import Path
 
@@ -48,10 +49,10 @@ def create_dashboard(
                      style={'width': '30%'}),
         dcc.RadioItems(id='graph-type',
                        options=[{
-                           'label': str(graph_type),
-                           'value': str(graph_type),
+                           'label': graph_type.value,
+                           'value': graph_type.name,
                        } for graph_type in [GraphType.Normal, GraphType.SemiLog, GraphType.LogLog]],
-                       value='normal',
+                       value='Normal',
                        labelStyle={'display': 'inline-block'})
     ]
     content += buttons
@@ -63,12 +64,7 @@ def create_dashboard(
         Output('country-graph', component_property='figure'),
         [Input('graph-type', 'value'), Input('country', 'value')])
     def update_graph(graph_type_str, country):
-        #TODO: figure out a way of skipping this mess
-        graph_type = GraphType.Normal
-        if graph_type_str == 'semi-log':
-            graph_type = GraphType.SemiLog
-        elif graph_type_str == 'log-log':
-            graph_type = GraphType.LogLog
+        graph_type = GraphType[graph_type_str]
 
         graphs = [
             country_graph for country_graph in country_graphs if country_graph.short_name == country
@@ -88,11 +84,12 @@ def _get_header_content(prediction_event: PredictionEvent, title: str):
         "story_fbid=10113020662000793&id=2247644"
     france_link = "https://www.reuters.com/article/us-health-coronavirus-france-toll/" \
         "french-coronavirus-cases-jump-above-chinas-after-including-nursing-home-tally-idUSKBN21L3BG"
+    next_day = prediction_event.date + timedelta(days=1)
     return [
         html.H1(children=title),
         html.P(children=[
             # TODO: fix the date
-            'On 2020-03-30, mathematicians Katarína Boďová and Richard Kollár ',
+            f'On {next_day}, mathematicians Katarína Boďová and Richard Kollár ',
             html.A('made predictions about 7 countries', href=prediction_link),
             f'. The data available up to that point (until {prediction_date_str}) is in the ',
             html.Span('light green zone', style={'background-color': 'lightgreen'}),

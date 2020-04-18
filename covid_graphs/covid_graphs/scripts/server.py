@@ -73,6 +73,7 @@ def _create_prediction_apps(data_dir: Path, server: Flask):
         for event_route in event_by_route
     }
 
+    # TODO(lukas): add redirect @server.route("/covid19/predictions/latest")
     @server.route("/covid19/predictions/<event>")
     def covid19_predictions(event: str):
         return prediction_apps[event].index()

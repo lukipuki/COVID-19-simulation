@@ -100,7 +100,7 @@ class CountryGraph:
             ),
             yaxis=dict(
                 autorange=True,
-                tickformat='.0f',
+                tickformat=',.0f',
                 title=f'COVID-19 active cases in {self.name}',
                 gridcolor='LightGray',
                 zerolinecolor='Gray',

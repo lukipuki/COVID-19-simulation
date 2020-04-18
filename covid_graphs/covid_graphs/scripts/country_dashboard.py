@@ -66,7 +66,7 @@ def _get_header_content(prediction_event: PredictionEvent, title: str):
             'On 2020-03-30, mathematicians Katarína Boďová and Richard Kollár ',
             html.A('made predictions about 7 countries', href=prediction_link),
             f'. The data available up to that point (until {prediction_date_str}) is in the ',
-            html.Span('light green zone', style={'color': 'lightgreen'}),
+            html.Span('light green zone', style={'background-color': 'lightgreen'}),
             f'. Data coming after {prediction_date_str} is in the white zone.',
             dcc.Markdown(
                 """

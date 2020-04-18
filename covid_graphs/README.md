@@ -11,20 +11,31 @@ You can then access the server locally at [localhost:8081](http://127.0.0.1:8081
 
 ### Running without Docker
 Alternatively, you can run the server locally without Docker. Create a virtual
-environment, install the `covid_graphs` package an run the server.
+environment, install the `covid_graphs` package an run the server. You can use
+a script provided in this directory:
 ```sh
-python3.7 -m venv your/path/to/venv
-source your/path/to/venv/bin/activate
-pip install -e . # With -e the package will automatically reload with any local changes.
+./create_dev_venv.sh
+source .venv/bin/activate
 covid_graphs.run_server --data-dir data
 ```
 Run `covid_graphs.run_server --help` for help on command parameters.
 
 
-## Running standalone graphs
+## Local development
 
-For quick development or data examination, running standalone graphs is useful.
+This script creates a virtual environment with all development dependencies.
+Don't forget to activate the environment:
+```sh
+./create_dev_venv.sh
+source .venv/bin/activate
+```
 
+To run tests, simply run:
+```sh
+./run_tests.sh
+```
+
+For quick development or data examination, running standalone graphs can be useful.
 ```sh
 covid_graphs.show_country_plot data Spain
 covid_graphs.show_scatter_plot data/Slovakia.data polynomial.sim

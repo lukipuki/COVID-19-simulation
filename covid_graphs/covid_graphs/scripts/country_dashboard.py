@@ -40,7 +40,7 @@ def create_dashboard(
     content = _get_header_content(prediction_event, app.title)
     content += [html.Hr()]
     buttons = [
-        dcc.Dropdown(id='country',
+        dcc.Dropdown(id='country-short-name',
                      options=[
                          dict(label=graph.short_name, value=graph.short_name)
                          for graph in country_graphs
@@ -60,14 +60,15 @@ def create_dashboard(
 
     app.layout = html.Div(children=content, style={'font-family': 'sans-serif'})
 
-    @app.callback(
-        Output('country-graph', component_property='figure'),
-        [Input('graph-type', 'value'), Input('country', 'value')])
-    def update_graph(graph_type_str, country):
+    @app.callback(Output('country-graph', component_property='figure'),
+                  [Input('graph-type', 'value'),
+                   Input('country-short-name', 'value')])
+    def update_graph(graph_type_str, country_short_name):
         graph_type = GraphType[graph_type_str]
 
         graphs = [
-            country_graph for country_graph in country_graphs if country_graph.short_name == country
+            country_graph for country_graph in country_graphs
+            if country_graph.short_name == country_short_name
         ]
 
         figure = graphs[0].create_country_figure(graph_type)

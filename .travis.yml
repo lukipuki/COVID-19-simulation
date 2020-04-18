@@ -12,9 +12,12 @@ install:
 jobs:
   include:
     - stage:
-      - script:
+      - name: "C++ tests"
+        script:
         - conan create -b gtest -b missing .
-      - script:
+      - name: "Python tests"
+        script:
         - pushd covid_graphs/
         - ./run_tests.sh
         - popd
+script: echo "hello"

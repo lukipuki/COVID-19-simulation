@@ -125,7 +125,7 @@ int main(int argc, char* argv[]) {
   for (uint32_t g = 96; g <= 106; g += 2) {
     auto generator = ExponentialGenerator(kGamma1, g / 100.0);
 #else
-  for (uint32_t g = 122; g <= 130; g += 2) {
+  for (uint32_t g = 126; g <= 132; g += 2) {
     auto generator = PolynomialGenerator(kGamma1, g / 100.0);
 #endif
     double param = g / 100.0;
@@ -189,5 +189,7 @@ int main(int argc, char* argv[]) {
   std::fstream output(growth_type + ".sim", std::ios::out | std::ios::trunc | std::ios::binary);
   if (!results.SerializeToOstream(&output)) {
     std::cerr << "Failed to write results" << std::endl;
+  } else {
+    std::cout << "Wrote output to " << growth_type << ".sim" << std::endl;
   }
 }

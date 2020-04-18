@@ -1,6 +1,9 @@
 from collections import OrderedDict
+from flask import Flask
 from pathlib import Path
+from dataclasses import dataclass
 from plotly.graph_objs import Figure, Layout, Heatmap
+from typing import List, Dict
 import click
 import click_pathlib
 import dash
@@ -8,95 +11,107 @@ import dash_core_components as dcc
 import dash_html_components as html
 import math
 
-from .simulation_report import create_simulation_reports, GrowthType
+from .simulation_report import create_simulation_reports, SimulationReport, GrowthType
 
 
-class HeatMap():
-    def __init__(self, simulation_pb2_file: Path):
-        try:
-            reports = create_simulation_reports(simulation_pb2_file)
-            self.parsed_reports = True
-        except:
-            self.growth_type = GrowthType.Exponential
-            self.simulation_pb2_file = simulation_pb2_file
-            self.parsed_reports = False
-            return
+@dataclass
+class SimulationTable:
+    growth_type: GrowthType
+    param_name: str
+    param: float
+    # TODO(lukas): Consider using pandas DataFrame here, this is actually a table.
+    errors: Dict[int, Dict[int, float]]
 
-        self.best_errors = OrderedDict()
-        self.growth_type = None
-        for report in reports:
-            if self.growth_type is None:
-                self.growth_type = report.growth_type
-                self.param_name = "alpha" if self.growth_type == GrowthType.Polynomial else "gamma2"
 
-            errors_by_param = self.best_errors.setdefault(report.param, OrderedDict())
-            errors = errors_by_param.setdefault(report.prefix_length, [])
-            errors.append((report.b0, report.error))
+def group_data(simulation_reports: List[SimulationReport]) -> Dict[float, SimulationTable]:
+    """Groups data in SimulationReport's by the value of alpha or gamma2"""
+    heat_maps = OrderedDict()
+    for report in simulation_reports:
+        if report.param not in heat_maps:
+            param_name = "alpha" if report.growth_type == GrowthType.Polynomial else "gamma2"
+            simulation_table = heat_maps.setdefault(
+                report.param,
+                SimulationTable(report.growth_type, param_name, report.param, OrderedDict()))
+        else:
+            simulation_table = heat_maps[report.param]
+        errors_by_prefix = simulation_table.errors.setdefault(report.prefix_length, [])
+        errors_by_prefix.append((report.b0, report.error))
 
-    def create_heatmap(self, param, prefix_dict):
-        data = []
-        for key, value in prefix_dict.items():
-            value.sort()
-            b0_set = [x[0] for x in value]
-            data.append([math.log(x[1]) for x in value])
+    return heat_maps
 
-        layout = Layout(title=f'Logarithm of average error for {self.param_name} = {param}',
-                        xaxis=dict(title='$b_0$'),
-                        yaxis=dict(title='prefix length'),
-                        height=700,
-                        font={'size': 20})
 
-        figure = Figure(layout=layout)
-        figure.add_trace(
-            Heatmap(z=data,
-                    x=b0_set,
-                    y=list(prefix_dict.keys()),
-                    reversescale=True,
-                    colorscale='Viridis',
-                    hovertemplate='b0: %{x}<br>prefix_len: %{y}<br>'
-                    'log(error): %{z}<extra></extra>'))
+def create_heat_map(simulation_table: SimulationTable):
+    data = []
+    for key, value in simulation_table.errors.items():
+        value.sort()
+        b0_set = [x[0] for x in value]
+        data.append([math.log(x[1]) for x in value])
 
-        return figure
+    layout = Layout(title=f'Logarithm of average error for {simulation_table.param_name} = '
+                    f'{simulation_table.param}',
+                    xaxis=dict(title='$b_0$'),
+                    yaxis=dict(title='prefix length'),
+                    height=700,
+                    font={'size': 20})
 
-    def create_app(self, server):
-        app = dash.Dash(
-            name=f'COVID-19 {self.growth_type} heat map',
-            server=server,
-            url_base_pathname=f"/covid19/heatmap/{self.growth_type}/",
-            external_scripts=[
-                'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML'
-            ])
-        app.title = 'Heat map of a COVID-19 stochastic model, with {self.growth_type} growth'
-        if not self.parsed_reports:
-            app.layout = html.Div(
-                dcc.Markdown(f"""
-                # Error in parsing simulation proto file
+    figure = Figure(layout=layout)
+    figure.add_trace(
+        Heatmap(z=data,
+                x=b0_set,
+                y=list(simulation_table.errors.keys()),
+                reversescale=True,
+                colorscale='Viridis',
+                hovertemplate='b0: %{x}<br>prefix_len: %{y}<br>'
+                'log(error): %{z}<extra></extra>'))
 
-                The file `{self.simulation_pb2_file}` failed to parse or doesn't exist. Please
-                contact the site administrator.
-                """))
-            return app
+    return figure
 
-        graphs = [
-            dcc.Graph(id=f'{key}', figure=self.create_heatmap(key, value))
-            for key, value in sorted(self.best_errors.items())
-        ]
 
-        body = [
-            dcc.Markdown(f"""
-                # Visualizations of a COVID-19 stochastic model, with {self.growth_type} growth
-                Model is by Radoslav Harman. You can read the
-                [description of the model](http://www.iam.fmph.uniba.sk/ospm/Harman/COR01.pdf).
+def create_heat_map_dashboard(simulation_pb2_file: Path, server: Flask):
+    try:
+        simulation_reports = create_simulation_reports(simulation_pb2_file)
+    except ValueError:
+        app = dash.Dash(name=f'COVID-19 heat map', server=server)
+        app.layout = html.Div(dcc.Markdown(f"""
+            # Error in parsing simulation proto file
 
-                * Squares correspond to a combination of b<sub>0</sub> and prefix length.
-                * Heat is the average error for these parameters, averaged over 200 simulations.
-                  We show the logarithm of the error, since we want to emphasize differences
-                  between small values.
-            """,
-                         dangerously_allow_html=True)
-        ] + graphs
-        app.layout = html.Div(body, style={'font-family': 'sans-serif'})
+            The file `{simulation_pb2_file}` failed to parse.
+            Please contact the site administrator.
+            """),
+                              style={'font-family': 'sans-serif'})
         return app
+
+    growth_type = next(iter(simulation_reports)).growth_type
+    app = dash.Dash(
+        name=f'COVID-19 {growth_type} heat map',
+        server=server,
+        url_base_pathname=f"/covid19/heatmap/{growth_type}/",
+        external_scripts=[
+            'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML'
+        ])
+    app.title = 'Heat map of a COVID-19 stochastic model, with {growth_type} growth'
+
+    simulation_tables = group_data(simulation_reports)
+    graphs = [
+        dcc.Graph(id=f'{simulation_table.param}', figure=create_heat_map(simulation_table))
+        for simulation_table in simulation_tables.values()
+    ]
+
+    body = [
+        dcc.Markdown(f"""
+            # Visualizations of a COVID-19 stochastic model, with {growth_type} growth
+            Model is by Radoslav Harman. You can read the
+            [description of the model](http://www.iam.fmph.uniba.sk/ospm/Harman/COR01.pdf).
+
+            * Squares correspond to a combination of b<sub>0</sub> and prefix length.
+            * Heat is the average error for these parameters, averaged over 200 simulations.
+              We show the logarithm of the error, since we want to emphasize differences
+              between small values.
+        """,
+                     dangerously_allow_html=True)
+    ] + graphs
+    app.layout = html.Div(body, style={'font-family': 'sans-serif'})
+    return app
 
 
 @click.command(help='COVID-19 simulation heat map for Slovakia')
@@ -106,5 +121,5 @@ class HeatMap():
     type=click_pathlib.Path(exists=True),
 )
 def show_heat_map(simulation_protofile):
-    app = HeatMap(simulation_protofile).create_app(True)
+    app = create_heat_map_dashboard(simulation_protofile, True)
     app.run_server(host="0.0.0.0", port=8080)

@@ -1,6 +1,7 @@
-from enum import Enum
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
+from google.protobuf import message
 from typing import List
 
 from .pb.simulation_results_pb2 import SimulationResults
@@ -31,8 +32,13 @@ class SimulationReport:
 
 def create_simulation_reports(simulation_pb2_file: Path) -> List[SimulationReport]:
     """Parses a proto file and creates a list of SimulationReport out of it"""
+    if not simulation_pb2_file.is_file():
+        raise FileNotFoundError
     simulation_results = SimulationResults()
-    simulation_results.ParseFromString(simulation_pb2_file.read_bytes())
+    try:
+        simulation_results.ParseFromString(simulation_pb2_file.read_bytes())
+    except message.DecodeError:
+        raise ValueError(f"Cannot parse {simulation_pb2_file}")
 
     reports = []
     for result in simulation_results.results:

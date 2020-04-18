@@ -67,11 +67,18 @@ def create_heat_map(simulation_table: SimulationTable):
     return figure
 
 
-def create_heat_map_dashboard(simulation_pb2_file: Path, server: Flask):
+def create_heat_map_dashboard(simulation_pb2_file: Path, growth_type: GrowthType, server: Flask):
+    app = dash.Dash(
+        name=f'COVID-19 {growth_type} heat map',
+        server=server,
+        url_base_pathname=f"/covid19/heatmap/{growth_type}/",
+        external_scripts=[
+            'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML'
+        ])
     try:
         simulation_reports = create_simulation_reports(simulation_pb2_file)
-    except ValueError:
-        app = dash.Dash(name=f'COVID-19 heat map', server=server)
+    except (ValueError, FileNotFoundError) as e:
+        print(e)
         app.layout = html.Div(dcc.Markdown(f"""
             # Error in parsing simulation proto file
 
@@ -82,13 +89,6 @@ def create_heat_map_dashboard(simulation_pb2_file: Path, server: Flask):
         return app
 
     growth_type = next(iter(simulation_reports)).growth_type
-    app = dash.Dash(
-        name=f'COVID-19 {growth_type} heat map',
-        server=server,
-        url_base_pathname=f"/covid19/heatmap/{growth_type}/",
-        external_scripts=[
-            'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML'
-        ])
     app.title = 'Heat map of a COVID-19 stochastic model, with {growth_type} growth'
 
     simulation_tables = group_data(simulation_reports)
@@ -121,5 +121,7 @@ def create_heat_map_dashboard(simulation_pb2_file: Path, server: Flask):
     type=click_pathlib.Path(exists=True),
 )
 def show_heat_map(simulation_protofile):
-    app = create_heat_map_dashboard(simulation_protofile, True)
+    # TODO(lukas): This can be exponential growth, but if the file fails to parse there's no way of
+    # knowing it.
+    app = create_heat_map_dashboard(simulation_protofile, GrowthType.Polynomial, True)
     app.run_server(host="0.0.0.0", port=8080)

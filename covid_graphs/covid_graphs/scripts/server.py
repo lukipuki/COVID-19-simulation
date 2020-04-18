@@ -10,6 +10,7 @@ import itertools
 from covid_graphs import predictions
 from covid_graphs.country_graph import GraphType
 from covid_graphs.heat_map import create_heat_map_dashboard
+from covid_graphs.simulation_report import GrowthType
 
 from . import country_dashboard
 
@@ -88,8 +89,10 @@ def _create_prediction_apps(data_dir: Path, server: Flask):
 def _create_simulation_apps(server: Flask, data_dir: Path):
     simulated_polynomial = data_dir / "polynomial.sim"
     simulated_exponential = data_dir / "exponential.sim"
-    covid19_heatmap_polynomial_app = create_heat_map_dashboard(simulated_polynomial, server)
-    covid19_heatmap_exponential_app = create_heat_map_dashboard(simulated_exponential, server)
+    covid19_heatmap_polynomial_app = create_heat_map_dashboard(simulated_polynomial,
+                                                               GrowthType.Polynomial, server)
+    covid19_heatmap_exponential_app = create_heat_map_dashboard(simulated_exponential,
+                                                                GrowthType.Exponential, server)
 
     @server.route("/covid19/heatmap/polynomial")
     def covid19_heatmap_polynomial():

@@ -1,5 +1,4 @@
-#!/bin/bash
-set -euo pipefail
+#!/bin/bash -euo pipefail
 
 if [[ "${VIRTUAL_ENV:-}" == "" ]]
 then

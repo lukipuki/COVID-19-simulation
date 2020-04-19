@@ -53,7 +53,7 @@ class SimulationGraph:
         print(f"b_0={self.best_b0}, {self.param_name}={self.best_param} is the best fit "
               f"for prefix_length={self.prefix_length}, error={self.best_error}")
 
-        country_report = CountryReport(country_data_file)
+        country_report = CountryReport(country_data_file, "Slovakia")
         # TODO: Complete Slovak data, so that we don't have to do this dance
         self.daily_positive = np.concatenate(
             (np.zeros(self.prefix_length), country_report.daily_positive))

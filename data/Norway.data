@@ -683,3 +683,21 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 9
+  positive: 41
+  date {
+    day: 17
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 3
+  positive: 99
+  date {
+    day: 18
+    month: 4
+    year: 2020
+  }
+}

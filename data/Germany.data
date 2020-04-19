@@ -737,3 +737,23 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 300
+  positive: 3699
+  recovered: 6114
+  date {
+    day: 17
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 107
+  positive: 1945
+  recovered: 2286
+  date {
+    day: 18
+    month: 4
+    year: 2020
+  }
+}

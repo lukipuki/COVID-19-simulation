@@ -651,3 +651,20 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 7
+  recovered: 31
+  date {
+    day: 17
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  positive: 30
+  date {
+    day: 18
+    month: 4
+    year: 2020
+  }
+}

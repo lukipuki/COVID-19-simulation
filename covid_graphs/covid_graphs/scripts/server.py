@@ -61,7 +61,7 @@ def _create_prediction_app(data_dir: Path, server: Flask):
     prediction_app = country_dashboard.create_dashboard(data_dir=data_dir, server=server)
 
     @server.route("/covid19/predictions/")
-    def covid19_predictions(event: str):
+    def covid19_predictions():
         return prediction_app.index()
 
 

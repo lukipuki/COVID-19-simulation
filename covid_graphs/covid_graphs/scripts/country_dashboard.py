@@ -15,11 +15,11 @@ from covid_graphs.predictions import prediction_db, PredictionEvent, BK_20200411
 def create_graphs(
     reports: List[CountryReport], prediction_event: PredictionEvent,
 ):
-    report_from_name = {report.short_name: report for report in reports}
+    report_by_name = {report.short_name: report for report in reports}
 
     # Note: We silently assume there is only one prediction per country.
     country_graphs = [
-        CountryGraph(report_from_name[country_prediction.country], [country_prediction])
+        CountryGraph(report_by_name[country_prediction.country], [country_prediction])
         for country_prediction in prediction_db.predictions_for_event(prediction_event)
     ]
     country_graphs.sort(key=lambda graph: graph.short_name)
@@ -33,7 +33,7 @@ def create_dashboard(
     print("Creating dashboard for prediction graphs.")
     prediction_events = prediction_db.get_prediction_events()
     prediction_events.sort(key=lambda event: event.date, reverse=True)
-    prediction_event_from_name = {
+    prediction_event_by_name = {
         prediction_event.name: prediction_event for prediction_event in prediction_events
     }
 
@@ -100,7 +100,7 @@ def create_dashboard(
             dict(label=graph.long_name, value=graph.short_name)
             for graph in graph_dict[prediction_event_name]
         ]
-        next_day = prediction_event_from_name[prediction_event_name].date + timedelta(days=1)
+        next_day = prediction_event_by_name[prediction_event_name].date + timedelta(days=1)
         return options, f"{next_day.strftime('%B %d')} predictions"
 
     @app.callback(

@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from datetime import datetime
-from google.protobuf import text_format # type: ignore
-import numpy as np
 from pathlib import Path
+
+import numpy as np
+from google.protobuf import text_format  # type: ignore
 
 from .pb.country_data_pb2 import CountryData
 

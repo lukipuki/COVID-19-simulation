@@ -1,10 +1,11 @@
-from flask import Flask, render_template, redirect, url_for
-from inotify import adapters, constants
 from multiprocessing import Process
 from pathlib import Path
 from time import sleep
+
 import click
 import click_pathlib
+from flask import Flask, redirect, render_template, url_for
+from inotify import adapters, constants
 
 from covid_graphs.heat_map import create_heat_map_dashboard
 from covid_graphs.simulation_report import GrowthType
@@ -34,12 +35,12 @@ def run_server(data_dir: Path) -> None:
     def covid19_redirect():
         return redirect(url_for("covid19_predictions"))
 
-    i = adapters.InotifyTree(str(data_dir),
-                             mask=(constants.IN_MODIFY | constants.IN_DELETE
-                                   | constants.IN_CREATE))
+    i = adapters.InotifyTree(
+        str(data_dir), mask=(constants.IN_MODIFY | constants.IN_DELETE | constants.IN_CREATE)
+    )
     p = Process(target=_run_flask_server, kwargs=dict(server=server, data_dir=data_dir))
     p.start()
-    while (True):
+    while True:
         events = list(i.event_gen(yield_nones=False, timeout_s=1))
         if len(events) != 0:
             print("Data changed. Restarting server...")
@@ -68,10 +69,12 @@ def _create_prediction_app(data_dir: Path, server: Flask):
 def _create_simulation_apps(server: Flask, data_dir: Path):
     simulated_polynomial = data_dir / "polynomial.sim"
     simulated_exponential = data_dir / "exponential.sim"
-    covid19_heatmap_polynomial_app = create_heat_map_dashboard(simulated_polynomial,
-                                                               GrowthType.Polynomial, server)
-    covid19_heatmap_exponential_app = create_heat_map_dashboard(simulated_exponential,
-                                                                GrowthType.Exponential, server)
+    covid19_heatmap_polynomial_app = create_heat_map_dashboard(
+        simulated_polynomial, GrowthType.Polynomial, server
+    )
+    covid19_heatmap_exponential_app = create_heat_map_dashboard(
+        simulated_exponential, GrowthType.Exponential, server
+    )
 
     @server.route("/covid19/heatmap/polynomial")
     def covid19_heatmap_polynomial():

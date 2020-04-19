@@ -1,15 +1,16 @@
+from datetime import timedelta
+from pathlib import Path
+from typing import List
+
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-from datetime import timedelta
 from flask import Flask
-from pathlib import Path
-from typing import List
 
 from covid_graphs.country_graph import CountryGraph, GraphType
 from covid_graphs.country_report import CountryReport
-from covid_graphs.predictions import prediction_db, PredictionEvent, BK_20200411, OTHER
+from covid_graphs.predictions import BK_20200411, OTHER, PredictionEvent, prediction_db
 
 
 def create_graphs(

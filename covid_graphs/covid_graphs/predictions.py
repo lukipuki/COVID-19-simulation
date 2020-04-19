@@ -1,5 +1,5 @@
-from dataclasses import dataclass
 import datetime
+from dataclasses import dataclass
 from typing import List
 
 from .formula import ATG_formula, Formula
@@ -28,46 +28,30 @@ _prediction_database = [
     CountryPrediction(
         prediction_event=OTHER,
         country="Slovakia",
-        formula=Formula(lambda t: 8 * t**1.28, r'$8 \cdot t^{1.28}$', 40, 10),
+        formula=Formula(lambda t: 8 * t ** 1.28, r"$8 \cdot t^{1.28}$", 40, 10),
     ),
-
     # BK_20200329
     CountryPrediction(
-        prediction_event=BK_20200329,
-        country="Italy",
-        formula=ATG_formula(7.8, 4417, 6.23),
+        prediction_event=BK_20200329, country="Italy", formula=ATG_formula(7.8, 4417, 6.23),
     ),
     CountryPrediction(
-        prediction_event=BK_20200329,
-        country="USA",
-        formula=ATG_formula(10.2, 72329, 6.23),
+        prediction_event=BK_20200329, country="USA", formula=ATG_formula(10.2, 72329, 6.23),
     ),
     CountryPrediction(
-        prediction_event=BK_20200329,
-        country="Spain",
-        formula=ATG_formula(6.4, 3665, 6.23),
+        prediction_event=BK_20200329, country="Spain", formula=ATG_formula(6.4, 3665, 6.23),
     ),
     CountryPrediction(
-        prediction_event=BK_20200329,
-        country="Germany",
-        formula=ATG_formula(6.7, 3773, 6.23),
+        prediction_event=BK_20200329, country="Germany", formula=ATG_formula(6.7, 3773, 6.23),
     ),
     CountryPrediction(
-        prediction_event=BK_20200329,
-        country="UK",
-        formula=ATG_formula(7.2, 2719, 6.23),
+        prediction_event=BK_20200329, country="UK", formula=ATG_formula(7.2, 2719, 6.23),
     ),
     CountryPrediction(
-        prediction_event=BK_20200329,
-        country="France",
-        formula=ATG_formula(6.5, 1961, 6.23),
+        prediction_event=BK_20200329, country="France", formula=ATG_formula(6.5, 1961, 6.23),
     ),
     CountryPrediction(
-        prediction_event=BK_20200329,
-        country="Iran",
-        formula=ATG_formula(8.7, 2569, 6.23),
+        prediction_event=BK_20200329, country="Iran", formula=ATG_formula(8.7, 2569, 6.23),
     ),
-
     # BK_20200411
     CountryPrediction(
         prediction_event=BK_20200411,
@@ -125,9 +109,7 @@ _prediction_database = [
         formula=ATG_formula(13.3726, 46881.7586, 2.376, 104),
     ),
     CountryPrediction(
-        prediction_event=BK_20200411,
-        country="NZ",
-        formula=ATG_formula(6.401, 1.89E+03, 3.7006, 16),
+        prediction_event=BK_20200411, country="NZ", formula=ATG_formula(6.401, 1.89e03, 3.7006, 16),
     ),
     CountryPrediction(
         prediction_event=BK_20200411,

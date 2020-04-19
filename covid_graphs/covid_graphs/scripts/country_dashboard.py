@@ -37,8 +37,13 @@ def create_dashboard(
     )
     app.title = 'COVID-19 predictions of Boďová and Kollár'
 
-    content = _get_header_content(prediction_event, app.title)
-    content += [html.Hr()]
+    content = _get_header_content(app.title)
+
+    next_day = prediction_event.date + timedelta(days=1)
+    content += [
+        html.Hr(),
+        html.H1(f"{next_day.strftime('%B %d')} predictions")
+    ]
     buttons = [
         dcc.Dropdown(id='country-short-name',
                      options=[
@@ -77,37 +82,34 @@ def create_dashboard(
     return app
 
 
-def _get_header_content(prediction_event: PredictionEvent, title: str):
-    # TODO: Rewrite the header to be general for both prediction pages.
-    # TODO: Description in the text of this date is wrong.
-    prediction_date_str = prediction_event.date.strftime("%Y-%m-%d")
-    prediction_link = "https://www.facebook.com/permalink.php?"\
+def _get_header_content(title: str):
+    mar30_prediction_link = "https://www.facebook.com/permalink.php?"\
         "story_fbid=10113020662000793&id=2247644"
     france_link = "https://www.reuters.com/article/us-health-coronavirus-france-toll/" \
         "french-coronavirus-cases-jump-above-chinas-after-including-nursing-home-tally-idUSKBN21L3BG"
-    next_day = prediction_event.date + timedelta(days=1)
     return [
         html.H1(children=title),
-        html.P(children=[
-            # TODO: fix the date
-            f'On {next_day}, mathematicians Katarína Boďová and Richard Kollár ',
-            html.A('made predictions about 7 countries', href=prediction_link),
-            f'. The data available up to that point (until {prediction_date_str}) is in the ',
-            html.Span('light green zone', style={'background-color': 'lightgreen'}),
-            f'. Data coming after {prediction_date_str} is in the white zone.',
-            dcc.Markdown(
-                """
-                The predicted number of active cases <em>N</em>(<em>t</em>) on day <em>t</em> is
-                calculated as follows (constants <em>A</em> and <em>T</em><sub><em>G</em></sub>
-                are country-specific):
-                <em>N</em>(<em>t</em>) = (<em>A</em>/<em>T</em><sub><em>G</em></sub>) ⋅
-                (<em>t</em>/<em>T</em><sub><em>G</em></sub>)<sup>6.23</sup> /
-                e<sup><em>t</em>/<em>T</em><sub><em>G</em></sub></sup>
-                """,
-                dangerously_allow_html=True,
-            ),
-        ]),
-        dcc.Markdown("""
+        dcc.Markdown(
+            f"""
+            Mathematicians Katarína Boďová and Richard Kollár predicted in March and April 2020
+            the growth of active cases during COVID-19 pandemic. Assuming social distancing measures
+            limit the rate of spread of the disease, their model suggests a polynomial growth with exponential
+            decay given by:
+
+            * <em>N</em>(<em>t</em>) = (<em>A</em>/<em>T</em><sub><em>G</em></sub>) ⋅
+              (<em>t</em>/<em>T</em><sub><em>G</em></sub>)<sup>α</sup> /
+              e<sup><em>t</em>/<em>T</em><sub><em>G</em></sub></sup>
+
+            Where:
+
+            * *t* is time in days counted from a country-specific "day one"
+            * *N(t)* the number of active cases (cumulative positively tested minus recovered and deceased)
+            * *A*, *T<sub>G</sub>* and *α* are country-specific parameters
+
+            They made two predictions, on [March 30](/covid19/predictions/mar29) (for 7 countries)
+            and on [April 12](/covid19/predictions/apr11) (for 23 countries), each based on data available until
+            the day before. The first prediction assumed a common growth parameter *α* = 6.23.
+
             ### References
             * [Polynomial growth in age-dependent branching processes with diverging
               reproductive number](https://arxiv.org/abs/cond-mat/0505116) by Alexei Vazquez
@@ -115,15 +117,29 @@ def _get_header_content(prediction_event: PredictionEvent, title: str):
               (https://www.medrxiv.org/content/10.1101/2020.02.16.20023820v2.full.pdf)
               by Robert Ziff and Anna Ziff
             * Unpublished manuscript by Katarína Boďová and Richard Kollár
-            """),
-        dcc.Markdown(f"""
-            ### Notes about the graphs
+            * March 30 predictions: [Facebook post]({mar30_prediction_link})
+            * April 13 predictions: Personal communication
 
-            * Dashed lines are the predictions, solid red lines are the real active
-              cases. Black dotted lines mark the predicted maximums.
-            * We've now added new prediction made on 2020-04-13 by the same authors. There's a
-              second dashed line for Italy, Spain, USA and Germany.
-            * France has been excluded, since they [screwed up daily data reporting]({france_link}).
+            ### Legend
             """,
-                     dangerously_allow_html=True)
+            dangerously_allow_html=True,
+        ),
+
+        # TODO: Include these?
+        # ### Notes about the graphs
+        # * France has been excluded, since they [screwed up daily data reporting]({france_link}).
+
+        html.Ul(
+            children=[
+                html.Li("Solid line is prediction"),
+                html.Li("Dashed line marks the culmination of the prediction"),
+                html.Li("Red line is observed number of active cases"),
+                html.Li(
+                    children=[
+                        "Data available until the date of prediction is in ",
+                        html.Span('light green zone', style={'background-color': 'lightgreen'}),
+                    ]
+                ),
+            ]
+        )
     ]

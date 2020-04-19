@@ -4,17 +4,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta charset="UTF-8">
     <title>COVID-19 visualizations</title>
+    <style type='text/css'> body {font-family: sans-serif} </style>
   </head>
   <body>
     <h1>COVID-19 predictions of Katarína Boďová and Richard Kollár</h1>
-    <ul>
-      <li>
-        Predictions <a href="{{ url_for('covid19_predictions', event='apr11') }}">by April 11</a>
-      </li>
-      <li>
-        Predictions <a href="{{ url_for('covid19_predictions', event='mar29') }}">by March 29</a>
-      </li>
-    </ul>
+      <a href="{{ url_for('covid19_predictions') }}">Dashboard with predictions</a>
     <h1>
       Visualizations of a COVID-19 stochastic model by Radoslav Harman
     </h1>

@@ -10,8 +10,8 @@ python3.7 -m venv --system-site-packages venv && source venv/bin/activate
 pip install $1/
 
 countries=("United Kingdom" "South Korea" Austria Iceland Jordan Switzerland Croatia Australia
-  Canada Germany Israel Italy Malaysia "New Zealand" Spain Belgium Chile Czechia Latvia
-  Lithuania Netherlands Norway Portugal "United States")
+  Canada Germany Iran Israel Italy Malaysia "New Zealand" Spain Belgium Chile Czechia Latvia
+  Lithuania Netherlands Norway Portugal France "United States")
 for country in $countries
 do
   if [[ -z $short_names["${country}"] ]]; then

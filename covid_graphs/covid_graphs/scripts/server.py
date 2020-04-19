@@ -6,7 +6,6 @@ from time import sleep
 import click
 import click_pathlib
 
-from covid_graphs import predictions
 from covid_graphs.heat_map import create_heat_map_dashboard
 from covid_graphs.simulation_report import GrowthType
 

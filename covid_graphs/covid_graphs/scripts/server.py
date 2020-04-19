@@ -32,7 +32,7 @@ def run_server(data_dir: Path) -> None:
 
     @server.route("/covid19/normal")
     def covid19_redirect():
-        return redirect(url_for("covid19_predictions", event="apr11"))
+        return redirect(url_for("covid19_predictions"))
 
     i = adapters.InotifyTree(str(data_dir),
                              mask=(constants.IN_MODIFY | constants.IN_DELETE

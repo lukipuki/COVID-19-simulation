@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from google.protobuf import text_format
 from datetime import datetime
+from google.protobuf import text_format # type: ignore
 import numpy as np
 from pathlib import Path
 

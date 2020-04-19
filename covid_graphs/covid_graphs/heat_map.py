@@ -3,7 +3,7 @@ from flask import Flask
 from pathlib import Path
 from dataclasses import dataclass
 from plotly.graph_objs import Figure, Layout, Heatmap
-from typing import List, Dict
+from typing import List, Dict, Tuple
 import click
 import click_pathlib
 import dash
@@ -20,12 +20,12 @@ class SimulationTable:
     param_name: str
     param: float
     # TODO(lukas): Consider using pandas DataFrame here, this is actually a table.
-    errors: Dict[int, Dict[int, float]]
+    errors: Dict[int, List[Tuple[int, float]]]
 
 
 def group_data(simulation_reports: List[SimulationReport]) -> Dict[float, SimulationTable]:
     """Groups data in SimulationReport's by the value of alpha or gamma2"""
-    heat_maps = OrderedDict()
+    heat_maps: OrderedDict[float, SimulationTable] = OrderedDict()
     for report in simulation_reports:
         if report.param not in heat_maps:
             param_name = "alpha" if report.growth_type == GrowthType.Polynomial else "gamma2"
@@ -42,10 +42,10 @@ def group_data(simulation_reports: List[SimulationReport]) -> Dict[float, Simula
 
 def create_heat_map(simulation_table: SimulationTable):
     data = []
-    for key, value in simulation_table.errors.items():
-        value.sort()
-        b0_set = [x[0] for x in value]
-        data.append([math.log(x[1]) for x in value])
+    for errors in simulation_table.errors.values():
+        errors.sort()
+        b0_set = [b0 for b0, _ in errors]
+        data.append([math.log(error) for _, error in errors])
 
     layout = Layout(title=f'Logarithm of average error for {simulation_table.param_name} = '
                     f'{simulation_table.param}',

@@ -102,9 +102,9 @@ def _get_header_content(title: str):
 
             Where:
 
-            * <em>t</em> is time in days counted from a country-specific "day one"
-            * <em>N(t)</em> is the number of active cases (cumulative positively tested minus recovered and deceased)
-            * <em>A</em>, <em>T<sub>G</sub></em> and <em>α</em> are country-specific parameters
+            * *t* is time in days counted from a country-specific "day one"
+            * *N(t)* the number of active cases (cumulative positively tested minus recovered and deceased)
+            * *A*, *T<sub>G</sub>* and *α* are country-specific parameters
 
             They made two predictions, on [March 30](/covid19/predictions/mar29) (for 7 countries)
             and on [April 12](/covid19/predictions/apr11) (for 23 countries), each based on data available until

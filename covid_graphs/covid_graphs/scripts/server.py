@@ -53,30 +53,17 @@ def run_server(data_dir: Path) -> None:
 
 
 def _run_flask_server(server: Flask, data_dir: Path):
-    _create_prediction_apps(server=server, data_dir=data_dir)
+    _create_prediction_app(server=server, data_dir=data_dir)
     _create_simulation_apps(server=server, data_dir=data_dir)
     server.run(host="0.0.0.0", port=8081)
 
 
-def _create_prediction_apps(data_dir: Path, server: Flask):
-    # Note: Event route strings might become part the PredictionEvent class.
-    event_by_route = {
-        "mar29": predictions.BK_20200329,
-        "apr11": predictions.BK_20200411,
-    }
+def _create_prediction_app(data_dir: Path, server: Flask):
+    prediction_app = country_dashboard.create_dashboard(data_dir=data_dir, server=server)
 
-    prediction_apps = {
-        event_route:
-        country_dashboard.create_dashboard(data_dir=data_dir,
-                                           server=server,
-                                           prediction_event=event_by_route[event_route])
-        for event_route in event_by_route
-    }
-
-    # TODO(lukas): add redirect @server.route("/covid19/predictions/latest")
-    @server.route("/covid19/predictions/<event>")
+    @server.route("/covid19/predictions/")
     def covid19_predictions(event: str):
-        return prediction_apps[event].index()
+        return prediction_app.index()
 
 
 def _create_simulation_apps(server: Flask, data_dir: Path):

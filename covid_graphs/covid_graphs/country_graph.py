@@ -2,6 +2,7 @@ from enum import Enum
 from plotly.graph_objs import Figure, Layout, Scatter
 import click
 import click_pathlib
+import math
 import numpy as np
 from pathlib import Path
 from typing import List
@@ -94,7 +95,6 @@ class CountryGraph:
         except ValueError:
             pass
 
-        maximal_y = max(max(curve.maximal_y for curve in self.curves), max(self.cumulative_active))
         layout = Layout(
             title=f"Active cases in {self.long_name}",
             xaxis=dict(
@@ -106,9 +106,7 @@ class CountryGraph:
                 tickformat=",.0f",
                 title=f"COVID-19 active cases in {self.short_name}",
                 gridcolor="LightGray",
-                autorange=True,
-                # setting range fails on log-scale graphs
-                # range=[1, maximal_y],
+                autorange=(graph_type == GraphType.Normal),
                 zerolinecolor="Gray",
             ),
             height=700,
@@ -118,6 +116,14 @@ class CountryGraph:
             legend=dict(x=0.01, y=0.99, borderwidth=1),
             plot_bgcolor="White",
         )
+        if graph_type != GraphType.Normal:
+            maximal_y = max(
+                max(curve.maximal_y for curve in self.curves), max(self.cumulative_active)
+            )
+            layout.yaxis["range"] = [
+                math.log10(self.cumulative_active.min()) - 0.3,
+                math.log10(maximal_y) + 0.3,
+            ]
 
         figure = Figure(layout=layout)
         for color, curve in zip(colors, self.curves):

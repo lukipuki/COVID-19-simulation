@@ -1,15 +1,16 @@
-from enum import Enum
-from plotly.graph_objs import Figure, Layout, Scatter
-import click
-import click_pathlib
 import math
-import numpy as np
+from enum import Enum
 from pathlib import Path
 from typing import List
 
-from .predictions import prediction_db, CountryPrediction
+import click
+import click_pathlib
+import numpy as np
+from plotly.graph_objs import Figure, Layout, Scatter
+
 from .country_report import CountryReport
 from .formula import Curve, XAxisType
+from .predictions import CountryPrediction, prediction_db
 
 
 class GraphType(Enum):
@@ -25,8 +26,7 @@ class CountryGraph:
     """Constructs a graph for a given country"""
 
     def __init__(
-        self, report: CountryReport,
-        country_predictions: List[CountryPrediction],
+        self, report: CountryReport, country_predictions: List[CountryPrediction],
     ):
         # TODO(miskosz): We assume there is only one country.
         # This might change soon though if we want to have a country dropdown in one graph.

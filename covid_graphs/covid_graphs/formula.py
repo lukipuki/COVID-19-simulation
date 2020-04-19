@@ -1,9 +1,10 @@
 import math
 from dataclasses import dataclass
 from datetime import timedelta
-import numpy as np
 from enum import Enum
 from typing import Callable
+
+import numpy as np
 
 
 @dataclass
@@ -15,20 +16,24 @@ class Formula:
 
 
 class XAxisType(Enum):
-    Dated = 'dated'  # with dates
-    Numbered = 'numbered'  # numbered instead of dates
+    Dated = "dated"  # with dates
+    Numbered = "numbered"  # numbered instead of dates
 
     def __str__(self):
         return self.value
 
 
 def ATG_formula(TG, A, exponent, min_case_count=200):
-    text = r'$\frac{_A}{_TG} \cdot \left(\frac{t}{_TG}\right)^{_expon} / e^{t/_TG}$'
+    text = r"$\frac{_A}{_TG} \cdot \left(\frac{t}{_TG}\right)^{_expon} / e^{t/_TG}$"
     text = text.replace("_A", f"{A:.0f}").replace("_TG", f"{TG}").replace("_expon", f"{exponent}")
     # Day of the second inflection point
     second_ip_day = math.ceil(TG * (exponent + math.sqrt(exponent)))
-    return Formula(lambda t: (A / TG) * (t / TG)**exponent / np.exp(t / TG), text, second_ip_day,
-                   min_case_count)
+    return Formula(
+        lambda t: (A / TG) * (t / TG) ** exponent / np.exp(t / TG),
+        text,
+        second_ip_day,
+        min_case_count,
+    )
 
 
 def first_day_of_curve(cumulative_active, formula):
@@ -51,14 +56,17 @@ class Curve:
     first_date - date corresponding to cumulative_active[0]
     xaxis_type - whether we label with numbers or dates
     """
+
     def __init__(self, formula, cumulative_active, first_idx, last_idx, first_date):
         self.text = formula.text
         start_idx = first_day_of_curve(cumulative_active, formula)
         length = last_idx - start_idx + 1
         self.y = formula.lambd(np.arange(length) + 1)
         self.t = np.arange(length) + 1 + (start_idx - first_idx)
-        self.date_list = [(first_date + timedelta(days=d)).strftime('%Y-%m-%d')
-                          for d in range(start_idx, last_idx + 1)]
+        self.date_list = [
+            (first_date + timedelta(days=d)).strftime("%Y-%m-%d")
+            for d in range(start_idx, last_idx + 1)
+        ]
 
         self.maximal_y = self.y.max()
         self.maximal_idx = self.y.argmax()
@@ -69,10 +77,15 @@ class Curve:
         first_idx = min(first_day_of_curve(cumulative_active, formula) for formula in formulas)
         last_idx = max(
             first_day_of_curve(cumulative_active, formula) + formula.second_ip_day
-            for formula in formulas)
+            for formula in formulas
+        )
         last_idx = max(last_idx, len(cumulative_active) - 1)
 
-        return (first_idx, last_idx, [
-            Curve(formula, cumulative_active, first_idx, last_idx, first_date)
-            for formula in formulas
-        ])
+        return (
+            first_idx,
+            last_idx,
+            [
+                Curve(formula, cumulative_active, first_idx, last_idx, first_date)
+                for formula in formulas
+            ],
+        )

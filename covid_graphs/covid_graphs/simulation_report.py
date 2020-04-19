@@ -1,15 +1,16 @@
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from google.protobuf import message
 from typing import List
+
+from google.protobuf import message
 
 from .pb.simulation_results_pb2 import SimulationResults
 
 
 class GrowthType(Enum):
-    Exponential = 'exponential'
-    Polynomial = 'polynomial'
+    Exponential = "exponential"
+    Polynomial = "polynomial"
 
     def __str__(self):
         return self.value
@@ -52,6 +53,15 @@ def create_simulation_reports(simulation_pb2_file: Path) -> List[SimulationRepor
             param = result.gamma2
 
         reports.append(
-            SimulationReport(daily_positive, daily_infected, result.deltas, result.b0,
-                             result.prefix_length, result.summary.error, param, growth_type))
+            SimulationReport(
+                daily_positive,
+                daily_infected,
+                result.deltas,
+                result.b0,
+                result.prefix_length,
+                result.summary.error,
+                param,
+                growth_type,
+            )
+        )
     return reports

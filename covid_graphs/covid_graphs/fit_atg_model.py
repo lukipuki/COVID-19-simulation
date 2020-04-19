@@ -8,6 +8,7 @@ from scipy.optimize import least_squares
 # TODO(miskosz): Pass in as a parameter?
 EXPONENT = 6.23
 
+
 @dataclass
 class AtgModelFit:
     """
@@ -16,6 +17,7 @@ class AtgModelFit:
     
     TODO(miskosz): Maybe return also something like a standard deviation of the fit.
     """
+
     a: float
     tg: float
 
@@ -57,4 +59,4 @@ def _model(params: List[float], xs: np.ndarray) -> np.ndarray:
     a, tg = params
     # Note(miskosz): Optimise `tg` in logspace if the following line becomes a problem.
     assert tg > 0, f"No support for non-positive values for `tg` (tg={tg})."
-    return (a/tg) * (xs/tg)**EXPONENT * np.exp(-xs/tg)
+    return (a / tg) * (xs / tg) ** EXPONENT * np.exp(-xs / tg)

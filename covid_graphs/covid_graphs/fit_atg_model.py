@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from typing import List
 
 import numpy as np
-import pytest
 from scipy.optimize import least_squares
 
 # TODO(miskosz): Pass in as a parameter?
@@ -14,7 +13,7 @@ class AtgModelFit:
     """
     Result of fitting (x, y) data samples to the curve:
         y = (a/tg) * (x/tg)^6.23 * e^(-x/tg)
-    
+
     TODO(miskosz): Maybe return also something like a standard deviation of the fit.
     """
 

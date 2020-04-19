@@ -77,7 +77,7 @@ def create_dashboard(
         dcc.RadioItems(
             id="graph-type",
             options=[
-                {"label": graph_type.value, "value": graph_type.name,}
+                {"label": graph_type.value, "value": graph_type.name}
                 for graph_type in [GraphType.Normal, GraphType.SemiLog, GraphType.LogLog]
             ],
             value="Normal",
@@ -132,10 +132,10 @@ def _get_header_content(title: str):
     mar30_prediction_link = (
         "https://www.facebook.com/permalink.php?story_fbid=10113020662000793&id=2247644"
     )
-    france_link = (
-        "https://www.reuters.com/article/us-health-coronavirus-france-toll/"
-        "french-coronavirus-cases-jump-above-chinas-after-including-nursing-home-tally-idUSKBN21L3BG"
-    )
+    # france_link = (
+    #     "https://www.reuters.com/article/us-health-coronavirus-france-toll/"
+    #     "french-coronavirus-cases-jump-above-chinas-after-including-nursing-home-tally-idUSKBN21L3BG"
+    # )
     return [
         html.H1(children=title),
         dcc.Markdown(

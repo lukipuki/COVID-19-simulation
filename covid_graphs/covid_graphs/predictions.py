@@ -57,6 +57,16 @@ _prediction_database = [
         country="UK",
         formula=ATG_formula(7.2, 2719, 6.23),
     ),
+    CountryPrediction(
+        prediction_event=BK_20200329,
+        country="France",
+        formula=ATG_formula(6.5, 1961, 6.23),
+    ),
+    CountryPrediction(
+        prediction_event=BK_20200329,
+        country="Iran",
+        formula=ATG_formula(8.7, 2569, 6.23),
+    ),
 
     # BK_20200411
     CountryPrediction(

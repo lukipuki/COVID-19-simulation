@@ -25,7 +25,8 @@ class CountryGraph:
     """Constructs a graph for a given country"""
 
     def __init__(
-        self, data_dir: Path, country_predictions: List[CountryPrediction],
+        self, report: CountryReport,
+        country_predictions: List[CountryPrediction],
     ):
         # TODO(miskosz): We assume there is only one country.
         # This might change soon though if we want to have a country dropdown in one graph.
@@ -38,8 +39,7 @@ class CountryGraph:
         if len(country_predictions) >= 1:
             self.prediction_date = country_predictions[0].prediction_event.date.strftime("%Y-%m-%d")
 
-        report = CountryReport(country_data_file=data_dir / f"{self.short_name}.data")
-        self.long_name = report.name
+        self.long_name = report.long_name
 
         first_idx, last_idx, self.curves = Curve.create_curves(
             [prediction.formula for prediction in country_predictions],
@@ -169,5 +169,6 @@ class CountryGraph:
 )
 def show_country_plot(data_dir: Path, country_name: str):
     country_predictions = prediction_db.predictions_for_country(country=country_name)
-    country_graph = CountryGraph(data_dir=data_dir, country_predictions=country_predictions)
+    country_report = CountryReport(data_dir / f"{country_name}.data", short_name=country_name)
+    country_graph = CountryGraph(report=country_report, country_predictions=country_predictions)
     country_graph.create_country_figure(GraphType.Normal).show()

@@ -24,7 +24,7 @@ class XAxisType(Enum):
 
 def ATG_formula(TG, A, exponent, min_case_count=200):
     text = r'$\frac{_A}{_TG} \cdot \left(\frac{t}{_TG}\right)^{_expon} / e^{t/_TG}$'
-    text = text.replace("_A", f"{A}").replace("_TG", f"{TG}").replace("_expon", f"{exponent}")
+    text = text.replace("_A", f"{A:.0f}").replace("_TG", f"{TG}").replace("_expon", f"{exponent}")
     # Day of the second inflection point
     second_ip_day = math.ceil(TG * (exponent + math.sqrt(exponent)))
     return Formula(lambda t: (A / TG) * (t / TG)**exponent / np.exp(t / TG), text, second_ip_day,

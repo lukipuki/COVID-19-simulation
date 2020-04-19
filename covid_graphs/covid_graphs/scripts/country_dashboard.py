@@ -76,7 +76,7 @@ def create_dashboard(
             if country_graph.short_name == country_short_name
         ]
         if len(graphs) == 0:
-            return None
+            return dash.no_update
 
         figure = graphs[0].create_country_figure(graph_type)
         return figure

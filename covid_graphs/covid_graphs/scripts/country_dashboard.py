@@ -108,7 +108,7 @@ def _get_header_content(title: str):
 
             They made two predictions, on [March 30](/covid19/predictions/mar29) (for 7 countries)
             and on [April 12](/covid19/predictions/apr11) (for 23 countries), each based on data available until
-            the day before. The first prediction assumed a common growth parameter <em>α</em> = 6.23.
+            the day before. The first prediction assumed a common growth parameter *α* = 6.23.
 
             ### References
             * [Polynomial growth in age-dependent branching processes with diverging

@@ -1,7 +1,7 @@
 from datetime import timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Dict
+from typing import Any, Dict, List
 
 import dash
 import dash_core_components as dcc
@@ -20,6 +20,9 @@ class DashboardType(Enum):
 
     def __str__(self):
         return self.value
+
+
+TITLE = "COVID-19 predictions of Boďová and Kollár"
 
 
 def _create_buttons(dashboard_type: DashboardType):
@@ -89,31 +92,22 @@ def _prepare_data_structures(data_dir: Path):
     return prediction_event_by_name, graph_dict
 
 
-def create_single_country_dashboard(data_dir: Path, server: Flask):
-    # TODO(miskosz): Don't use print.
-    print("Creating dashboard for a single country.")
+def _create_dash_app(dashboard_type: DashboardType, server: Flask, extra_content: List[Any]):
     app = dash.Dash(
         name=f"COVID-19 predictions",
-        url_base_pathname=f"/covid19/predictions/single/",
+        url_base_pathname=f"/covid19/predictions/{dashboard_type}/",
         server=server,
         external_scripts=[
             "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"
         ],
         meta_tags=[{"name": "viewport", "content": "width=750"}],
     )
-    app.title = "COVID-19 predictions of Boďová and Kollár"
-
-    content = _get_header_content(app.title)
+    content = _get_header_content(TITLE)
     content += [html.Hr(), html.H1(id="graph-title")]
-    content += _create_buttons(DashboardType.SingleCountry)
-    content += [
-        dcc.Graph(
-            id="country-graph",
-            figure=dict(layout=dict(height=700)),
-            config=dict(modeBarButtons=[["toImage"]]),
-        )
-    ]
+    content += _create_buttons(dashboard_type)
+    content += extra_content
 
+    app.title = TITLE
     app.layout = html.Div(
         children=content,
         style={
@@ -122,6 +116,20 @@ def create_single_country_dashboard(data_dir: Path, server: Flask):
             "-webkit-text-size-adjust": "none",
         },
     )
+    return app
+
+
+def create_single_country_dashboard(data_dir: Path, server: Flask):
+    # TODO(miskosz): Don't use print.
+    print("Creating dashboard for a single country.")
+
+    graph = dcc.Graph(
+        id="country-graph",
+        figure=dict(layout=dict(height=700)),
+        config=dict(modeBarButtons=[["toImage"]]),
+    )
+
+    app = _create_dash_app(DashboardType.SingleCountry, server, extra_content=[graph])
 
     prediction_event_by_name, graph_dict = _prepare_data_structures(data_dir)
 
@@ -167,22 +175,9 @@ def create_single_country_dashboard(data_dir: Path, server: Flask):
 def create_all_countries_dashboard(data_dir: Path, server: Flask):
     # TODO(miskosz): Don't use print.
     print("Creating dashboard for all countries.")
-    app = dash.Dash(
-        name=f"COVID-19 predictions",
-        url_base_pathname=f"/covid19/predictions/all/",
-        server=server,
-        external_scripts=[
-            "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"
-        ],
-    )
-    app.title = "COVID-19 predictions of Boďová and Kollár"
+    extra_content = [html.Div(id="country-graphs")]
 
-    content = _get_header_content(app.title)
-    content += [html.Hr(), html.H1(id="graph-title")]
-    content += _create_buttons(DashboardType.AllCountries)
-    content += [html.Div(id="country-graphs")]
-
-    app.layout = html.Div(children=content, style={"font-family": "sans-serif"})
+    app = _create_dash_app(DashboardType.AllCountries, server, extra_content)
 
     prediction_event_by_name, graph_dict = _prepare_data_structures(data_dir)
 

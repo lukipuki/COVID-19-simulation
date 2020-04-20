@@ -8,7 +8,15 @@
   </head>
   <body>
     <h1>COVID-19 predictions of Katarína Boďová and Richard Kollár</h1>
-      <a href="{{ url_for('covid19_predictions') }}">Dashboard with predictions</a>
+    Dashboards with predictions:
+    <ul>
+      <li>
+        <a href="{{ url_for('covid19_single_predictions') }}">single country</a>
+      </li>
+      <li>
+        <a href="{{ url_for('covid19_all_predictions') }}">all countries on one page</a>
+      </li>
+    </ul>
     <h1>
       Visualizations of a COVID-19 stochastic model by Radoslav Harman
     </h1>

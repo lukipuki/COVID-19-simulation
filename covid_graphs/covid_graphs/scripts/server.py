@@ -33,7 +33,7 @@ def run_server(data_dir: Path) -> None:
 
     @server.route("/covid19/normal")
     def covid19_redirect():
-        return redirect(url_for("covid19_predictions"))
+        return redirect(url_for("covid19_all_predictions"))
 
     i = adapters.InotifyTree(
         str(data_dir), mask=(constants.IN_MODIFY | constants.IN_DELETE | constants.IN_CREATE)
@@ -53,17 +53,26 @@ def run_server(data_dir: Path) -> None:
 
 
 def _run_flask_server(server: Flask, data_dir: Path):
-    _create_prediction_app(server=server, data_dir=data_dir)
+    _create_prediction_apps(server=server, data_dir=data_dir)
     _create_simulation_apps(server=server, data_dir=data_dir)
     server.run(host="0.0.0.0", port=8081)
 
 
-def _create_prediction_app(data_dir: Path, server: Flask):
-    prediction_app = country_dashboard.create_dashboard(data_dir=data_dir, server=server)
+def _create_prediction_apps(data_dir: Path, server: Flask):
+    single_prediction_app = country_dashboard.create_single_country_dashboard(
+        data_dir=data_dir, server=server
+    )
+    all_predictions_app = country_dashboard.create_all_countries_dashboard(
+        data_dir=data_dir, server=server
+    )
 
-    @server.route("/covid19/predictions/")
-    def covid19_predictions():
-        return prediction_app.index()
+    @server.route("/covid19/predictions/single/")
+    def covid19_single_predictions():
+        return single_prediction_app.index()
+
+    @server.route("/covid19/predictions/all/")
+    def covid19_all_predictions():
+        return all_predictions_app.index()
 
 
 def _create_simulation_apps(server: Flask, data_dir: Path):

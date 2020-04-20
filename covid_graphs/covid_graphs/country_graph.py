@@ -99,6 +99,7 @@ class CountryGraph:
             title=f"Active cases in {self.long_name}",
             xaxis=dict(
                 autorange=True,
+                fixedrange=True,
                 title=f"Day [starting at the {self.min_case_count}th case]",
                 showgrid=False,
             ),
@@ -107,6 +108,7 @@ class CountryGraph:
                 title=f"COVID-19 active cases in {self.short_name}",
                 gridcolor="LightGray",
                 autorange=(graph_type == GraphType.Normal),
+                fixedrange=True,
                 zerolinecolor="Gray",
             ),
             height=700,

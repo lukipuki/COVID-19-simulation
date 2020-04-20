@@ -71,9 +71,13 @@ def create_dashboard(
                 if event != OTHER
             ],
             value=BK_20200411.name,
-            style={"width": "40%"},
+            style={"width": "220px", "margin": "4px 0px"},
         ),
-        dcc.Dropdown(id="country-short-name", value="Italy", style={"width": "40%"}),
+        dcc.Dropdown(
+            id="country-short-name",
+            value="Italy",
+            style={"width": "220px", "margin": "4px 0px"},
+        ),
         dcc.RadioItems(
             id="graph-type",
             options=[
@@ -81,7 +85,7 @@ def create_dashboard(
                 for graph_type in [GraphType.Normal, GraphType.SemiLog, GraphType.LogLog]
             ],
             value="Normal",
-            labelStyle={"display": "inline-block"},
+            labelStyle={"display": "inline-block", "margin": "4px 4px 4px 0px"},
         ),
     ]
     content += buttons

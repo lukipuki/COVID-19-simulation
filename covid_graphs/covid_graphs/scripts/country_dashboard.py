@@ -143,9 +143,8 @@ def _get_header_content(title: str):
         dcc.Markdown(
             f"""
             Mathematicians Katarína Boďová and Richard Kollár predicted in March and April 2020
-            the growth of active cases during COVID-19 pandemic. Assuming social distancing measures
-            limit the rate of spread of the disease, their model suggests a polynomial growth with exponential
-            decay given by:
+            the growth of active cases during COVID-19 pandemic. Their model suggests polynomial
+            growth with exponential decay given by:
 
             * <em>N</em>(<em>t</em>) = (<em>A</em>/<em>T</em><sub><em>G</em></sub>) ⋅
               (<em>t</em>/<em>T</em><sub><em>G</em></sub>)<sup>α</sup> /

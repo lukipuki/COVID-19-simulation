@@ -74,9 +74,7 @@ def create_dashboard(
             style={"width": "220px", "margin": "4px 0px"},
         ),
         dcc.Dropdown(
-            id="country-short-name",
-            value="Italy",
-            style={"width": "220px", "margin": "4px 0px"},
+            id="country-short-name", value="Italy", style={"width": "220px", "margin": "4px 0px"},
         ),
         dcc.RadioItems(
             id="graph-type",

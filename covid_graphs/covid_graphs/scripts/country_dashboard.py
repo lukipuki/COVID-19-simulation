@@ -72,8 +72,9 @@ def create_graphs(
     return country_graphs
 
 
-def _prepare_data_structures(data_dir: Path) -> Tuple[Dict[str, PredictionEvent],
-                                                      CountryGraphsByReportName]:
+def _prepare_data_structures(
+    data_dir: Path,
+) -> Tuple[Dict[str, PredictionEvent], CountryGraphsByReportName]:
     prediction_events = prediction_db.get_prediction_events()
     prediction_events.sort(key=lambda event: event.date, reverse=True)
     prediction_event_by_name = {
@@ -183,6 +184,19 @@ def create_all_countries_dashboard(data_dir: Path, server: Flask):
 
     prediction_event_by_name, graph_dict = _prepare_data_structures(data_dir)
 
+    dash_graph_dict = {
+        (prediction_event_name, graph_type.name): [
+            dcc.Graph(
+                id=f"country-graph-{graph.short_name}",
+                figure=graph.create_country_figure(graph_type),
+                config=dict(modeBarButtons=[["toImage"]]),
+            )
+            for graph in graph_dict[prediction_event_name]
+        ]
+        for prediction_event_name in prediction_event_by_name.keys()
+        for graph_type in GraphType
+    }
+
     @app.callback(
         [
             Output("country-graphs", component_property="children"),
@@ -191,16 +205,7 @@ def create_all_countries_dashboard(data_dir: Path, server: Flask):
         [Input("prediction-event", "value"), Input("graph-type", "value")],
     )
     def update_event(prediction_event_name, graph_type_str):
-        graph_type = GraphType[graph_type_str]
-        graphs = [
-            dcc.Graph(
-                id=f"country-graph-{graph.short_name}",
-                # TODO: cache these to save server CPU
-                figure=graph.create_country_figure(graph_type),
-                config=dict(modeBarButtons=[["toImage"]]),
-            )
-            for graph in graph_dict[prediction_event_name]
-        ]
+        graphs = dash_graph_dict[(prediction_event_name, graph_type_str)]
         next_day = prediction_event_by_name[prediction_event_name].date + timedelta(days=1)
         return graphs, f"{next_day.strftime('%B %d')} predictions"
 
@@ -243,7 +248,7 @@ def _get_header_content(title: str):
               by Robert Ziff and Anna Ziff
             * Unpublished manuscript by Katarína Boďová and Richard Kollár
             * March 30 predictions: [Facebook post]({mar30_prediction_link})
-            * April 13 predictions: Personal communication
+            * April 12 predictions: Personal communication
 
             ### Legend
             """,

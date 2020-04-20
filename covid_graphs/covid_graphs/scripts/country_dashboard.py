@@ -87,7 +87,13 @@ def create_dashboard(
         ),
     ]
     content += buttons
-    content += [dcc.Graph(id="country-graph", figure=dict(layout=dict(height=700)), config=dict(modeBarButtons=[["toImage"]]))]
+    content += [
+        dcc.Graph(
+            id="country-graph",
+            figure=dict(layout=dict(height=700)),
+            config=dict(modeBarButtons=[["toImage"]]),
+        )
+    ]
 
     app.layout = html.Div(children=content, style={"font-family": "sans-serif"})
 

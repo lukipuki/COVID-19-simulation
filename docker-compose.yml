@@ -3,7 +3,7 @@ version: "2.2"
 services:
   dash_server:
     build: covid_graphs/
-    image: accu_dash
+    image: covid19_predictions
     volumes:
       - "./data:/covid19/data:ro"
     working_dir: "/covid19"

@@ -31,9 +31,13 @@ def run_server(data_dir: Path) -> None:
     def home():
         return render_template("index.html")
 
-    @server.route("/covid19/normal")
-    def covid19_redirect():
+    @server.route("/covid19/normal/")
+    def covid19_normal_redirect():
         return redirect(url_for("covid19_all_predictions"))
+
+    @server.route("/covid19/predictions/")
+    def covid19_predictions_redirect():
+        return redirect(url_for("covid19_single_predictions"))
 
     i = adapters.InotifyTree(
         str(data_dir), mask=(constants.IN_MODIFY | constants.IN_DELETE | constants.IN_CREATE)

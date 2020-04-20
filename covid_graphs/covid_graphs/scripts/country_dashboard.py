@@ -1,7 +1,7 @@
 from datetime import timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 import dash
 import dash_core_components as dcc
@@ -23,6 +23,7 @@ class DashboardType(Enum):
 
 
 TITLE = "COVID-19 predictions of Boďová and Kollár"
+CountryGraphsByReportName = Dict[str, List[CountryGraph]]
 
 
 def _create_buttons(dashboard_type: DashboardType):
@@ -60,18 +61,19 @@ def _create_buttons(dashboard_type: DashboardType):
 
 
 def create_graphs(
-    report_by_name: Dict[str, CountryReport], prediction_event: PredictionEvent,
-):
+    report_by_short_name: Dict[str, CountryReport], prediction_event: PredictionEvent,
+) -> List[CountryGraph]:
     # Note: We silently assume there is only one prediction per country.
     country_graphs = [
-        CountryGraph(report_by_name[country_prediction.country], [country_prediction])
+        CountryGraph(report_by_short_name[country_prediction.country], [country_prediction])
         for country_prediction in prediction_db.predictions_for_event(prediction_event)
     ]
     country_graphs.sort(key=lambda graph: graph.short_name)
     return country_graphs
 
 
-def _prepare_data_structures(data_dir: Path):
+def _prepare_data_structures(data_dir: Path) -> Tuple[Dict[str, PredictionEvent],
+                                                      CountryGraphsByReportName]:
     prediction_events = prediction_db.get_prediction_events()
     prediction_events.sort(key=lambda event: event.date, reverse=True)
     prediction_event_by_name = {
@@ -84,9 +86,9 @@ def _prepare_data_structures(data_dir: Path):
         for country_short_name in prediction_db.get_countries()
         if (data_dir / f"{country_short_name}.data").is_file()
     ]
-    report_by_name = {report.short_name: report for report in reports}
+    report_by_short_name = {report.short_name: report for report in reports}
     graph_dict = {
-        prediction_event.name: create_graphs(report_by_name, prediction_event)
+        prediction_event.name: create_graphs(report_by_short_name, prediction_event)
         for prediction_event in prediction_db.get_prediction_events()
     }
     return prediction_event_by_name, graph_dict

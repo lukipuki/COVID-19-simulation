@@ -56,6 +56,7 @@ def create_dashboard(
         external_scripts=[
             "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"
         ],
+        meta_tags=[{"name": "viewport", "content": "width=750"}],
     )
     app.title = "COVID-19 predictions of Boďová and Kollár"
 
@@ -95,7 +96,14 @@ def create_dashboard(
         )
     ]
 
-    app.layout = html.Div(children=content, style={"font-family": "sans-serif"})
+    app.layout = html.Div(
+        children=content,
+        style={
+            "font-family": "sans-serif",
+            "text-size-adjust": "none",
+            "-webkit-text-size-adjust": "none",
+        },
+    )
 
     @app.callback(
         [

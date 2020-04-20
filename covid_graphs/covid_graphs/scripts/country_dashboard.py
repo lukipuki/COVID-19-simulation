@@ -95,7 +95,10 @@ def create_dashboard(
         )
     ]
 
-    app.layout = html.Div(children=content, style={"font-family": "sans-serif"})
+    app.layout = html.Div(
+        children=content,
+        style={"font-family": "sans-serif", "text-size-adjust": "none", "-webkit-text-size-adjust": "none"},
+    )
 
     @app.callback(
         [

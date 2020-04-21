@@ -89,10 +89,10 @@ def _create_simulation_apps(server: Flask, data_dir: Path):
         simulated_exponential, GrowthType.Exponential, server
     )
 
-    @server.route("/covid19/heatmap/polynomial")
+    @server.route("/covid19/heatmap/polynomial/")
     def covid19_heatmap_polynomial():
         return covid19_heatmap_polynomial_app.index()
 
-    @server.route("/covid19/heatmap/exponential")
+    @server.route("/covid19/heatmap/exponential/")
     def covid19_heatmap_exponential():
         return covid19_heatmap_exponential_app.index()

@@ -36,6 +36,7 @@ class CountryGraph:
     def __init__(
         self, report: CountryReport, country_predictions: List[CountryPrediction],
     ):
+        self.report = report
         self.short_name = country_predictions[0].country
         self.long_name = report.long_name
 
@@ -43,16 +44,14 @@ class CountryGraph:
         if len(country_predictions) >= 1:
             self.prediction_date = country_predictions[0].prediction_event.date.strftime("%Y-%m-%d")
 
-        self.graph_functions = [
-            prediction.formula.get_graph_function(country_report=report)
+        self.curves = [
+            prediction.formula.get_curve(country_report=report)
             for prediction in country_predictions
         ]
 
-        # TODO
-        self.dates = report.dates
-        self.dates_str = report.dates_str
-        self.ts = [formula.epoch_days(date) for date in self.dates]
-        self.cumulative_active = report.cumulative_active
+        # # TODO
+        # self.dates = report.dates
+        # self.cumulative_active = report.cumulative_active
 
     def create_country_figure(self, graph_type: GraphType):
 
@@ -66,7 +65,7 @@ class CountryGraph:
         #     else:
         #         return object.t
 
-        colors = ["SteelBlue", "Purple", "Green"][: len(self.graph_functions)]
+        colors = ["SteelBlue", "Purple", "Green"][: len(self.curves)]
         # shapes = [
         #     # Add vertical dotted lines marking the maxima
         #     dict(
@@ -132,23 +131,23 @@ class CountryGraph:
         #     ]
 
         figure = Figure(layout=layout)
-        for color, graph_function in zip(colors, self.graph_functions):
-            xs, ys = graph_function.get_trace()
+        for color, curve in zip(colors, self.curves):
+            xs, ys = curve.get_trace()
             figure.add_trace(
                 Scatter(
                     x=xs,
                     y=ys,
                     # text=curve.date_list,
                     mode="lines",
-                    name=graph_function.label,
+                    name=curve.label,
                     line={"width": 2, "color": color},
                 )
             )
 
         figure.add_trace(
             Scatter(
-                x=self.ts,
-                y=self.cumulative_active,
+                x=self.report.dates,
+                y=self.report.cumulative_active,
                 mode="lines+markers",
                 name="Active cases",
                 marker=dict(size=8),

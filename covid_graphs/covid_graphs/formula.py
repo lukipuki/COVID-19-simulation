@@ -1,3 +1,4 @@
+from abc import abstractmethod
 import datetime
 import math
 from dataclasses import dataclass
@@ -10,31 +11,40 @@ from .country_report import CountryReport
 
 
 @dataclass
-class GraphFunction:
-    # Mypy has trouble with `Callable[[int], float]` annotation:
+class Curve:
+    # Mypy has trouble with `Callable[[datetime.date], float]` annotation:
     # https://github.com/python/mypy/issues/708
     func: Callable
-    min_t: int  # inclusive
-    max_t: int  # exclusive
+    start_date: datetime.date  # inclusive
+    end_date: datetime.date  # exclusive
     label: str
 
-    def get_trace(self) -> Tuple[List[int], List[float]]:
+    def get_trace(self) -> Tuple[List[datetime.date], List[float]]:
         """
         Returns TODO
         """
-        xs = list(range(self.min_t, self.max_t))
+        xs = [
+            self.start_date + datetime.timedelta(days=d)
+            for d in range((self.end_date - self.start_date).days)
+        ]
         ys = [self.func(x) for x in xs]
         return xs, ys
 
 
+class CurveConstructor:
+    @abstractmethod
+    def get_curve(self, country_report: CountryReport) -> Curve:
+        pass
+
+
 @dataclass
-class AtgFormula:
+class AtgCurveConstructor(CurveConstructor):
     tg: float
     a: float
     exponent: float
     min_case_count: int
 
-    def get_graph_function(self, country_report: CountryReport) -> GraphFunction:
+    def get_curve(self, country_report: CountryReport) -> Curve:
         label = r"$\frac{_A}{_TG} \cdot \left(\frac{t}{_TG}\right)^{_expon} / e^{t/_TG}$"
         label = (
             label.replace("_A", f"{self.a:.0f}")
@@ -46,22 +56,14 @@ class AtgFormula:
         # more than min_case_count.
         start_idx = np.argmax(country_report.cumulative_active > self.min_case_count)
         start_date = country_report.dates[start_idx]
-        min_t = epoch_days(start_date)
 
         # Display values until the second inflection point.
         second_ip_days = math.ceil(self.tg * (self.exponent + math.sqrt(self.exponent)))
-        max_t = epoch_days(start_date + datetime.timedelta(days=second_ip_days))
+        end_date = start_date + datetime.timedelta(days=second_ip_days)
 
-        formula = (
-            lambda t: (self.a / self.tg)
-            * ((t - min_t) / self.tg) ** self.exponent
-            / np.exp((t - min_t) / self.tg)
-        )
-        return GraphFunction(func=formula, min_t=min_t, max_t=max_t, label=label)
+        def formula(date: datetime.date):
+            x = (date - start_date).days / self.tg
+            return (self.a / self.tg) * x ** self.exponent / np.exp(x)
 
+        return Curve(func=formula, start_date=start_date, end_date=end_date, label=label)
 
-def epoch_days(date: datetime.date):
-    """
-    TODO
-    """
-    return (date - datetime.datetime(1970, 1, 1)).days

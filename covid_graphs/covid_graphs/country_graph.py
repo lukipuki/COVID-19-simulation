@@ -1,4 +1,5 @@
 import math
+import datetime
 from enum import Enum
 from pathlib import Path
 from typing import List
@@ -24,87 +25,80 @@ class GraphType(Enum):
         return self.value
 
 
-class XAxisType(Enum):
-    Dated = "dated"  # with dates
-    Numbered = "numbered"  # numbered instead of dates
-
-    def __str__(self):
-        return self.value
-
-
 class CountryGraph:
     """Constructs a graph for a given country"""
 
     def __init__(
         self, report: CountryReport, country_predictions: List[CountryPrediction],
     ):
-        self.report = report
         self.short_name = country_predictions[0].country
         self.long_name = report.long_name
 
         # TODO(lukas): Figure out better strategy for more predictions
         if len(country_predictions) >= 1:
-            self.prediction_date = country_predictions[0].prediction_event.date.strftime("%Y-%m-%d")
+            self.prediction_date = country_predictions[0].prediction_event.date
 
         self.curves = [
             prediction.formula.get_curve(country_report=report)
             for prediction in country_predictions
         ]
 
-        # # TODO
-        # self.dates = report.dates
-        # self.cumulative_active = report.cumulative_active
+        # Crop country data to display.
+        min_start_date = min(curve.start_date for curve in self.curves)
+        min_start_date_idx = report.dates.index(min_start_date)
+        self.cropped_dates = report.dates[min_start_date_idx:]
+        self.cropped_cumulative_active = report.cumulative_active[min_start_date_idx:]
 
 
     def create_country_figure(self, graph_type: GraphType):
 
         # Due to plotly limitations, we can only have graphs with dates on the x-axis when we
         # aren't using logs.
-        # def pick_xaxis_labels(object):
-        #     if graph_type == GraphType.Normal:
-        #         return object.date_list
-        #     else:
-        #         return object.t
+        def adjust_xlabel(date: datetime.date):
+            if graph_type == GraphType.Normal:
+                return date
+            else:
+                return (date - datetime.date(2020, 3, 1)).days
 
         colors = ["SteelBlue", "Purple", "Green"][: len(self.curves)]
-        # shapes = [
-        #     # Add vertical dotted lines marking the maxima
-        #     dict(
-        #         type="line",
-        #         x0=pick_xaxis_labels(curve)[curve.maximal_idx],
-        #         y0=1,
-        #         x1=pick_xaxis_labels(curve)[curve.maximal_idx],
-        #         y1=curve.maximal_y,
-        #         line=dict(width=2, dash="dash", color=color),
-        #     )
-        #     for color, curve in zip(colors, self.curves)
-        # ]
-        # try:
-        #     prediction_date = self.date_list.index(self.prediction_date)
-        #     # Add green zone marking the data available at the prediction date.
-        #     shapes.append(
-        #         dict(
-        #             type="rect",
-        #             yref="paper",
-        #             x0=pick_xaxis_labels(self)[0],
-        #             x1=pick_xaxis_labels(self)[prediction_date],
-        #             y0=0,
-        #             y1=1,
-        #             fillcolor="LightGreen",
-        #             opacity=0.4,
-        #             layer="below",
-        #             line_width=0,
-        #         )
-        #     )
-        # except ValueError:
-        #     pass
+        shapes = []
+
+        # Add vertical dotted lines marking the maxima
+        for color, curve in zip(colors, self.curves):
+            x_max, y_max = curve.get_maximum()
+            shapes.append(
+                dict(
+                    type="line",
+                    x0=adjust_xlabel(x_max),
+                    y0=1,
+                    x1=adjust_xlabel(x_max),
+                    y1=y_max,
+                    line=dict(width=2, dash="dash", color=color),
+                )
+            )
+
+        # Add green zone marking the data available at the prediction date.
+        shapes.append(
+            dict(
+                type="rect",
+                yref="paper",
+                x0=adjust_xlabel(self.dates[0]),
+                x1=adjust_xlabel(self.prediction_date),
+                y0=0,
+                y1=1,
+                fillcolor="LightGreen",
+                opacity=0.4,
+                layer="below",
+                line_width=0,
+            )
+        )
 
         layout = Layout(
             title=f"Active cases in {self.long_name}",
             xaxis=dict(
                 autorange=True,
                 fixedrange=True,
-                title=f"Day [starting at the TODOth case]",
+                title=f"Date / Days [since Mar 1, 2020]", # TODO(miskosz): Update label on radio change.
                 showgrid=False,
             ),
             yaxis=dict(
@@ -116,29 +110,28 @@ class CountryGraph:
             ),
             height=700,
             margin=dict(r=40),
-            # shapes=shapes,
+            shapes=shapes,
             hovermode="x",
             font=dict(size=18),
             legend=dict(x=0.01, y=0.99, borderwidth=1),
             plot_bgcolor="White",
         )
-        # if graph_type != GraphType.Normal:
-        #     maximal_y = max(
-        #         max(curve.maximal_y for curve in self.curves), max(self.cumulative_active)
-        #     )
-        #     layout.yaxis["range"] = [
-        #         math.log10(self.cumulative_active.min()) - 0.3,
-        #         math.log10(maximal_y) + 0.3,
-        #     ]
+        if graph_type != GraphType.Normal:
+            maximal_y = max(
+                max(curve.get_maximum()[1] for curve in self.curves), max(self.cumulative_active)
+            )
+            # Note: We silently assume `self.cumulative_active` does not contain zeros.
+            layout.yaxis["range"] = [
+                math.log10(self.cumulative_active.min()) - 0.3,
+                math.log10(maximal_y) + 0.3,
+            ]
 
         figure = Figure(layout=layout)
         for color, curve in zip(colors, self.curves):
-            xs, ys = curve.get_trace()
             figure.add_trace(
                 Scatter(
-                    x=xs,
-                    y=ys,
-                    # text=curve.date_list,
+                    x=list(map(adjust_xlabel, curve.xs)),
+                    y=curve.ys,
                     mode="lines",
                     name=curve.label,
                     line={"width": 2, "color": color},
@@ -147,8 +140,8 @@ class CountryGraph:
 
         figure.add_trace(
             Scatter(
-                x=self.report.dates,
-                y=self.report.cumulative_active,
+                x=list(map(adjust_xlabel, self.dates)),
+                y=self.cumulative_active,
                 mode="lines+markers",
                 name="Active cases",
                 marker=dict(size=8),

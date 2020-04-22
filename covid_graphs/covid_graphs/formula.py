@@ -9,25 +9,36 @@ import numpy as np
 
 from .country_report import CountryReport
 
-@dataclass
-class Curve:
-    # Mypy has trouble with `Callable[[datetime.date], float]` annotation:
-    # https://github.com/python/mypy/issues/708
-    func: Callable
-    start_date: datetime.date  # inclusive
-    end_date: datetime.date  # exclusive
-    label: str
 
-    def get_trace(self) -> Tuple[List[datetime.date], List[float]]:
+class Curve:
+    def __init__(
+        self,
+        func: Callable[[datetime.date], float],
+        start_date: datetime.date,
+        end_date: datetime.date,
+        label: str,
+    ) -> None:
         """
-        Returns TODO
+        TODO
+        [start_date, end_date)
         """
-        xs = [
+        self.start_date = start_date
+        self.end_date = end_date
+        self.label = label
+
+        self.xs = [
             self.start_date + datetime.timedelta(days=d)
             for d in range((self.end_date - self.start_date).days)
         ]
-        ys = [self.func(x) for x in xs]
-        return xs, ys
+        self.ys = [func(x) for x in self.xs]
+
+
+    def get_maximum(self) -> Tuple[datetime.date, float]:
+        """
+        Return TODO
+        """
+        idx = np.argmax(self.ys)
+        return self.xs[idx], self.ys[idx]
 
 
 class CurveConstructor:
@@ -51,17 +62,19 @@ class AtgCurveConstructor(CurveConstructor):
             .replace("_expon", f"{self.exponent}")
         )
 
+
         # Display values from the first day for which the number of cumulative active is
-        # more than min_case_count.
-        start_idx = np.argmax(country_report.cumulative_active > self.min_case_count)
+        # more than min_case_count. This day is also "day one".
+        start_idx = np.argmax(country_report.cumulative_active >= self.min_case_count)
         start_date = country_report.dates[start_idx]
+        day_zero = start_date - datetime.timedelta(days=1)
 
         # Display values until the second inflection point.
         second_ip_days = math.ceil(self.tg * (self.exponent + math.sqrt(self.exponent)))
         end_date = start_date + datetime.timedelta(days=second_ip_days)
 
         def formula(date: datetime.date):
-            x = (date - start_date).days / self.tg
+            x = (date - day_zero).days / self.tg
             return (self.a / self.tg) * x ** self.exponent / np.exp(x)
 
         return Curve(func=formula, start_date=start_date, end_date=end_date, label=label)

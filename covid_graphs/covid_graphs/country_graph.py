@@ -10,6 +10,8 @@ from plotly.graph_objs import Figure, Layout, Scatter
 
 from . import formula
 from .country_report import CountryReport
+
+from .formula import Curve
 from .predictions import CountryPrediction, prediction_db
 
 
@@ -53,14 +55,13 @@ class CountryGraph:
         # self.dates = report.dates
         # self.cumulative_active = report.cumulative_active
 
+
     def create_country_figure(self, graph_type: GraphType):
 
         # Due to plotly limitations, we can only have graphs with dates on the x-axis when we
         # aren't using logs.
-        axis_type = XAxisType.Dated if graph_type == GraphType.Normal else XAxisType.Numbered
-
         # def pick_xaxis_labels(object):
-        #     if axis_type == XAxisType.Dated:
+        #     if graph_type == GraphType.Normal:
         #         return object.date_list
         #     else:
         #         return object.t

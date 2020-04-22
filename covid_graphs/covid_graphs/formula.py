@@ -2,13 +2,12 @@ from abc import abstractmethod
 import datetime
 import math
 from dataclasses import dataclass
-from enum import Enum
+from datetime import timedelta
 from typing import Callable, List, Tuple
 
 import numpy as np
 
 from .country_report import CountryReport
-
 
 @dataclass
 class Curve:
@@ -66,4 +65,3 @@ class AtgCurveConstructor(CurveConstructor):
             return (self.a / self.tg) * x ** self.exponent / np.exp(x)
 
         return Curve(func=formula, start_date=start_date, end_date=end_date, label=label)
-

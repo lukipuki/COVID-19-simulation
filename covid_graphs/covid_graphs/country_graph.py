@@ -9,7 +9,7 @@ import numpy as np
 from plotly.graph_objs import Figure, Layout, Scatter
 
 from .country_report import CountryReport
-from .formula import Curve, XAxisType
+from .formula import Curve
 from .predictions import CountryPrediction, prediction_db
 
 
@@ -46,7 +46,7 @@ class CountryGraph:
             report.cumulative_active,
             report.dates[0],
         )
-        self.cumulative_active = report.cumulative_active[first_idx:].copy()
+        self.cumulative_active = report.cumulative_active[first_idx:]
         self.date_list = report.dates_str[first_idx:]
         self.t = np.arange(len(self.cumulative_active)) + 1
 
@@ -54,10 +54,8 @@ class CountryGraph:
 
         # Due to plotly limitations, we can only have graphs with dates on the x-axis when we
         # aren't using logs.
-        axis_type = XAxisType.Dated if graph_type == GraphType.Normal else XAxisType.Numbered
-
         def pick_xaxis_labels(object):
-            if axis_type == XAxisType.Dated:
+            if graph_type == GraphType.Normal:
                 return object.date_list
             else:
                 return object.t
@@ -142,7 +140,7 @@ class CountryGraph:
 
         figure.add_trace(
             Scatter(
-                x=pick_xaxis_labels(curve),
+                x=pick_xaxis_labels(self),
                 y=self.cumulative_active,
                 mode="lines+markers",
                 name="Active cases",

@@ -1,7 +1,6 @@
 import math
 from dataclasses import dataclass
 from datetime import timedelta
-from enum import Enum
 from typing import Callable
 
 import numpy as np
@@ -13,14 +12,6 @@ class Formula:
     text: str
     second_ip_day: int
     min_case_count: int
-
-
-class XAxisType(Enum):
-    Dated = "dated"  # with dates
-    Numbered = "numbered"  # numbered instead of dates
-
-    def __str__(self):
-        return self.value
 
 
 def ATG_formula(TG, A, exponent, min_case_count=200):
@@ -54,7 +45,6 @@ class Curve:
     first_idx - 0-based index where the graph starts, so from cumulative_active[first_idx:].
     last_idx - 0-based index where the graph ends
     first_date - date corresponding to cumulative_active[0]
-    xaxis_type - whether we label with numbers or dates
     """
 
     def __init__(self, formula, cumulative_active, first_idx, last_idx, first_date):

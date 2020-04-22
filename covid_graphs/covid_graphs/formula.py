@@ -1,9 +1,8 @@
-from abc import abstractmethod
 import datetime
 import math
+from abc import abstractmethod
 from dataclasses import dataclass
-from datetime import timedelta
-from typing import Callable, List, Tuple
+from typing import Callable, Tuple
 
 import numpy as np
 
@@ -31,7 +30,6 @@ class Curve:
             for d in range((self.end_date - self.start_date).days)
         ]
         self.ys = [func(x) for x in self.xs]
-
 
     def get_maximum(self) -> Tuple[datetime.date, float]:
         """
@@ -61,7 +59,6 @@ class AtgCurveConstructor(CurveConstructor):
             .replace("_TG", f"{self.tg}")
             .replace("_expon", f"{self.exponent}")
         )
-
 
         # Display values from the first day for which the number of cumulative active is
         # more than min_case_count. This day is also "day one".

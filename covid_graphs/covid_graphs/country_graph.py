@@ -1,18 +1,14 @@
-import math
 import datetime
+import math
 from enum import Enum
 from pathlib import Path
 from typing import List
 
 import click
 import click_pathlib
-import numpy as np
 from plotly.graph_objs import Figure, Layout, Scatter
 
-from . import formula
 from .country_report import CountryReport
-
-from .formula import Curve
 from .predictions import CountryPrediction, prediction_db
 
 
@@ -49,7 +45,6 @@ class CountryGraph:
         self.cropped_dates = report.dates[min_start_date_idx:]
         self.cropped_cumulative_active = report.cumulative_active[min_start_date_idx:]
 
-
     def create_country_figure(self, graph_type: GraphType):
 
         # Due to plotly limitations, we can only have graphs with dates on the x-axis when we
@@ -82,7 +77,7 @@ class CountryGraph:
             dict(
                 type="rect",
                 yref="paper",
-                x0=adjust_xlabel(self.dates[0]),
+                x0=adjust_xlabel(self.cropped_dates[0]),
                 x1=adjust_xlabel(self.prediction_date),
                 y0=0,
                 y1=1,
@@ -98,7 +93,7 @@ class CountryGraph:
             xaxis=dict(
                 autorange=True,
                 fixedrange=True,
-                title=f"Date / Days [since Mar 1, 2020]", # TODO(miskosz): Update label on radio change.
+                title=f"Date / Days [since Mar 1, 2020]",  # TODO(miskosz): Update label on radio change.
                 showgrid=False,
             ),
             yaxis=dict(
@@ -118,11 +113,12 @@ class CountryGraph:
         )
         if graph_type != GraphType.Normal:
             maximal_y = max(
-                max(curve.get_maximum()[1] for curve in self.curves), max(self.cumulative_active)
+                max(curve.get_maximum()[1] for curve in self.curves),
+                max(self.cropped_cumulative_active),
             )
-            # Note: We silently assume `self.cumulative_active` does not contain zeros.
+            # Note: We silently assume `self.cropped_cumulative_active` does not contain zeros.
             layout.yaxis["range"] = [
-                math.log10(self.cumulative_active.min()) - 0.3,
+                math.log10(self.cropped_cumulative_active.min()) - 0.3,
                 math.log10(maximal_y) + 0.3,
             ]
 
@@ -140,8 +136,8 @@ class CountryGraph:
 
         figure.add_trace(
             Scatter(
-                x=list(map(adjust_xlabel, self.dates)),
-                y=self.cumulative_active,
+                x=list(map(adjust_xlabel, self.cropped_dates)),
+                y=self.cropped_cumulative_active,
                 mode="lines+markers",
                 name="Active cases",
                 marker=dict(size=8),

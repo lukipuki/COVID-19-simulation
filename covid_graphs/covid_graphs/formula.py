@@ -2,7 +2,7 @@ import datetime
 import math
 from abc import abstractmethod
 from dataclasses import dataclass
-from typing import Callable, Tuple
+from typing import Callable, List, Optional, Tuple
 
 import numpy as np
 
@@ -21,22 +21,31 @@ class Curve:
         TODO
         [start_date, end_date)
         """
+        self._func = func
         self.start_date = start_date
         self.end_date = end_date
         self.label = label
+        self._xs: Optional[List[datetime.date]] = None
+        self._ys: Optional[List[float]] = None
 
-        self.xs = [
-            self.start_date + datetime.timedelta(days=d)
-            for d in range((self.end_date - self.start_date).days)
+    def get_trace(
+        self, plot_start_date: datetime.date, plot_end_date: datetime.date
+    ) -> Tuple[List[datetime.date], List[float]]:
+        self._xs = [
+            plot_start_date + datetime.timedelta(days=d)
+            for d in range((plot_end_date - plot_start_date).days)
         ]
-        self.ys = [func(x) for x in self.xs]
+        self._ys = [self._func(x) for x in self._xs]
+        return self._xs, self._ys
 
     def get_maximum(self) -> Tuple[datetime.date, float]:
         """
         Return TODO
         """
-        idx = np.argmax(self.ys)
-        return self.xs[idx], self.ys[idx]
+        if self._xs is None or self._ys is None:
+            raise ValueError("Must call get_trace() first.")
+        idx = np.argmax(self._ys)
+        return self._xs[idx], self._ys[idx]
 
 
 class CurveConstructor:
@@ -61,7 +70,7 @@ class AtgCurveConstructor(CurveConstructor):
         )
 
         # Display values from the first day for which the number of cumulative active is
-        # more than min_case_count. This day is also "day one".
+        # at least min_case_count. This day is also "day one".
         start_idx = np.argmax(country_report.cumulative_active >= self.min_case_count)
         start_date = country_report.dates[start_idx]
         day_zero = start_date - datetime.timedelta(days=1)

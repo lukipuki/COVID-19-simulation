@@ -40,22 +40,54 @@ class CountryGraph:
         ]
 
         # Crop country data to display.
-        min_start_date = min(curve.start_date for curve in self.curves)
-        min_start_date_idx = report.dates.index(min_start_date)
+        self.min_start_date = min(curve.start_date for curve in self.curves)
+        min_start_date_idx = report.dates.index(self.min_start_date)
         self.cropped_dates = report.dates[min_start_date_idx:]
         self.cropped_cumulative_active = report.cumulative_active[min_start_date_idx:]
+
+        self.max_end_date = max(curve.end_date for curve in self.curves)
+        self.max_end_date = max(self.max_end_date, report.dates[-1] + datetime.timedelta(days=7))
 
     def create_country_figure(self, graph_type: GraphType):
 
         # Due to plotly limitations, we can only have graphs with dates on the x-axis when we
         # aren't using logs.
+        log_xaxis_date_since = datetime.date(2020, 2, 1)
+
         def adjust_xlabel(date: datetime.date):
             if graph_type == GraphType.Normal:
                 return date
             else:
-                return (date - datetime.date(2020, 3, 1)).days
+                return (date - log_xaxis_date_since).days
 
         colors = ["SteelBlue", "Purple", "Green"][: len(self.curves)]
+
+        # Traces
+        traces = []
+        for color, curve in zip(colors, self.curves):
+            xs, ys = curve.get_trace(self.min_start_date, self.max_end_date)
+            traces.append(
+                Scatter(
+                    x=list(map(adjust_xlabel, xs)),
+                    y=ys,
+                    mode="lines",
+                    name=curve.label,
+                    line={"width": 2, "color": color},
+                )
+            )
+
+        traces.append(
+            Scatter(
+                x=list(map(adjust_xlabel, self.cropped_dates)),
+                y=self.cropped_cumulative_active,
+                mode="lines+markers",
+                name="Active cases",
+                marker=dict(size=8),
+                line=dict(width=3, color="rgb(239, 85, 59)"),
+            )
+        )
+
+        # Shapes
         shapes = []
 
         # Add vertical dotted lines marking the maxima
@@ -93,7 +125,8 @@ class CountryGraph:
             xaxis=dict(
                 autorange=True,
                 fixedrange=True,
-                title=f"Date / Days [since Mar 1, 2020]",  # TODO(miskosz): Update label on radio change.
+                # TODO(miskosz): Update label on radio change.
+                title=f"Date / Days [since {log_xaxis_date_since.strftime('%b %d, %Y')}]",
                 showgrid=False,
             ),
             yaxis=dict(
@@ -122,28 +155,7 @@ class CountryGraph:
                 math.log10(maximal_y) + 0.3,
             ]
 
-        figure = Figure(layout=layout)
-        for color, curve in zip(colors, self.curves):
-            figure.add_trace(
-                Scatter(
-                    x=list(map(adjust_xlabel, curve.xs)),
-                    y=curve.ys,
-                    mode="lines",
-                    name=curve.label,
-                    line={"width": 2, "color": color},
-                )
-            )
-
-        figure.add_trace(
-            Scatter(
-                x=list(map(adjust_xlabel, self.cropped_dates)),
-                y=self.cropped_cumulative_active,
-                mode="lines+markers",
-                name="Active cases",
-                marker=dict(size=8),
-                line=dict(width=3, color="rgb(239, 85, 59)"),
-            )
-        )
+        figure = Figure(data=traces, layout=layout)
 
         if graph_type == GraphType.Normal:
             figure.update_yaxes(type="linear")

@@ -75,7 +75,8 @@ _prediction_database = [
     CountryPrediction(
         prediction_event=BK_20200411,
         country="Austria",
-        formula=AtgCurveConstructor(3.4818, 2.135, 8.466, 29),
+        # Fix buggy offset.
+        formula=AtgCurveConstructor(3.4818, 2.135, 8.466, 29 + 1),
     ),
     CountryPrediction(
         prediction_event=BK_20200411,

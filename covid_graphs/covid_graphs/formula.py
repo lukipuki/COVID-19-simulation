@@ -31,6 +31,10 @@ class Curve:
     def get_trace(
         self, plot_start_date: datetime.date, plot_end_date: datetime.date
     ) -> Tuple[List[datetime.date], List[float]]:
+        """
+        Returns (xs, ys) - a trace of the function `func` in the given
+        half-open interval [plot_start_date, plot_end_date).
+        """
         self._xs = [
             plot_start_date + datetime.timedelta(days=d)
             for d in range((plot_end_date - plot_start_date).days)
@@ -40,7 +44,7 @@ class Curve:
 
     def get_maximum(self) -> Tuple[datetime.date, float]:
         """
-        Return TODO
+        Returns (x, y) point on the curve with maximal y.
         """
         if self._xs is None or self._ys is None:
             raise ValueError("Must call get_trace() first.")

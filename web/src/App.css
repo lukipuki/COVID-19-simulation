@@ -10,6 +10,11 @@
   min-width: 300px;
   overflow: auto;
   padding: 0 10px;
+  background-color: linen;
+  -webkit-box-shadow: 0px 0px 20px 5px rgba(0,0,0,0.2);
+  -moz-box-shadow: 0px 0px 20px 5px rgba(0,0,0,0.2);
+  box-shadow: 0px 0px 20px 5px rgba(0,0,0,0.2);
+  z-index: 1;
 }
 
 .content {

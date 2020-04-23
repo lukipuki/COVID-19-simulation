@@ -21,7 +21,6 @@ const predefinedOptions = {
     chart: {
         zoomType: 'x',
         colors,
-        height: '80%',
     },
     title: {
         text: 'USD to EUR exchange rate over time'
@@ -241,6 +240,7 @@ class Graph extends Component {
                                     return <HighchartsReact
                                         highcharts={Highcharts}
                                         immutable={true}
+                                        containerProps={{ style: { height: "100%" } }}
                                         options={finalOptions}/>
                                 }}
                             </DataContext.Consumer>

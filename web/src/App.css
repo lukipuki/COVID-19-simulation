@@ -1,0 +1,71 @@
+.App {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+}
+
+.sidebar {
+  flex: 1;
+  max-width: 30%;
+  min-width: 300px;
+  overflow: auto;
+  padding: 10px;
+}
+
+.content {
+  flex: 1;
+  padding-top: 5%;
+}
+
+button {
+  background-color: transparent;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid lightgrey;
+  text-align: center;
+}
+
+button:hover {
+  background-color: linen;
+}
+
+button:disabled,
+button:disabled:hover {
+  background-color: lightgrey;
+  color: darkgrey;
+}
+
+button.active {
+  background-color: orange;
+}
+
+fieldset {
+  border-radius: 10px;
+  border: 1px solid lightgrey;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.dates,
+.countries {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.dates {
+  padding-bottom: 10px;
+  border-bottom: 1px solid lightgrey;
+}
+
+.countries button {
+  margin-top: 10px;
+}
+
+fieldset.countries {
+  display: block;
+}

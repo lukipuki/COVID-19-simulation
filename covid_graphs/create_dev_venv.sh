@@ -2,7 +2,7 @@
 set -euo pipefail
 
 rm -rf .venv
-python3.7 -m venv .venv
+python -m venv .venv
 
 source .venv/bin/activate
 pip install -r dev_requirements.txt

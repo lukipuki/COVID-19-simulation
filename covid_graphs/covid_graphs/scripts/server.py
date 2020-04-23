@@ -59,8 +59,21 @@ def run_server(data_dir: Path) -> None:
 def _run_flask_server(server: Flask, data_dir: Path):
     _create_prediction_apps(server=server, data_dir=data_dir)
     _create_simulation_apps(server=server, data_dir=data_dir)
+    _create_prediction_rest(server=server, data_dir=data_dir)
     server.run(host="0.0.0.0", port=8081)
 
+def _create_prediction_rest(data_dir: Path, server: Flask):
+    prediction_rest = country_dashboard.create_prediction_rest(
+        data_dir=data_dir, server=server
+    )
+    
+    @server.route("/covid19/predictions/list/")
+    def covid19_available_predictions():
+        return prediction_rest.get_available_predictions()
+    
+    @server.route("/covid19/predictions/data/<date>/<country>")
+    def covid19_get_specific_prediction(date, country):
+        return prediction_rest.get_specific_prediction(date, country)
 
 def _create_prediction_apps(data_dir: Path, server: Flask):
     single_prediction_app = country_dashboard.create_single_country_dashboard(

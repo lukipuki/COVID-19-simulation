@@ -668,3 +668,46 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 15
+  date {
+    day: 19
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  positive: 12
+  date {
+    day: 20
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 4
+  positive: 9
+  recovered: 45
+  date {
+    day: 21
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 13
+  date {
+    day: 22
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  positive: 17
+  date {
+    day: 23
+    month: 4
+    year: 2020
+  }
+}

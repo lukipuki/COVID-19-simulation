@@ -27,7 +27,7 @@ class CountryGraph:
     def __init__(
         self, report: CountryReport, country_predictions: List[CountryPrediction],
     ):
-        self.short_name = country_predictions[0].country
+        self.short_name = report.short_name
         self.long_name = report.long_name
 
         # TODO(lukas): Figure out better strategy for more predictions
@@ -40,8 +40,8 @@ class CountryGraph:
         ]
 
         # Crop country data to display.
-        self.min_start_date = min(curve.start_date for curve in self.curves)
-        min_start_date_idx = report.dates.index(self.min_start_date)
+        min_start_date = min(curve.start_date for curve in self.curves)
+        min_start_date_idx = report.dates.index(min_start_date)
         self.cropped_dates = report.dates[min_start_date_idx:]
         self.cropped_cumulative_active = report.cumulative_active[min_start_date_idx:]
 

@@ -1,3 +1,4 @@
+import datetime
 import math
 from enum import Enum
 from pathlib import Path
@@ -5,11 +6,9 @@ from typing import List
 
 import click
 import click_pathlib
-import numpy as np
 from plotly.graph_objs import Figure, Layout, Scatter
 
 from .country_report import CountryReport
-from .formula import Curve
 from .predictions import CountryPrediction, prediction_db
 
 
@@ -28,77 +27,101 @@ class CountryGraph:
     def __init__(
         self, report: CountryReport, country_predictions: List[CountryPrediction],
     ):
-        # TODO(miskosz): We assume there is only one country.
-        # This might change soon though if we want to have a country dropdown in one graph.
-        self.short_name = country_predictions[0].country
-        self.min_case_count = min(
-            prediction.formula.min_case_count for prediction in country_predictions
-        )
+        self.short_name = report.short_name
+        self.long_name = report.long_name
 
         # TODO(lukas): Figure out better strategy for more predictions
         if len(country_predictions) >= 1:
-            self.prediction_date = country_predictions[0].prediction_event.date.strftime("%Y-%m-%d")
+            self.prediction_date = country_predictions[0].prediction_event.date
 
-        self.long_name = report.long_name
+        self.curves = [
+            prediction.formula.get_curve(country_report=report)
+            for prediction in country_predictions
+        ]
 
-        first_idx, last_idx, self.curves = Curve.create_curves(
-            [prediction.formula for prediction in country_predictions],
-            report.cumulative_active,
-            report.dates[0],
-        )
-        self.cumulative_active = report.cumulative_active[first_idx:]
-        self.date_list = report.dates_str[first_idx:]
-        self.t = np.arange(len(self.cumulative_active)) + 1
+        # Crop country data to display.
+        min_start_date = min(curve.start_date for curve in self.curves)
+        min_start_date_idx = report.dates.index(min_start_date)
+        self.cropped_dates = report.dates[min_start_date_idx:]
+        self.cropped_cumulative_active = report.cumulative_active[min_start_date_idx:]
 
     def create_country_figure(self, graph_type: GraphType):
 
         # Due to plotly limitations, we can only have graphs with dates on the x-axis when we
         # aren't using logs.
-        def pick_xaxis_labels(object):
+        log_xaxis_date_since = datetime.date(2020, 2, 1)
+
+        def adjust_xlabel(date: datetime.date):
             if graph_type == GraphType.Normal:
-                return object.date_list
+                return date
             else:
-                return object.t
+                return (date - log_xaxis_date_since).days
 
         colors = ["SteelBlue", "Purple", "Green"][: len(self.curves)]
-        shapes = [
-            # Add vertical dotted lines marking the maxima
-            dict(
-                type="line",
-                x0=pick_xaxis_labels(curve)[curve.maximal_idx],
-                y0=1,
-                x1=pick_xaxis_labels(curve)[curve.maximal_idx],
-                y1=curve.maximal_y,
-                line=dict(width=2, dash="dash", color=color),
-            )
-            for color, curve in zip(colors, self.curves)
-        ]
-        try:
-            prediction_date = self.date_list.index(self.prediction_date)
-            # Add green zone marking the data available at the prediction date.
-            shapes.append(
-                dict(
-                    type="rect",
-                    yref="paper",
-                    x0=pick_xaxis_labels(self)[0],
-                    x1=pick_xaxis_labels(self)[prediction_date],
-                    y0=0,
-                    y1=1,
-                    fillcolor="LightGreen",
-                    opacity=0.4,
-                    layer="below",
-                    line_width=0,
+
+        # Traces
+        traces = []
+        for color, curve in zip(colors, self.curves):
+            traces.append(
+                Scatter(
+                    x=list(map(adjust_xlabel, curve.xs)),
+                    y=curve.ys,
+                    mode="lines",
+                    name=curve.label,
+                    line={"width": 2, "color": color},
                 )
             )
-        except ValueError:
-            pass
+
+        traces.append(
+            Scatter(
+                x=list(map(adjust_xlabel, self.cropped_dates)),
+                y=self.cropped_cumulative_active,
+                mode="lines+markers",
+                name="Active cases",
+                marker=dict(size=8),
+                line=dict(width=3, color="rgb(239, 85, 59)"),
+            )
+        )
+
+        # Shapes
+        shapes = []
+
+        # Add vertical dotted lines marking the maxima
+        for color, curve in zip(colors, self.curves):
+            shapes.append(
+                dict(
+                    type="line",
+                    x0=adjust_xlabel(curve.x_max),
+                    y0=1,
+                    x1=adjust_xlabel(curve.x_max),
+                    y1=curve.y_max,
+                    line=dict(width=2, dash="dash", color=color),
+                )
+            )
+
+        # Add green zone marking the data available at the prediction date.
+        shapes.append(
+            dict(
+                type="rect",
+                yref="paper",
+                x0=adjust_xlabel(self.cropped_dates[0]),
+                x1=adjust_xlabel(self.prediction_date),
+                y0=0,
+                y1=1,
+                fillcolor="LightGreen",
+                opacity=0.4,
+                layer="below",
+                line_width=0,
+            )
+        )
 
         layout = Layout(
             title=f"Active cases in {self.long_name}",
             xaxis=dict(
                 autorange=True,
                 fixedrange=True,
-                title=f"Day [starting at the {self.min_case_count}th case]",
+                # TODO(miskosz): Update label on radio change.
+                title=f"Date / Days [since {log_xaxis_date_since.strftime('%b %d, %Y')}]",
                 showgrid=False,
             ),
             yaxis=dict(
@@ -118,36 +141,15 @@ class CountryGraph:
         )
         if graph_type != GraphType.Normal:
             maximal_y = max(
-                max(curve.maximal_y for curve in self.curves), max(self.cumulative_active)
+                max(curve.y_max for curve in self.curves), max(self.cropped_cumulative_active),
             )
+            # Note: We silently assume `self.cropped_cumulative_active` does not contain zeros.
             layout.yaxis["range"] = [
-                math.log10(self.cumulative_active.min()) - 0.3,
+                math.log10(self.cropped_cumulative_active.min()) - 0.3,
                 math.log10(maximal_y) + 0.3,
             ]
 
-        figure = Figure(layout=layout)
-        for color, curve in zip(colors, self.curves):
-            figure.add_trace(
-                Scatter(
-                    x=pick_xaxis_labels(curve),
-                    y=curve.y,
-                    text=curve.date_list,
-                    mode="lines",
-                    name=curve.text,
-                    line={"width": 2, "color": color},
-                )
-            )
-
-        figure.add_trace(
-            Scatter(
-                x=pick_xaxis_labels(self),
-                y=self.cumulative_active,
-                mode="lines+markers",
-                name="Active cases",
-                marker=dict(size=8),
-                line=dict(width=3, color="rgb(239, 85, 59)"),
-            )
-        )
+        figure = Figure(data=traces, layout=layout)
 
         if graph_type == GraphType.Normal:
             figure.update_yaxes(type="linear")

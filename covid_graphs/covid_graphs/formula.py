@@ -1,81 +1,79 @@
+import datetime
 import math
+from abc import abstractmethod
 from dataclasses import dataclass
-from datetime import timedelta
 from typing import Callable
 
 import numpy as np
 
-
-@dataclass
-class Formula:
-    lambd: Callable[[float], float]
-    text: str
-    second_ip_day: int
-    min_case_count: int
-
-
-def ATG_formula(TG, A, exponent, min_case_count=200):
-    text = r"$\frac{_A}{_TG} \cdot \left(\frac{t}{_TG}\right)^{_expon} / e^{t/_TG}$"
-    text = text.replace("_A", f"{A:.0f}").replace("_TG", f"{TG}").replace("_expon", f"{exponent}")
-    # Day of the second inflection point
-    second_ip_day = math.ceil(TG * (exponent + math.sqrt(exponent)))
-    return Formula(
-        lambda t: (A / TG) * (t / TG) ** exponent / np.exp(t / TG),
-        text,
-        second_ip_day,
-        min_case_count,
-    )
-
-
-def first_day_of_curve(cumulative_active, formula):
-    """
-    Returns the first day of the curve formed by 'formula'.
-
-    It's the first day for which the number of cumulative active is more than
-    formula.min_case_count.
-    """
-    return np.argmax(cumulative_active > formula.min_case_count)
+from .country_report import CountryReport
 
 
 class Curve:
-    """
-    Class containing a curve derived from a formula.
+    def __init__(
+        self,
+        func: Callable[[datetime.date], float],
+        start_date: datetime.date,
+        end_date: datetime.date,
+        label: str,
+    ) -> None:
+        """
+        Calculates function trace for dates in a half-open interval [start_date, end_date).
 
-    cumulative_active - list of cumulative active cases
-    first_idx - 0-based index where the graph starts, so from cumulative_active[first_idx:].
-    last_idx - 0-based index where the graph ends
-    first_date - date corresponding to cumulative_active[0]
-    """
+        Sets the trace as properties `xs` and `ys`. Also calculates a point (x_max, y_max)
+        for which the maximum is achieved.
 
-    def __init__(self, formula, cumulative_active, first_idx, last_idx, first_date):
-        self.text = formula.text
-        start_idx = first_day_of_curve(cumulative_active, formula)
-        length = last_idx - start_idx + 1
-        self.y = formula.lambd(np.arange(length) + 1)
-        self.t = np.arange(length) + 1 + (start_idx - first_idx)
-        self.date_list = [
-            (first_date + timedelta(days=d)).strftime("%Y-%m-%d")
-            for d in range(start_idx, last_idx + 1)
+        Note: The current design assumes the range of the plot is known at initialisation.
+        """
+        self.start_date = start_date
+        self.end_date = end_date
+        self.label = label
+
+        self.xs = [
+            start_date + datetime.timedelta(days=d) for d in range((end_date - start_date).days)
         ]
+        self.ys = [func(x) for x in self.xs]
 
-        self.maximal_y = self.y.max()
-        self.maximal_idx = self.y.argmax()
+        idx_max = np.argmax(self.ys)
+        self.x_max = self.xs[idx_max]
+        self.y_max = self.ys[idx_max]
 
-    @staticmethod
-    def create_curves(formulas, cumulative_active, first_date):
-        """Evaluates a list of formulas and finds a suitable range in the graph"""
-        first_idx = min(first_day_of_curve(cumulative_active, formula) for formula in formulas)
-        last_idx = max(
-            first_day_of_curve(cumulative_active, formula) + formula.second_ip_day
-            for formula in formulas
+
+class CurveConstructor:
+    @abstractmethod
+    def get_curve(self, country_report: CountryReport) -> Curve:
+        pass
+
+
+@dataclass
+class AtgCurveConstructor(CurveConstructor):
+    tg: float
+    a: float
+    exponent: float
+    min_case_count: int
+
+    def get_curve(self, country_report: CountryReport) -> Curve:
+        label = r"$\frac{_A}{_TG} \cdot \left(\frac{t}{_TG}\right)^{_expon} / e^{t/_TG}$"
+        label = (
+            label.replace("_A", f"{self.a:.0f}")
+            .replace("_TG", f"{self.tg}")
+            .replace("_expon", f"{self.exponent}")
         )
-        last_idx = max(last_idx, len(cumulative_active) - 1)
 
-        return (
-            first_idx,
-            last_idx,
-            [
-                Curve(formula, cumulative_active, first_idx, last_idx, first_date)
-                for formula in formulas
-            ],
-        )
+        # Display values from the first day for which the number of cumulative active is
+        # at least min_case_count. This day is also "day one".
+        start_idx = np.argmax(country_report.cumulative_active >= self.min_case_count)
+        start_date = country_report.dates[start_idx]
+        day_zero = start_date - datetime.timedelta(days=1)
+
+        # Display values until the second inflection point or one week after data finishes.
+        days_till_second_ip = math.ceil(self.tg * (self.exponent + math.sqrt(self.exponent)))
+        second_ip_date = start_date + datetime.timedelta(days=days_till_second_ip)
+        week_after_data_ends_date = country_report.dates[-1] + datetime.timedelta(days=7)
+        end_date = max(second_ip_date, week_after_data_ends_date)
+
+        def formula(date: datetime.date):
+            x = (date - day_zero).days / self.tg
+            return (self.a / self.tg) * x ** self.exponent / np.exp(x)
+
+        return Curve(func=formula, start_date=start_date, end_date=end_date, label=label)

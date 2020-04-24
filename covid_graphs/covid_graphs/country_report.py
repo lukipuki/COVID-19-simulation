@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 from pathlib import Path
 
 import numpy as np
@@ -16,7 +16,7 @@ class CountryReport:
         self.short_name = short_name
         self.long_name = country_data.name
         self.dates = [
-            datetime(day=day.date.day, month=day.date.month, year=day.date.year)
+            datetime.date(day=day.date.day, month=day.date.month, year=day.date.year)
             for day in country_data.stats
         ]
         self.dates_str = list(map(lambda d: d.strftime("%Y-%m-%d"), self.dates))

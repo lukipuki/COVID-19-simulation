@@ -9,6 +9,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 from flask import Flask
 
+import covid_graphs.country_report as country_report
 from covid_graphs.country_graph import CountryGraph, GraphType
 from covid_graphs.country_report import CountryReport
 from covid_graphs.predictions import BK_20200411, OTHER, PredictionEvent, prediction_db
@@ -83,7 +84,7 @@ def _prepare_data_structures(
 
     # TODO: parsing the proto can fail
     reports = [
-        CountryReport(data_dir / f"{country_short_name}.data", country_short_name)
+        country_report.create_report(data_dir / f"{country_short_name}.data", country_short_name)
         for country_short_name in prediction_db.get_countries()
         if (data_dir / f"{country_short_name}.data").is_file()
     ]

@@ -9,7 +9,7 @@ import click_pathlib
 import numpy as np
 from plotly.graph_objs import Figure, Layout, Scatter
 
-from .country_report import CountryReport
+from .country_report import create_report
 from .simulation_report import GrowthType, create_simulation_reports
 
 EXTENSION = 10
@@ -56,7 +56,7 @@ class SimulationGraph:
             f"for prefix_length={self.prefix_length}, error={self.best_error}"
         )
 
-        country_report = CountryReport(country_data_file, "Slovakia")
+        country_report = create_report(country_data_file, "Slovakia")
         # TODO: Complete Slovak data, so that we don't have to do this dance
         self.daily_positive = np.concatenate(
             (np.zeros(self.prefix_length), country_report.daily_positive)

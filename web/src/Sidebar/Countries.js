@@ -32,7 +32,7 @@ class Countries extends Component {
                                     }
                                 );
 
-                                return <div className='countries'>{countries}</div>;
+                                return <div className='buttons'>{countries}</div>;
                             }
                         }
                     </SelectionContext.Consumer>

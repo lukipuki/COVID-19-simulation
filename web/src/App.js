@@ -10,7 +10,14 @@ class App extends Component {
         selectionContext: selectionInit,
         availablePredictionsContext: availablePredictionsInit,
         dataContext: dataInit,
-        graphDetailsContext: graphDetailsInit
+        graphDetailsContext: graphDetailsInit,
+        sideBarHidden: false
+    };
+
+    toggleSidebar = () => {
+        this.setState({
+            sideBarHidden: !this.state.sideBarHidden
+        })
     };
 
     setAvailablePredictions = (data) => {
@@ -78,18 +85,25 @@ class App extends Component {
     }
 
     render() {
+        const {
+            sideBarHidden
+        } = this.state;
+
+        const appClassName = `App ${sideBarHidden ? 'side-hidden' : 'side-visible'}`;
+
         return (
             <AvailablePredictionsContext.Provider value={{data: this.state.availablePredictionsContext, setData: this.setAvailablePredictions}}>
                 <SelectionContext.Provider value={{selections: this.state.selectionContext, toggle: this.toggleSelection}}>
                     <DataContext.Provider value={this.state.dataContext}>
                         <GraphDetailContext.Provider value={{options: this.state.graphDetailsContext, setOptions: this.setOptions}}>
-                            <div className="App">
+                            <div className={appClassName}>
                                 <div className='sidebar'>
                                     <Sidebar />
                                 </div>
                                 <div className='content'>
                                     <Graph />
                                 </div>
+                                <img src={require('./Hamburger_icon.svg')} className='side_switch' onClick={this.toggleSidebar}/>
                             </div>
                         </GraphDetailContext.Provider>
                     </DataContext.Provider>

@@ -57,18 +57,22 @@ class Sidebar extends Component {
                                     <h3>Results</h3>
                                     <fieldset>
                                         <legend>Show by:</legend>
-                                        <button onClick={this.changeGraphDetail(mode, true)} className={relative ? 'active' : ''}>Day</button>
-                                        <button onClick={this.changeGraphDetail(mode, false)} className={!relative ? 'active' : ''}>Date</button>
+                                        <div className='buttons'>
+                                            <button onClick={this.changeGraphDetail(mode, true)} className={relative ? 'active' : ''}>Day</button>
+                                            <button onClick={this.changeGraphDetail(mode, false)} className={!relative ? 'active' : ''}>Date</button>
+                                        </div>
                                     </fieldset>
                                     <fieldset>
                                         <legend>Axes adjustments:</legend>
-                                        <button onClick={this.changeGraphDetail(MODE_LINEAR, relative)} className={mode === MODE_LINEAR ? 'active' : ''}>Linear</button>
-                                        <button onClick={this.changeGraphDetail(MODE_LOG, relative)} className={mode === MODE_LOG ? 'active' : ''}>Log Y</button>
-                                        <button disabled={!relative} onClick={this.changeGraphDetail(MODE_LOG_LOG, relative)} className={mode === MODE_LOG_LOG ? 'active' : ''}>Log XY</button>
+                                        <div className='buttons'>
+                                            <button onClick={this.changeGraphDetail(MODE_LINEAR, relative)} className={mode === MODE_LINEAR ? 'active' : ''}>Linear</button>
+                                            <button onClick={this.changeGraphDetail(MODE_LOG, relative)} className={mode === MODE_LOG ? 'active' : ''}>Log Y</button>
+                                            <button disabled={!relative} onClick={this.changeGraphDetail(MODE_LOG_LOG, relative)} className={mode === MODE_LOG_LOG ? 'active' : ''}>Log XY</button>
+                                        </div>
                                     </fieldset>
-                                    <fieldset className='countries'>
+                                    <fieldset>
                                         <legend>Predictions by date:</legend>
-                                        <div className='dates'>{dates}</div>
+                                        <div className='buttons dates'>{dates}</div>
                                         <Countries selectedDateKey={this.state.activeDateKey}/>
                                     </fieldset>
                                     <h3>Legend</h3>

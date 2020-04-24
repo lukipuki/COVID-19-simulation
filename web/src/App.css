@@ -4,6 +4,17 @@
   height: 100%;
 }
 
+.side_switch {
+  position: fixed;
+  right: 10px;
+  top: 10px;
+  display: none;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  z-index: 2;
+}
+
 .sidebar {
   flex: 1;
   max-width: 30%;
@@ -11,14 +22,15 @@
   overflow: auto;
   padding: 0 10px;
   background-color: linen;
-  -webkit-box-shadow: 0px 0px 20px 5px rgba(0,0,0,0.2);
-  -moz-box-shadow: 0px 0px 20px 5px rgba(0,0,0,0.2);
-  box-shadow: 0px 0px 20px 5px rgba(0,0,0,0.2);
+  -webkit-box-shadow: 0 0 20px 5px rgba(0,0,0,0.2);
+  -moz-box-shadow: 0 0 20px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 0 20px 5px rgba(0,0,0,0.2);
   z-index: 1;
 }
 
 .content {
   flex: 1;
+  height: 100%;
 }
 
 button {
@@ -27,10 +39,13 @@ button {
   border-radius: 5px;
   border: 1px solid lightgrey;
   text-align: center;
+  transition: all 0.2s;
+  cursor: pointer;
+  margin-top: 10px;
 }
 
 button:hover {
-  background-color: linen;
+  background-color: lightgrey;
 }
 
 button:disabled,
@@ -47,14 +62,9 @@ fieldset {
   border-radius: 10px;
   border: 1px solid lightgrey;
   margin-top: 10px;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-around;
 }
 
-.dates,
-.countries {
+fieldset .buttons {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -66,10 +76,40 @@ fieldset {
   border-bottom: 1px solid lightgrey;
 }
 
-.countries button {
-  margin-top: 10px;
-}
+@media screen
+and (max-width: 599px) {
+  .App {
+    display: block;
+    overflow: auto;
+  }
 
-fieldset.countries {
-  display: block;
+  button {
+    padding: 10px;
+  }
+
+  .side_switch {
+    display: block;
+    opacity: 0.2;
+    transition: all 0.2s;
+  }
+
+  .side_switch:hover {
+    opacity: 1;
+  }
+
+  .App.side-hidden .side_switch {
+    transform: rotate(90deg);
+  }
+
+  .sidebar {
+    max-width: initial;
+    min-width: initial;
+    position: absolute;
+    min-height: 100%;
+    overflow: initial;
+  }
+
+  .App.side-hidden .sidebar {
+    display: none;
+  }
 }

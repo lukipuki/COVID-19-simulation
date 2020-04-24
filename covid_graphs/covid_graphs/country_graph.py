@@ -45,9 +45,6 @@ class CountryGraph:
         self.cropped_dates = report.dates[min_start_date_idx:]
         self.cropped_cumulative_active = report.cumulative_active[min_start_date_idx:]
 
-        self.max_end_date = max(curve.end_date for curve in self.curves)
-        self.max_end_date = max(self.max_end_date, report.dates[-1] + datetime.timedelta(days=7))
-
     def create_country_figure(self, graph_type: GraphType):
 
         # Due to plotly limitations, we can only have graphs with dates on the x-axis when we
@@ -65,11 +62,10 @@ class CountryGraph:
         # Traces
         traces = []
         for color, curve in zip(colors, self.curves):
-            xs, ys = curve.get_trace(self.min_start_date, self.max_end_date)
             traces.append(
                 Scatter(
-                    x=list(map(adjust_xlabel, xs)),
-                    y=ys,
+                    x=list(map(adjust_xlabel, curve.xs)),
+                    y=curve.ys,
                     mode="lines",
                     name=curve.label,
                     line={"width": 2, "color": color},
@@ -92,14 +88,13 @@ class CountryGraph:
 
         # Add vertical dotted lines marking the maxima
         for color, curve in zip(colors, self.curves):
-            x_max, y_max = curve.get_maximum()
             shapes.append(
                 dict(
                     type="line",
-                    x0=adjust_xlabel(x_max),
+                    x0=adjust_xlabel(curve.x_max),
                     y0=1,
-                    x1=adjust_xlabel(x_max),
-                    y1=y_max,
+                    x1=adjust_xlabel(curve.x_max),
+                    y1=curve.y_max,
                     line=dict(width=2, dash="dash", color=color),
                 )
             )
@@ -146,7 +141,7 @@ class CountryGraph:
         )
         if graph_type != GraphType.Normal:
             maximal_y = max(
-                max(curve.get_maximum()[1] for curve in self.curves),
+                max(curve.y_max for curve in self.curves),
                 max(self.cropped_cumulative_active),
             )
             # Note: We silently assume `self.cropped_cumulative_active` does not contain zeros.

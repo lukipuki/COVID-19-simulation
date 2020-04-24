@@ -18,38 +18,26 @@ class Curve:
         label: str,
     ) -> None:
         """
-        TODO
-        [start_date, end_date)
+        Calculates function trace for dates in a half-open interval [start_date, end_date).
+
+        Sets the trace as properties `xs` and `ys`. Also calculates a point (x_max, y_max)
+        for which the maximum is achieved.
+
+        Note: The current design assumes the range of the plot is known at initialisation.
         """
-        self._func = func
         self.start_date = start_date
         self.end_date = end_date
         self.label = label
-        self._xs: Optional[List[datetime.date]] = None
-        self._ys: Optional[List[float]] = None
 
-    def get_trace(
-        self, plot_start_date: datetime.date, plot_end_date: datetime.date
-    ) -> Tuple[List[datetime.date], List[float]]:
-        """
-        Returns (xs, ys) - a trace of the function `func` in the given
-        half-open interval [plot_start_date, plot_end_date).
-        """
-        self._xs = [
-            plot_start_date + datetime.timedelta(days=d)
-            for d in range((plot_end_date - plot_start_date).days)
+        self.xs = [
+            start_date + datetime.timedelta(days=d)
+            for d in range((end_date - start_date).days)
         ]
-        self._ys = [self._func(x) for x in self._xs]
-        return self._xs, self._ys
+        self.ys = [func(x) for x in self.xs]
 
-    def get_maximum(self) -> Tuple[datetime.date, float]:
-        """
-        Returns (x, y) point on the curve with maximal y.
-        """
-        if self._xs is None or self._ys is None:
-            raise ValueError("Must call get_trace() first.")
-        idx = np.argmax(self._ys)
-        return self._xs[idx], self._ys[idx]
+        idx_max = np.argmax(self.ys)
+        self.x_max = self.xs[idx_max]
+        self.y_max = self.ys[idx_max]
 
 
 class CurveConstructor:
@@ -79,9 +67,11 @@ class AtgCurveConstructor(CurveConstructor):
         start_date = country_report.dates[start_idx]
         day_zero = start_date - datetime.timedelta(days=1)
 
-        # Display values until the second inflection point.
-        second_ip_days = math.ceil(self.tg * (self.exponent + math.sqrt(self.exponent)))
-        end_date = start_date + datetime.timedelta(days=second_ip_days)
+        # Display values until the second inflection point or one week after data finishes.
+        days_till_second_ip = math.ceil(self.tg * (self.exponent + math.sqrt(self.exponent)))
+        second_ip_date = start_date + datetime.timedelta(days=days_till_second_ip)
+        week_after_data_ends_date = country_report.dates[-1] + datetime.timedelta(days=7)
+        end_date = max(second_ip_date, week_after_data_ends_date)
 
         def formula(date: datetime.date):
             x = (date - day_zero).days / self.tg

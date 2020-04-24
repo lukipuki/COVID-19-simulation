@@ -2,7 +2,7 @@ import datetime
 import math
 from abc import abstractmethod
 from dataclasses import dataclass
-from typing import Callable, List, Optional, Tuple
+from typing import Callable
 
 import numpy as np
 
@@ -30,8 +30,7 @@ class Curve:
         self.label = label
 
         self.xs = [
-            start_date + datetime.timedelta(days=d)
-            for d in range((end_date - start_date).days)
+            start_date + datetime.timedelta(days=d) for d in range((end_date - start_date).days)
         ]
         self.ys = [func(x) for x in self.xs]
 

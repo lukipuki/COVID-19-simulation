@@ -141,8 +141,7 @@ class CountryGraph:
         )
         if graph_type != GraphType.Normal:
             maximal_y = max(
-                max(curve.y_max for curve in self.curves),
-                max(self.cropped_cumulative_active),
+                max(curve.y_max for curve in self.curves), max(self.cropped_cumulative_active),
             )
             # Note: We silently assume `self.cropped_cumulative_active` does not contain zeros.
             layout.yaxis["range"] = [

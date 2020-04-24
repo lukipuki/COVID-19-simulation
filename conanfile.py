@@ -29,8 +29,4 @@ class COVID19Simulation(ConanFile):
             cmake.build()
         if self.should_test:
             cmake.test(output_on_failure=True)
-
-    def package(self):
-        cmake = CMake(self)
-        cmake.configure()
         cmake.install()

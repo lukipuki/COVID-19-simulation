@@ -20,33 +20,42 @@ The simulation is for the initial phase of the epidemic in Slovakia, based on [S
 
 ## Building using Conan
 
-Conan is able to download the dependencies and compile the project. However, you still need OpenMP on your system, though that usually comes installed with the compiler (for Clang, you need to also install `libomp`).
+[Conan](https://conan.io) is able to download the dependencies and compile the project. However, you still need OpenMP on your system, though that usually comes installed with the compiler (for Clang, you need to also install `libomp`).
+
+If you've never used Conan, you need to configure it first.
 
 ```sh
-conan create -b gtest -b missing $PATH_TO_THIS_REPOSITORY
-conan install -g deploy 'COVID-19-simulation/1.0.0@'
+conan profile new default --detect
+conan profile update settings.compiler.libcxx=libstdc++11 default
+```
+
+Once configured, you can create the package.
+```
+conan create .
 # Alternatively, adding '-o growth_type=exponential' creates a binary with simulated exponential growth.
-# The simulation binary will be in COVID-19-simulation/bin.
 ```
-
-You can also use Conan to install `protoc`.
-
-```sh
-conan install -g deploy 'protoc_installer/[>=0]@bincrafters/stable'
-./protoc_installer/bin/protoc --decode ...  # More information on protoc usage below
-```
-
 
 ## Running and viewing protobuf files
 
 ```sh
-COVID-19-simulation/bin/simulation data/Slovakia.data
-# The simulation creates a proto file 'polynomial.sim' or 'exponential.sim', which can be examined
+conan install -g virtualrunenv 'COVID-19-simulation/1.0.0@'
+source activate_run.sh
+simulation data/Slovakia.data
+source deactivate_run.sh  # deactivate once you're done
+# The simulation creates a proto file 'polynomial.sim' or 'exponential.sim', which can be examined using protoc
 cat polynomial.sim | protoc --decode SimulationResults src/simulation_results.proto
 ```
 
-You can also visualize the results. See the [covid_graphs README](covid_graphs/README.md) for examples.
+You can visualize the simulation in graphs. See the [covid_graphs README](covid_graphs/README.md) for examples.
 
+Conan can be used to install `protoc`. This is especially useful on Debian-based systems, which have an old version.
+
+```sh
+conan install -g virtualrunenv 'protoc_installer/[>=0]@bincrafters/stable'
+source activate_run.sh && protoc --decode ...  # More information on protoc usage is above
+...
+source deactivate_run.sh  # deactivate once you're done
+```
 
 ## Building using CMake [NOT RECOMMENDED]
 

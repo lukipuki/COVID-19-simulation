@@ -7,11 +7,10 @@ matrix:
     - name: "Conan C++ tests"
       install:
         - pip install conan
-        - conan user
         - conan profile new default --detect
         - conan profile update settings.compiler.libcxx=libstdc++11 default
       script:
-        - conan create -b gtest -b missing .
+        - conan create .
     - name: "Python tests"
       install:
         - pip install -r covid_graphs/dev_requirements.txt

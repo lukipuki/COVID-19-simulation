@@ -2,7 +2,7 @@ syntax = "proto3";
 
 message DailyStats {
   int32 dead = 1;
-  uint32 positive = 2;
+  int32 positive = 2;
   int32 recovered = 3;
   uint32 tested = 4;
 

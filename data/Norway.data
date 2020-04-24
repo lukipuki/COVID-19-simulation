@@ -701,3 +701,48 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 1
+  positive: 42
+  date {
+    day: 19
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 16
+  positive: 78
+  date {
+    day: 20
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 35
+  date {
+    day: 21
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 5
+  positive: 147
+  date {
+    day: 22
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 7
+  positive: 63
+  date {
+    day: 23
+    month: 4
+    year: 2020
+  }
+}

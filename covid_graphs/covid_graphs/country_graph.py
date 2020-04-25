@@ -9,7 +9,8 @@ import click_pathlib
 from plotly.graph_objs import Figure, Layout, Scatter
 
 from .country_report import CountryReport, create_report
-from .predictions import CountryPrediction, prediction_db
+from .formula import FittedFormula
+from .predictions import CountryPrediction, PredictionEvent, prediction_db
 
 
 class GraphType(Enum):
@@ -57,7 +58,7 @@ class CountryGraph:
             else:
                 return (date - log_xaxis_date_since).days
 
-        colors = ["SteelBlue", "Purple", "Green"][: len(self.curves)]
+        colors = ["SteelBlue", "Purple", "Green", "Orange", "Gray"][: len(self.curves)]
 
         # Traces
         traces = []
@@ -172,5 +173,21 @@ class CountryGraph:
 def show_country_plot(data_dir: Path, country_name: str):
     country_predictions = prediction_db.predictions_for_country(country=country_name)
     country_report = create_report(data_dir / f"{country_name}.data", short_name=country_name)
+
+    for until_date in [
+        datetime.date(2020, 3, 29),
+        datetime.date(2020, 4, 11),
+        country_report.dates[-1],
+    ]:
+        country_predictions.append(
+            CountryPrediction(
+                prediction_event=PredictionEvent(
+                    name=f"daily_fit_{until_date.strftime('%Y_%m_%d')}", date=until_date
+                ),
+                country=country_report.short_name,
+                formula=FittedFormula(until_date=until_date),
+            ),
+        )
+
     country_graph = CountryGraph(report=country_report, country_predictions=country_predictions)
     country_graph.create_country_figure(GraphType.Normal).show()

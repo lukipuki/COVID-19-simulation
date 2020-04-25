@@ -4,9 +4,6 @@ from typing import List
 import numpy as np
 from scipy.optimize import least_squares
 
-# TODO(miskosz): Pass in as a parameter?
-EXPONENT = 6.23
-
 
 @dataclass
 class AtgModelFit:
@@ -19,9 +16,11 @@ class AtgModelFit:
 
     a: float
     tg: float
+    exp: float
+    t0: float
 
     def predict(self, x: float) -> float:
-        ys = _model(params=[self.a, self.tg], xs=[x])
+        ys = _model(params=[self.a, self.tg, self.exp, self.t0], xs=np.array([x]))
         return ys[0]
 
 
@@ -30,12 +29,20 @@ def fit_atg_model(xs: np.ndarray, ys: np.ndarray) -> AtgModelFit:
     Fits atg model through `(xs, ys)` datapoints.
     """
     assert len(xs) == len(ys), "Inconsistent number of datapoints to fit."
-    assert np.all(xs > 0), "No support for non-positive values for `xs`."
+    # assert np.all(xs > 0), "No support for non-positive values for `xs`."
     assert np.all(ys >= 0), "No support for negative values for `ys`."
-    a0 = 2000.0
-    tg0 = 7.0
-    least_squares_result = least_squares(fun=_residuals, x0=[a0, tg0], args=(xs, ys))
-    return AtgModelFit(a=least_squares_result.x[0], tg=least_squares_result.x[1])
+    a_init = 2000.0
+    tg_init = 7.0
+    exp_init = 6.23
+    t0_init = 0.0
+    least_squares_result = least_squares(
+        fun=_residuals,
+        x0=[a_init, tg_init, exp_init, t0_init],
+        bounds=([0.0, 0.0, 0.0, -np.inf], np.inf),
+        args=(xs, ys),
+    )
+    a, tg, exp, t0 = least_squares_result.x
+    return AtgModelFit(a=a, tg=tg, exp=exp, t0=t0)
 
 
 def _residuals(params: List[float], xs: np.ndarray, ys: np.ndarray) -> float:
@@ -55,7 +62,6 @@ def _model(params: List[float], xs: np.ndarray) -> np.ndarray:
         y = (a/tg) * (x/tg)^6.23 * e^(-x/tg)
     with parameters `params` for the values `x` in `xs`, where `a=params[0]` and `tg=params[1]`.
     """
-    a, tg = params
-    # Note(miskosz): Optimise `tg` in logspace if the following line becomes a problem.
-    assert tg > 0, f"No support for non-positive values for `tg` (tg={tg})."
-    return (a / tg) * (xs / tg) ** EXPONENT * np.exp(-xs / tg)
+    a, tg, exp, t0 = params
+    x = np.maximum(0.0, (xs - t0)) / tg
+    return (a / tg) * x ** exp * np.exp(-x)

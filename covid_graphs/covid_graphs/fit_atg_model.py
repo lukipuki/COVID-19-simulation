@@ -13,7 +13,7 @@ class AtgModelFit:
     t0: float
 
     def predict(self, x: float) -> float:
-        ys = _model(params=[self.a, self.tg, self.exp, self.t0], xs=np.array([x]))
+        ys = _model(params=[self.a, self.tg, self.exp, 0], xs=np.array([x]))
         return ys[0]
 
 

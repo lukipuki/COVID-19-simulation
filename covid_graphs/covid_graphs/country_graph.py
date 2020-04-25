@@ -12,6 +12,8 @@ from .country_report import CountryReport, create_report
 from .formula import FittedFormula
 from .predictions import CountryPrediction, PredictionEvent, prediction_db
 
+EXTENSION_PERIOD = datetime.timedelta(days=7)
+
 
 class GraphType(Enum):
     Linear = "linear"
@@ -45,9 +47,13 @@ class CountryGraph:
         min_start_date_idx = report.dates.index(min_start_date)
         self.cropped_dates = report.dates[min_start_date_idx:]
         self.cropped_cumulative_active = report.cumulative_active[min_start_date_idx:]
+        self.display_at_least_until = max(
+            max(curve.display_at_least_until for curve in self.curves) + datetime.timedelta(days=1),
+            self.cropped_dates[-1] + EXTENSION_PERIOD,
+        )
 
     def create_country_figure(self, graph_type=GraphType.Linear):
-        log_xaxis_date_since = datetime.date(2020, 2, 1)
+        log_xaxis_date_since = self.cropped_dates[0] - datetime.timedelta(days=1)
 
         def adjust_xlabel(date: datetime.date):
             # Due to plotly limitations, we can only have graphs with dates on the x-axis when we
@@ -59,17 +65,32 @@ class CountryGraph:
 
         colors = ["SteelBlue", "Purple", "Green", "Orange", "Gray"][: len(self.curves)]
 
-        # Traces
-        traces = []
+        traces, shapes = [], []
+        maximal_y = max(self.cropped_cumulative_active)
         for color, curve in zip(colors, self.curves):
+            xs, ys = curve.generate_trace(self.display_at_least_until)
+            idx_max = ys.argmax()
+            maximal_y = max(maximal_y, ys.max())
+
             traces.append(
                 Scatter(
-                    x=list(map(adjust_xlabel, curve.xs)),
-                    y=curve.ys,
-                    text=curve.xs,
+                    x=list(map(adjust_xlabel, xs)),
+                    y=ys,
+                    text=xs,
                     mode="lines",
                     name=curve.label,
                     line={"width": 2, "color": color},
+                )
+            )
+            # Add vertical dotted line marking the maximum
+            shapes.append(
+                dict(
+                    type="line",
+                    x0=adjust_xlabel(xs[idx_max]),
+                    y0=1,
+                    x1=adjust_xlabel(xs[idx_max]),
+                    y1=ys.max(),
+                    line=dict(width=2, dash="dash", color=color),
                 )
             )
 
@@ -83,22 +104,6 @@ class CountryGraph:
                 line=dict(width=3, color="rgb(239, 85, 59)"),
             )
         )
-
-        # Shapes
-        shapes = []
-
-        # Add vertical dotted lines marking the maxima
-        for color, curve in zip(colors, self.curves):
-            shapes.append(
-                dict(
-                    type="line",
-                    x0=adjust_xlabel(curve.x_max),
-                    y0=1,
-                    x1=adjust_xlabel(curve.x_max),
-                    y1=curve.y_max,
-                    line=dict(width=2, dash="dash", color=color),
-                )
-            )
 
         # Add green zone marking the data available at the prediction date.
         shapes.append(
@@ -131,12 +136,9 @@ class CountryGraph:
             plot_bgcolor="White",
         )
 
-        maximal_y = max(
-            max(curve.y_max for curve in self.curves), max(self.cropped_cumulative_active),
-        )
         # Note: We silently assume `self.cropped_cumulative_active` does not contain zeros.
         self.log_yrange = [
-            math.log10(self.cropped_cumulative_active.min()) - 0.3,
+            math.log10(max(0.1, self.cropped_cumulative_active.min())) - 0.3,
             math.log10(maximal_y) + 0.3,
         ]
         self.log_title = f"Days [since {log_xaxis_date_since.strftime('%b %d, %Y')}]"
@@ -171,7 +173,6 @@ def show_country_plot(data_dir: Path, country_name: str):
     country_report = create_report(data_dir / f"{country_name}.data", short_name=country_name)
 
     for until_date in [
-        datetime.date(2020, 3, 29),
         datetime.date(2020, 4, 11),
         country_report.dates[-1],
     ]:

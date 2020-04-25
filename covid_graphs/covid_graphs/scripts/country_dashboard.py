@@ -301,5 +301,5 @@ class PredictionRest:
 
 def create_prediction_rest(data_dir: Path, server: Flask):
     # TODO(rejdi): Don't use print.
-    print("Creating dashboard for rest calls.")
+    print("Creating dashboard for REST calls.")
     return PredictionRest(data_dir)

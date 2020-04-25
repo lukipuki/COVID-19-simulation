@@ -19,7 +19,7 @@ try:
     from inotify import adapters, constants
 
     platform_supports_inotify = True
-except:
+except AttributeError:
     print("⚠️  inotify is not supported! Will run the server without reloading.")
     pass
 

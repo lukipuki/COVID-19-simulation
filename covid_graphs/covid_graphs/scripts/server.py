@@ -17,6 +17,7 @@ CURRENT_DIR = Path(__file__).parent
 platform_supports_inotify = False
 try:
     from inotify import adapters, constants
+
     platform_supports_inotify = True
 except:
     print("⚠️  inotify is not supported! Will run the server without reloading.")

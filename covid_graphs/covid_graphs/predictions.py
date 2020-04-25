@@ -24,12 +24,6 @@ BK_20200411 = PredictionEvent(name="bk_20200411", date=datetime.date(2020, 4, 11
 OTHER = PredictionEvent(name="other", date=datetime.date(2020, 4, 1))
 
 _prediction_database = [
-    # OTHER
-    # CountryPrediction(
-    #     prediction_event=OTHER,
-    #     country="Slovakia",
-    #     formula=Formula(lambda t: 8 * t ** 1.28, r"$8 \cdot t^{1.28}$", 40, 10),
-    # ),
     # BK_20200329
     CountryPrediction(
         prediction_event=BK_20200329, country="Italy", formula=AtgFormula(7.8, 4417, 6.23, 200),

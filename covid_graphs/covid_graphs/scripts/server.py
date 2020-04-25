@@ -10,7 +10,7 @@ from inotify import adapters, constants
 from covid_graphs.heat_map import create_heat_map_dashboard
 from covid_graphs.simulation_report import GrowthType
 
-from . import country_dashboard
+from .country_dashboard import CountryDashboard, DashboardType
 
 CURRENT_DIR = Path(__file__).parent
 
@@ -63,12 +63,12 @@ def _run_flask_server(server: Flask, data_dir: Path):
 
 
 def _create_prediction_apps(data_dir: Path, server: Flask):
-    single_prediction_app = country_dashboard.create_single_country_dashboard(
-        data_dir=data_dir, server=server
-    )
-    all_predictions_app = country_dashboard.create_all_countries_dashboard(
-        data_dir=data_dir, server=server
-    )
+    single_prediction_app = CountryDashboard(
+        DashboardType.SingleCountry, data_dir=data_dir, server=server
+    ).get_app()
+    all_predictions_app = CountryDashboard(
+        DashboardType.AllCountries, data_dir=data_dir, server=server
+    ).get_app()
 
     @server.route("/covid19/predictions/single/")
     def covid19_single_predictions():

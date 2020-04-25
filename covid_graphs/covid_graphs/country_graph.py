@@ -38,9 +38,6 @@ class CountryGraph:
             prediction.formula.get_curve(country_report=report)
             for prediction in country_predictions
         ]
-        self.min_case_count = min(
-            prediction.formula.min_case_count for prediction in country_predictions
-        )
 
         # Crop country data to display.
         min_start_date = min(curve.start_date for curve in self.curves)
@@ -142,7 +139,7 @@ class CountryGraph:
             math.log10(maximal_y) + 0.3,
         ]
         self.log_title = f"Days [since {log_xaxis_date_since.strftime('%b %d, %Y')}]"
-        self.date_title = f"Date [starting from {self.min_case_count}th case]"
+        self.date_title = f"Date [starting from {self.cropped_dates[0].strftime('%b %d, %Y')}]"
 
         self.figure = Figure(data=traces, layout=layout)
         self.update_graph_type(graph_type)

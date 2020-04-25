@@ -5,7 +5,6 @@ from time import sleep
 import click
 import click_pathlib
 from flask import Flask, redirect, render_template, url_for
-from inotify import adapters, constants
 
 from covid_graphs.heat_map import create_heat_map_dashboard
 from covid_graphs.simulation_report import GrowthType
@@ -13,6 +12,16 @@ from covid_graphs.simulation_report import GrowthType
 from .country_dashboard import CountryDashboard, DashboardType
 
 CURRENT_DIR = Path(__file__).parent
+
+
+platform_supports_inotify = False
+try:
+    from inotify import adapters, constants
+
+    platform_supports_inotify = True
+except AttributeError:
+    print("⚠️  inotify is not supported! Will run the server without reloading.")
+    pass
 
 
 @click.command(help="COVID-19 web server")
@@ -39,21 +48,24 @@ def run_server(data_dir: Path) -> None:
     def covid19_predictions_redirect():
         return redirect(url_for("covid19_single_predictions"))
 
-    i = adapters.InotifyTree(
-        str(data_dir), mask=(constants.IN_MODIFY | constants.IN_DELETE | constants.IN_CREATE)
-    )
-    p = Process(target=_run_flask_server, kwargs=dict(server=server, data_dir=data_dir))
-    p.start()
-    while True:
-        events = list(i.event_gen(yield_nones=False, timeout_s=1))
-        if len(events) != 0:
-            print("Data changed. Restarting server...")
-            p.terminate()
-            p.join()
-            p = Process(target=_run_flask_server, kwargs=dict(server=server, data_dir=data_dir))
-            p.start()
-            print("Server restarted.")
-        sleep(10)
+    if platform_supports_inotify:
+        i = adapters.InotifyTree(
+            str(data_dir), mask=(constants.IN_MODIFY | constants.IN_DELETE | constants.IN_CREATE)
+        )
+        p = Process(target=_run_flask_server, kwargs=dict(server=server, data_dir=data_dir))
+        p.start()
+        while True:
+            events = list(i.event_gen(yield_nones=False, timeout_s=1))
+            if len(events) != 0:
+                print("Data changed. Restarting server...")
+                p.terminate()
+                p.join()
+                p = Process(target=_run_flask_server, kwargs=dict(server=server, data_dir=data_dir))
+                p.start()
+                print("Server restarted.")
+            sleep(10)
+    else:
+        _run_flask_server(server=server, data_dir=data_dir)
 
 
 def _run_flask_server(server: Flask, data_dir: Path):

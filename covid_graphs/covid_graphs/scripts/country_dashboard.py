@@ -1,7 +1,7 @@
 from datetime import timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 import dash
 import dash_core_components as dcc
@@ -12,7 +12,7 @@ from flask import Flask
 import covid_graphs.country_report as country_report
 from covid_graphs.country_graph import CountryGraph, GraphType
 from covid_graphs.country_report import CountryReport
-from covid_graphs.predictions import BK_20200411, OTHER, PredictionEvent, prediction_db
+from covid_graphs.predictions import BK_20200329, BK_20200411, OTHER, PredictionEvent, prediction_db
 
 
 class DashboardType(Enum):
@@ -27,198 +27,222 @@ TITLE = "COVID-19 predictions of Boďová and Kollár"
 CountryGraphsByReportName = Dict[str, List[CountryGraph]]
 
 
-def _create_buttons(dashboard_type: DashboardType):
-    buttons = [
-        dcc.Dropdown(
-            id="prediction-event",
-            options=[
-                dict(label=(event.date + timedelta(days=1)).strftime("%B %d"), value=event.name)
-                for event in prediction_db.get_prediction_events()
-                if event != OTHER
-            ],
-            value=BK_20200411.name,
-            style={"width": "220px", "margin": "8px 0"},
-        )
-    ]
-    if dashboard_type == DashboardType.SingleCountry:
-        buttons.append(
+class CountryDashboard:
+    def __init__(self, dashboard_type: DashboardType, data_dir: Path, server: Flask):
+        prediction_events = prediction_db.get_prediction_events()
+        prediction_events.sort(key=lambda event: event.date, reverse=True)
+        self.prediction_event_by_name = {
+            prediction_event.name: prediction_event for prediction_event in prediction_events
+        }
+
+        # TODO: parsing the proto can fail
+        reports = [
+            country_report.create_report(
+                data_dir / f"{country_short_name}.data", country_short_name
+            )
+            for country_short_name in prediction_db.get_countries()
+            if (data_dir / f"{country_short_name}.data").is_file()
+        ]
+        report_by_short_name = {report.short_name: report for report in reports}
+        self.graph_dict = {
+            prediction_event.name: CountryDashboard._create_graphs(
+                report_by_short_name, prediction_event
+            )
+            for prediction_event in prediction_db.get_prediction_events()
+        }
+
+        if dashboard_type == DashboardType.SingleCountry:
+            extra_content = [
+                dcc.Graph(
+                    id="country-graph",
+                    figure=dict(layout=dict(height=700)),
+                    config=dict(modeBarButtons=[["toImage"]]),
+                )
+            ]
+        else:
+            extra_content = [html.Div(id="country-graphs")]
+
+        self.app = self._create_dash_app(dashboard_type, server, extra_content)
+        if dashboard_type == DashboardType.SingleCountry:
+            self._create_single_country_callbacks()
+        else:
+            self._create_all_countries_callbacks()
+
+    def get_app(self):
+        return self.app
+
+    @staticmethod
+    def _create_graphs(
+        report_by_short_name: Dict[str, CountryReport], prediction_event: PredictionEvent,
+    ) -> List[CountryGraph]:
+        # Note: We silently assume there is only one prediction per country.
+        country_graphs = [
+            CountryGraph(report_by_short_name[country_prediction.country], [country_prediction])
+            for country_prediction in prediction_db.predictions_for_event(prediction_event)
+        ]
+        country_graphs.sort(key=lambda graph: graph.short_name)
+        return country_graphs
+
+    @staticmethod
+    def _create_buttons(dashboard_type: DashboardType):
+        buttons = [
             dcc.Dropdown(
-                id="country-short-name", value="Italy", style={"width": "220px", "margin": "8px 0"}
+                id="prediction-event",
+                options=[
+                    dict(label=(event.date + timedelta(days=1)).strftime("%B %d"), value=event.name)
+                    for event in prediction_db.get_prediction_events()
+                    if event != OTHER
+                ],
+                value=BK_20200411.name,
+                style={"width": "220px", "margin": "8px 0"},
             )
+        ]
+        if dashboard_type == DashboardType.SingleCountry:
+            buttons.append(
+                dcc.Dropdown(
+                    id="country-short-name",
+                    value="Italy",
+                    style={"width": "220px", "margin": "8px 0"},
+                )
+            )
+
+        buttons.append(
+            dcc.RadioItems(
+                id="graph-type",
+                options=[
+                    {"label": graph_type.value, "value": graph_type.name}
+                    for graph_type in [GraphType.Linear, GraphType.SemiLog]
+                ],
+                value="Linear",
+                labelStyle={"display": "inline-block", "margin": "0 4px 0 0"},
+            ),
         )
+        return buttons
 
-    buttons.append(
-        dcc.RadioItems(
-            id="graph-type",
-            options=[
-                {"label": graph_type.value, "value": graph_type.name}
-                for graph_type in [GraphType.Normal, GraphType.SemiLog, GraphType.LogLog]
+    def _create_dash_app(
+        self, dashboard_type: DashboardType, server: Flask, extra_content: List[Any]
+    ):
+        app = dash.Dash(
+            name=f"COVID-19 predictions",
+            url_base_pathname=f"/covid19/predictions/{dashboard_type}/",
+            server=server,
+            external_scripts=[
+                "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"
             ],
-            value="Normal",
-            labelStyle={"display": "inline-block", "margin": "0 4px 0 0"},
-        ),
-    )
-    return buttons
+            meta_tags=[{"name": "viewport", "content": "width=750"}],
+        )
+        content = _get_header_content(TITLE)
+        content += [html.Hr(), html.H1(id="graph-title")]
+        content += CountryDashboard._create_buttons(dashboard_type)
+        content += extra_content
 
+        app.title = TITLE
+        app.layout = html.Div(
+            children=content,
+            style={
+                "font-family": "sans-serif",
+                "text-size-adjust": "none",
+                "-webkit-text-size-adjust": "none",
+            },
+        )
+        return app
 
-def create_graphs(
-    report_by_short_name: Dict[str, CountryReport], prediction_event: PredictionEvent,
-) -> List[CountryGraph]:
-    # Note: We silently assume there is only one prediction per country.
-    country_graphs = [
-        CountryGraph(report_by_short_name[country_prediction.country], [country_prediction])
-        for country_prediction in prediction_db.predictions_for_event(prediction_event)
-    ]
-    country_graphs.sort(key=lambda graph: graph.short_name)
-    return country_graphs
+    def _create_single_country_callbacks(self):
+        @self.app.callback(
+            [
+                Output("country-short-name", component_property="options"),
+                Output("graph-title", component_property="children"),
+            ],
+            [Input("prediction-event", "value")],
+        )
+        def update_event(prediction_event_name):
+            options = [
+                dict(label=graph.long_name, value=graph.short_name)
+                for graph in self.graph_dict[prediction_event_name]
+            ]
+            next_day = self.prediction_event_by_name[prediction_event_name].date + timedelta(days=1)
+            return options, f"{next_day.strftime('%B %d')} predictions"
 
+        @self.app.callback(
+            Output("country-graph", component_property="figure"),
+            [
+                Input("prediction-event", "value"),
+                Input("graph-type", "value"),
+                Input("country-short-name", "value"),
+            ],
+        )
+        def update_graph(prediction_event_name, graph_type_str, country_short_name):
+            graph_type = GraphType[graph_type_str]
 
-def _prepare_data_structures(
-    data_dir: Path,
-) -> Tuple[Dict[str, PredictionEvent], CountryGraphsByReportName]:
-    prediction_events = prediction_db.get_prediction_events()
-    prediction_events.sort(key=lambda event: event.date, reverse=True)
-    prediction_event_by_name = {
-        prediction_event.name: prediction_event for prediction_event in prediction_events
-    }
+            graphs = [
+                country_graph
+                for country_graph in self.graph_dict[prediction_event_name]
+                if country_graph.short_name == country_short_name
+            ]
+            if len(graphs) == 0:
+                return dash.no_update
 
-    # TODO: parsing the proto can fail
-    reports = [
-        country_report.create_report(data_dir / f"{country_short_name}.data", country_short_name)
-        for country_short_name in prediction_db.get_countries()
-        if (data_dir / f"{country_short_name}.data").is_file()
-    ]
-    report_by_short_name = {report.short_name: report for report in reports}
-    graph_dict = {
-        prediction_event.name: create_graphs(report_by_short_name, prediction_event)
-        for prediction_event in prediction_db.get_prediction_events()
-    }
-    return prediction_event_by_name, graph_dict
+            figure = graphs[0].create_country_figure(graph_type)
+            return figure
 
+    def _create_all_countries_callbacks(self):
+        dash_graph_dict = {
+            prediction_event_name: [
+                dcc.Graph(
+                    id=f"{graph.short_name}-graph-{prediction_event_name}",
+                    figure=graph.create_country_figure(),
+                    config=dict(modeBarButtons=[["toImage"]]),
+                )
+                for graph in self.graph_dict[prediction_event_name]
+            ]
+            for prediction_event_name in self.prediction_event_by_name.keys()
+        }
 
-def _create_dash_app(dashboard_type: DashboardType, server: Flask, extra_content: List[Any]):
-    app = dash.Dash(
-        name=f"COVID-19 predictions",
-        url_base_pathname=f"/covid19/predictions/{dashboard_type}/",
-        server=server,
-        external_scripts=[
-            "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"
-        ],
-        meta_tags=[{"name": "viewport", "content": "width=750"}],
-    )
-    content = _get_header_content(TITLE)
-    content += [html.Hr(), html.H1(id="graph-title")]
-    content += _create_buttons(dashboard_type)
-    content += extra_content
+        @self.app.callback(
+            [
+                Output("country-graphs", component_property="children"),
+                Output("graph-title", component_property="children"),
+            ],
+            [Input("prediction-event", "value")],
+        )
+        def update_event(prediction_event_name):
+            graphs = dash_graph_dict[prediction_event_name]
+            next_day = self.prediction_event_by_name[prediction_event_name].date + timedelta(days=1)
+            return graphs, f"{next_day.strftime('%B %d')} predictions"
 
-    app.title = TITLE
-    app.layout = html.Div(
-        children=content,
-        style={
-            "font-family": "sans-serif",
-            "text-size-adjust": "none",
-            "-webkit-text-size-adjust": "none",
-        },
-    )
-    return app
+        # TODO(lukas): only have one callback for all prediction events
+        @self.app.callback(
+            [
+                Output(f"{graph.short_name}-graph-{BK_20200411.name}", component_property="figure")
+                for graph in self.graph_dict[BK_20200411.name]
+            ],
+            [Input("graph-type", "value")],
+        )
+        def update_country_graphs_20200411(graph_type_str):
+            result = []
+            for graph in self.graph_dict[BK_20200411.name]:
+                result.append(graph.update_graph_type(GraphType[graph_type_str]))
+            return result
 
-
-def create_single_country_dashboard(data_dir: Path, server: Flask):
-    # TODO(miskosz): Don't use print.
-    print("Creating dashboard for a single country.")
-
-    graph = dcc.Graph(
-        id="country-graph",
-        figure=dict(layout=dict(height=700)),
-        config=dict(modeBarButtons=[["toImage"]]),
-    )
-
-    app = _create_dash_app(DashboardType.SingleCountry, server, extra_content=[graph])
-
-    prediction_event_by_name, graph_dict = _prepare_data_structures(data_dir)
-
-    @app.callback(
-        [
-            Output("country-short-name", component_property="options"),
-            Output("graph-title", component_property="children"),
-        ],
-        [Input("prediction-event", "value")],
-    )
-    def update_event(prediction_event_name):
-        options = [
-            dict(label=graph.long_name, value=graph.short_name)
-            for graph in graph_dict[prediction_event_name]
-        ]
-        next_day = prediction_event_by_name[prediction_event_name].date + timedelta(days=1)
-        return options, f"{next_day.strftime('%B %d')} predictions"
-
-    @app.callback(
-        Output("country-graph", component_property="figure"),
-        [
-            Input("prediction-event", "value"),
-            Input("graph-type", "value"),
-            Input("country-short-name", "value"),
-        ],
-    )
-    def update_graph(prediction_event_name, graph_type_str, country_short_name):
-        graph_type = GraphType[graph_type_str]
-
-        graphs = [
-            country_graph
-            for country_graph in graph_dict[prediction_event_name]
-            if country_graph.short_name == country_short_name
-        ]
-        if len(graphs) == 0:
-            return dash.no_update
-
-        return graphs[0].create_country_figure(graph_type)
-
-    return app
-
-
-def create_all_countries_dashboard(data_dir: Path, server: Flask):
-    # TODO(miskosz): Don't use print.
-    print("Creating dashboard for all countries.")
-    extra_content = [html.Div(id="country-graphs")]
-
-    app = _create_dash_app(DashboardType.AllCountries, server, extra_content)
-
-    prediction_event_by_name, graph_dict = _prepare_data_structures(data_dir)
-
-    dash_graph_dict = {
-        (prediction_event_name, graph_type.name): [
-            dcc.Graph(
-                id=f"country-graph-{graph.short_name}",
-                figure=graph.create_country_figure(graph_type),
-                config=dict(modeBarButtons=[["toImage"]]),
-            )
-            for graph in graph_dict[prediction_event_name]
-        ]
-        for prediction_event_name in prediction_event_by_name.keys()
-        for graph_type in GraphType
-    }
-
-    @app.callback(
-        [
-            Output("country-graphs", component_property="children"),
-            Output("graph-title", component_property="children"),
-        ],
-        [Input("prediction-event", "value"), Input("graph-type", "value")],
-    )
-    def update_event(prediction_event_name, graph_type_str):
-        graphs = dash_graph_dict[(prediction_event_name, graph_type_str)]
-        next_day = prediction_event_by_name[prediction_event_name].date + timedelta(days=1)
-        return graphs, f"{next_day.strftime('%B %d')} predictions"
+        @self.app.callback(
+            [
+                Output(f"{graph.short_name}-graph-{BK_20200329.name}", component_property="figure")
+                for graph in self.graph_dict[BK_20200329.name]
+            ],
+            [Input("graph-type", "value")],
+        )
+        def update_country_graphs_20200329(graph_type_str):
+            result = []
+            for graph in self.graph_dict[BK_20200329.name]:
+                graph.update_graph_type(GraphType[graph_type_str])
+                result.append(graph.figure)
+            return result
 
 
 def _get_header_content(title: str):
     mar30_prediction_link = (
         "https://www.facebook.com/permalink.php?story_fbid=10113020662000793&id=2247644"
     )
-    # france_link = (
-    #     "https://www.reuters.com/article/us-health-coronavirus-france-toll/"
-    #     "french-coronavirus-cases-jump-above-chinas-after-including-nursing-home-tally-idUSKBN21L3BG"
-    # )
     return [
         html.H1(children=title),
         dcc.Markdown(
@@ -255,9 +279,6 @@ def _get_header_content(title: str):
             """,
             dangerously_allow_html=True,
         ),
-        # TODO: Include these?
-        # ### Notes about the graphs
-        # * France has been excluded, since they [screwed up daily data reporting]({france_link}).
         html.Ul(
             children=[
                 html.Li("Solid line is prediction"),

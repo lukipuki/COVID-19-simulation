@@ -13,7 +13,7 @@ from .predictions import CountryPrediction, prediction_db
 
 
 class GraphType(Enum):
-    Normal = "normal"
+    Linear = "linear"
     SemiLog = "semi-log"
     LogLog = "log-log"
 
@@ -45,14 +45,13 @@ class CountryGraph:
         self.cropped_dates = report.dates[min_start_date_idx:]
         self.cropped_cumulative_active = report.cumulative_active[min_start_date_idx:]
 
-    def create_country_figure(self, graph_type: GraphType):
-
-        # Due to plotly limitations, we can only have graphs with dates on the x-axis when we
-        # aren't using logs.
+    def create_country_figure(self, graph_type=GraphType.Linear):
         log_xaxis_date_since = datetime.date(2020, 2, 1)
 
         def adjust_xlabel(date: datetime.date):
-            if graph_type == GraphType.Normal:
+            # Due to plotly limitations, we can only have graphs with dates on the x-axis when we
+            # x-axis isn't log-scale.
+            if graph_type != GraphType.LogLog:
                 return date
             else:
                 return (date - log_xaxis_date_since).days
@@ -66,6 +65,7 @@ class CountryGraph:
                 Scatter(
                     x=list(map(adjust_xlabel, curve.xs)),
                     y=curve.ys,
+                    text=curve.xs,
                     mode="lines",
                     name=curve.label,
                     line={"width": 2, "color": color},
@@ -117,19 +117,9 @@ class CountryGraph:
 
         layout = Layout(
             title=f"Active cases in {self.long_name}",
-            xaxis=dict(
-                autorange=True,
-                fixedrange=True,
-                # TODO(miskosz): Update label on radio change.
-                title=f"Date / Days [since {log_xaxis_date_since.strftime('%b %d, %Y')}]",
-                showgrid=False,
-            ),
+            xaxis=dict(autorange=True, fixedrange=True, showgrid=False,),
             yaxis=dict(
-                tickformat=",.0f",
-                gridcolor="LightGray",
-                autorange=(graph_type == GraphType.Normal),
-                fixedrange=True,
-                zerolinecolor="Gray",
+                tickformat=",.0f", gridcolor="LightGray", fixedrange=True, zerolinecolor="Gray",
             ),
             height=700,
             margin=dict(r=40),
@@ -139,27 +129,33 @@ class CountryGraph:
             legend=dict(x=0.01, y=0.99, borderwidth=1),
             plot_bgcolor="White",
         )
-        if graph_type != GraphType.Normal:
-            maximal_y = max(
-                max(curve.y_max for curve in self.curves), max(self.cropped_cumulative_active),
-            )
-            # Note: We silently assume `self.cropped_cumulative_active` does not contain zeros.
-            layout.yaxis["range"] = [
-                math.log10(self.cropped_cumulative_active.min()) - 0.3,
-                math.log10(maximal_y) + 0.3,
-            ]
 
-        figure = Figure(data=traces, layout=layout)
+        maximal_y = max(
+            max(curve.y_max for curve in self.curves), max(self.cropped_cumulative_active),
+        )
+        # Note: We silently assume `self.cropped_cumulative_active` does not contain zeros.
+        self.log_yrange = [
+            math.log10(self.cropped_cumulative_active.min()) - 0.3,
+            math.log10(maximal_y) + 0.3,
+        ]
+        self.log_title = f"Days [since {log_xaxis_date_since.strftime('%b %d, %Y')}]"
+        self.date_title = f"Date [starting from {self.cropped_dates[0].strftime('%b %d, %Y')}]"
 
-        if graph_type == GraphType.Normal:
-            figure.update_yaxes(type="linear")
+        self.figure = Figure(data=traces, layout=layout)
+        self.update_graph_type(graph_type)
+        return self.figure
+
+    def update_graph_type(self, graph_type: GraphType):
+        if graph_type == GraphType.Linear:
+            self.figure.update_xaxes(type="date", title=self.date_title)
+            self.figure.update_yaxes(type="linear", autorange=True)
         elif graph_type == GraphType.SemiLog:
-            figure.update_xaxes(type="linear")
-            figure.update_yaxes(type="log")
+            self.figure.update_xaxes(type="date", title=self.date_title)
+            self.figure.update_yaxes(type="log", autorange=False, range=self.log_yrange)
         elif graph_type == GraphType.LogLog:
-            figure.update_xaxes(type="log")
-            figure.update_yaxes(type="log")
-        return figure
+            self.figure.update_xaxes(type="log", title=self.log_title)
+            self.figure.update_yaxes(type="log", autorange=False, range=self.log_yrange)
+        return self.figure
 
 
 @click.command(help="COVID-19 country growth visualization")
@@ -173,4 +169,4 @@ def show_country_plot(data_dir: Path, country_name: str):
     country_predictions = prediction_db.predictions_for_country(country=country_name)
     country_report = create_report(data_dir / f"{country_name}.data", short_name=country_name)
     country_graph = CountryGraph(report=country_report, country_predictions=country_predictions)
-    country_graph.create_country_figure(GraphType.Normal).show()
+    country_graph.create_country_figure().show()

@@ -7,13 +7,6 @@ from scipy.optimize import least_squares
 
 @dataclass
 class AtgModelFit:
-    """
-    Result of fitting (x, y) data samples to the curve:
-        y = (a/tg) * (x/tg)^6.23 * e^(-x/tg)
-
-    TODO(miskosz): Maybe return also something like a standard deviation of the fit.
-    """
-
     a: float
     tg: float
     exp: float
@@ -29,7 +22,6 @@ def fit_atg_model(xs: np.ndarray, ys: np.ndarray) -> AtgModelFit:
     Fits atg model through `(xs, ys)` datapoints.
     """
     assert len(xs) == len(ys), "Inconsistent number of datapoints to fit."
-    # assert np.all(xs > 0), "No support for non-positive values for `xs`."
     assert np.all(ys >= 0), "No support for negative values for `ys`."
     a_init = 2000.0
     tg_init = 7.0
@@ -58,10 +50,12 @@ def _residuals(params: List[float], xs: np.ndarray, ys: np.ndarray) -> float:
 
 def _model(params: List[float], xs: np.ndarray) -> np.ndarray:
     """
-    Returns predicted y-values of the model
-        y = (a/tg) * (x/tg)^6.23 * e^(-x/tg)
-    with parameters `params` for the values `x` in `xs`, where `a=params[0]` and `tg=params[1]`.
+    Returns predicted y-values of the model for values `x` in `xs`:
+        x' = (x-t0) / tg
+        y = (a/tg) * (x')^exp * e^(-x')  | if x' > 0
+          = 0                            | otherwise.
+    with parameters `a, tg, exp`, and `t0` passed in  `params` .
     """
     a, tg, exp, t0 = params
-    x = np.maximum(0.0, (xs - t0)) / tg
-    return (a / tg) * x ** exp * np.exp(-x)
+    x_prime = np.maximum(0.0, (xs - t0)) / tg
+    return (a / tg) * x_prime ** exp * np.exp(-x_prime)

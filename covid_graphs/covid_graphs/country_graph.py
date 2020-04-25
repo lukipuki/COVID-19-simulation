@@ -13,7 +13,7 @@ from .predictions import CountryPrediction, prediction_db
 
 
 class GraphType(Enum):
-    Normal = "normal"
+    Linear = "linear"
     SemiLog = "semi-log"
     LogLog = "log-log"
 
@@ -45,7 +45,7 @@ class CountryGraph:
         self.cropped_dates = report.dates[min_start_date_idx:]
         self.cropped_cumulative_active = report.cumulative_active[min_start_date_idx:]
 
-    def create_country_figure(self, graph_type=GraphType.Normal):
+    def create_country_figure(self, graph_type=GraphType.Linear):
         log_xaxis_date_since = datetime.date(2020, 2, 1)
 
         def adjust_xlabel(date: datetime.date):
@@ -146,7 +146,7 @@ class CountryGraph:
         return self.figure
 
     def update_graph_type(self, graph_type: GraphType):
-        if graph_type == GraphType.Normal:
+        if graph_type == GraphType.Linear:
             self.figure.update_xaxes(type="date", title=self.date_title)
             self.figure.update_yaxes(type="linear", autorange=True)
         elif graph_type == GraphType.SemiLog:

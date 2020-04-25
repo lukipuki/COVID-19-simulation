@@ -111,9 +111,9 @@ class CountryDashboard:
                 id="graph-type",
                 options=[
                     {"label": graph_type.value, "value": graph_type.name}
-                    for graph_type in [GraphType.Normal, GraphType.SemiLog]
+                    for graph_type in [GraphType.Linear, GraphType.SemiLog]
                 ],
-                value="Normal",
+                value="Linear",
                 labelStyle={"display": "inline-block", "margin": "0 4px 0 0"},
             ),
         )
@@ -131,9 +131,9 @@ class CountryDashboard:
             ],
             meta_tags=[{"name": "viewport", "content": "width=750"}],
         )
-        content = self._get_header_content(TITLE)
+        content = _get_header_content(TITLE)
         content += [html.Hr(), html.H1(id="graph-title")]
-        content += self._create_buttons(dashboard_type)
+        content += CountryDashboard._create_buttons(dashboard_type)
         content += extra_content
 
         app.title = TITLE
@@ -238,57 +238,58 @@ class CountryDashboard:
                 result.append(graph.figure)
             return result
 
-    def _get_header_content(self, title: str):
-        mar30_prediction_link = (
-            "https://www.facebook.com/permalink.php?story_fbid=10113020662000793&id=2247644"
-        )
-        return [
-            html.H1(children=title),
-            dcc.Markdown(
-                f"""
-                Mathematicians Katarína Boďová and Richard Kollár predicted in March and April 2020
-                the growth of active cases during COVID-19 pandemic. Their model suggests polynomial
-                growth with exponential decay given by:
 
-                * <em>N</em>(<em>t</em>) = (<em>A</em>/<em>T</em><sub><em>G</em></sub>) ⋅
-                  (<em>t</em>/<em>T</em><sub><em>G</em></sub>)<sup>α</sup> /
-                  e<sup><em>t</em>/<em>T</em><sub><em>G</em></sub></sup>
+def _get_header_content(title: str):
+    mar30_prediction_link = (
+        "https://www.facebook.com/permalink.php?story_fbid=10113020662000793&id=2247644"
+    )
+    return [
+        html.H1(children=title),
+        dcc.Markdown(
+            f"""
+            Mathematicians Katarína Boďová and Richard Kollár predicted in March and April 2020
+            the growth of active cases during COVID-19 pandemic. Their model suggests polynomial
+            growth with exponential decay given by:
 
-                Where:
+            * <em>N</em>(<em>t</em>) = (<em>A</em>/<em>T</em><sub><em>G</em></sub>) ⋅
+              (<em>t</em>/<em>T</em><sub><em>G</em></sub>)<sup>α</sup> /
+              e<sup><em>t</em>/<em>T</em><sub><em>G</em></sub></sup>
 
-                * *t* is time in days counted from a country-specific "day one"
-                * *N(t)* the number of active cases (cumulative positively tested minus recovered and deceased)
-                * *A*, *T<sub>G</sub>* and *α* are country-specific parameters
+            Where:
 
-                They made two predictions, on March 30 (for 7 countries) and on April 12 (for 23
-                countries), each based on data available until the day before. The first prediction
-                assumed a common growth parameter *α* = 6.23.
+            * *t* is time in days counted from a country-specific "day one"
+            * *N(t)* the number of active cases (cumulative positively tested minus recovered and deceased)
+            * *A*, *T<sub>G</sub>* and *α* are country-specific parameters
 
-                ### References
-                * [Polynomial growth in age-dependent branching processes with diverging
-                  reproductive number](https://arxiv.org/abs/cond-mat/0505116) by Alexei Vazquez
-                * [Fractal kinetics of COVID-19 pandemic]
-                  (https://www.medrxiv.org/content/10.1101/2020.02.16.20023820v2.full.pdf)
-                  by Robert Ziff and Anna Ziff
-                * Unpublished manuscript by Katarína Boďová and Richard Kollár
-                * March 30 predictions: [Facebook post]({mar30_prediction_link})
-                * April 12 predictions: Personal communication
+            They made two predictions, on March 30 (for 7 countries) and on April 12 (for 23
+            countries), each based on data available until the day before. The first prediction
+            assumed a common growth parameter *α* = 6.23.
 
-                ### Legend
-                """,
-                dangerously_allow_html=True,
-            ),
-            html.Ul(
-                children=[
-                    html.Li("Solid line is prediction"),
-                    html.Li("Dashed line marks the culmination of the prediction"),
-                    html.Li("Red line is observed number of active cases"),
-                    html.Li(
-                        children=[
-                            "Data available until the date of prediction is in ",
-                            html.Span("light green zone", style={"background-color": "lightgreen"}),
-                        ]
-                    ),
-                ]
-            ),
-        ]
+            ### References
+            * [Polynomial growth in age-dependent branching processes with diverging
+              reproductive number](https://arxiv.org/abs/cond-mat/0505116) by Alexei Vazquez
+            * [Fractal kinetics of COVID-19 pandemic]
+              (https://www.medrxiv.org/content/10.1101/2020.02.16.20023820v2.full.pdf)
+              by Robert Ziff and Anna Ziff
+            * Unpublished manuscript by Katarína Boďová and Richard Kollár
+            * March 30 predictions: [Facebook post]({mar30_prediction_link})
+            * April 12 predictions: Personal communication
+
+            ### Legend
+            """,
+            dangerously_allow_html=True,
+        ),
+        html.Ul(
+            children=[
+                html.Li("Solid line is prediction"),
+                html.Li("Dashed line marks the culmination of the prediction"),
+                html.Li("Red line is observed number of active cases"),
+                html.Li(
+                    children=[
+                        "Data available until the date of prediction is in ",
+                        html.Span("light green zone", style={"background-color": "lightgreen"}),
+                    ]
+                ),
+            ]
+        ),
+    ]

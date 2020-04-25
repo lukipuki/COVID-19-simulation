@@ -2,7 +2,7 @@ import datetime
 from dataclasses import dataclass
 from typing import List
 
-from .formula import AtgCurveConstructor, CurveConstructor
+from .formula import AtgFormula, Formula
 
 
 # Make the class hashable.
@@ -16,7 +16,7 @@ class PredictionEvent:
 class CountryPrediction:
     prediction_event: PredictionEvent
     country: str
-    formula: CurveConstructor
+    formula: Formula
 
 
 BK_20200329 = PredictionEvent(name="bk_20200329", date=datetime.date(2020, 3, 29))
@@ -32,156 +32,140 @@ _prediction_database = [
     # ),
     # BK_20200329
     CountryPrediction(
-        prediction_event=BK_20200329,
-        country="Italy",
-        formula=AtgCurveConstructor(7.8, 4417, 6.23, 200),
+        prediction_event=BK_20200329, country="Italy", formula=AtgFormula(7.8, 4417, 6.23, 200),
     ),
     CountryPrediction(
-        prediction_event=BK_20200329,
-        country="USA",
-        formula=AtgCurveConstructor(10.2, 72329, 6.23, 200),
+        prediction_event=BK_20200329, country="USA", formula=AtgFormula(10.2, 72329, 6.23, 200),
     ),
     CountryPrediction(
-        prediction_event=BK_20200329,
-        country="Spain",
-        formula=AtgCurveConstructor(6.4, 3665, 6.23, 200),
+        prediction_event=BK_20200329, country="Spain", formula=AtgFormula(6.4, 3665, 6.23, 200),
     ),
     CountryPrediction(
-        prediction_event=BK_20200329,
-        country="Germany",
-        formula=AtgCurveConstructor(6.7, 3773, 6.23, 200),
+        prediction_event=BK_20200329, country="Germany", formula=AtgFormula(6.7, 3773, 6.23, 200),
     ),
     CountryPrediction(
-        prediction_event=BK_20200329,
-        country="UK",
-        formula=AtgCurveConstructor(7.2, 2719, 6.23, 200),
+        prediction_event=BK_20200329, country="UK", formula=AtgFormula(7.2, 2719, 6.23, 200),
     ),
     CountryPrediction(
-        prediction_event=BK_20200329,
-        country="France",
-        formula=AtgCurveConstructor(6.5, 1961, 6.23, 200),
+        prediction_event=BK_20200329, country="France", formula=AtgFormula(6.5, 1961, 6.23, 200),
     ),
     CountryPrediction(
-        prediction_event=BK_20200329,
-        country="Iran",
-        formula=AtgCurveConstructor(8.7, 2569, 6.23, 200),
+        prediction_event=BK_20200329, country="Iran", formula=AtgFormula(8.7, 2569, 6.23, 200),
     ),
     # BK_20200411
     CountryPrediction(
         prediction_event=BK_20200411,
         country="Australia",
-        formula=AtgCurveConstructor(4.9667, 426.7599, 5.5868, 83),
+        formula=AtgFormula(4.9667, 426.7599, 5.5868, 83),
     ),
     CountryPrediction(
         prediction_event=BK_20200411,
         country="Austria",
         # Fix buggy offset.
-        formula=AtgCurveConstructor(3.4818, 2.135, 8.466, 29 + 1),
+        formula=AtgFormula(3.4818, 2.135, 8.466, 29 + 1),
     ),
     CountryPrediction(
         prediction_event=BK_20200411,
         country="Iceland",
-        formula=AtgCurveConstructor(5.5763, 47.8177, 6.0141, 10),
+        formula=AtgFormula(5.5763, 47.8177, 6.0141, 10),
     ),
     CountryPrediction(
         prediction_event=BK_20200411,
         country="Jordan",
-        formula=AtgCurveConstructor(8.9873, 4474.6547, 1.8184, 33),
+        formula=AtgFormula(8.9873, 4474.6547, 1.8184, 33),
     ),
     CountryPrediction(
         prediction_event=BK_20200411,
         country="Korea",
-        formula=AtgCurveConstructor(8.9001, 79719.7898, 2.5156, 171),
+        formula=AtgFormula(8.9001, 79719.7898, 2.5156, 171),
     ),
     CountryPrediction(
         prediction_event=BK_20200411,
         country="Switzerland",
-        formula=AtgCurveConstructor(4.1902, 16.6454, 7.7792, 28),
+        formula=AtgFormula(4.1902, 16.6454, 7.7792, 28),
     ),
     CountryPrediction(
         prediction_event=BK_20200411,
         country="Croatia",
-        formula=AtgCurveConstructor(8.5037, 1608.8302, 4.2301, 14),
+        formula=AtgFormula(8.5037, 1608.8302, 4.2301, 14),
     ),
     CountryPrediction(
         prediction_event=BK_20200411,
         country="Germany",
-        formula=AtgCurveConstructor(5.9852, 5086.2059, 5.7886, 274),
+        formula=AtgFormula(5.9852, 5086.2059, 5.7886, 274),
     ),
     CountryPrediction(
         prediction_event=BK_20200411,
         country="Israel",
-        formula=AtgCurveConstructor(3.9904, 0.3155, 9.3991, 29),
+        formula=AtgFormula(3.9904, 0.3155, 9.3991, 29),
     ),
     CountryPrediction(
         prediction_event=BK_20200411,
         country="Italy",
-        formula=AtgCurveConstructor(9.6702, 30079.4932, 5.2567, 200),
+        formula=AtgFormula(9.6702, 30079.4932, 5.2567, 200),
     ),
     CountryPrediction(
         prediction_event=BK_20200411,
         country="Malaysia",
-        formula=AtgCurveConstructor(13.3726, 46881.7586, 2.376, 104),
+        formula=AtgFormula(13.3726, 46881.7586, 2.376, 104),
     ),
     CountryPrediction(
-        prediction_event=BK_20200411,
-        country="NZ",
-        formula=AtgCurveConstructor(6.401, 1.89e03, 3.7006, 16),
+        prediction_event=BK_20200411, country="NZ", formula=AtgFormula(6.401, 1.89e03, 3.7006, 16),
     ),
     CountryPrediction(
         prediction_event=BK_20200411,
         country="Spain",
-        formula=AtgCurveConstructor(5.9344, 1644.5779, 6.5412, 155),
+        formula=AtgFormula(5.9344, 1644.5779, 6.5412, 155),
     ),
     CountryPrediction(
         prediction_event=BK_20200411,
         country="Belgium",
-        formula=AtgCurveConstructor(8.3277, 2838.2347, 5.6401, 38),
+        formula=AtgFormula(8.3277, 2838.2347, 5.6401, 38),
     ),
     CountryPrediction(
         prediction_event=BK_20200411,
         country="Canada",
-        formula=AtgCurveConstructor(13.275, 117588.9945, 3.5334, 123),
+        formula=AtgFormula(13.275, 117588.9945, 3.5334, 123),
     ),
     CountryPrediction(
         prediction_event=BK_20200411,
         country="Chile",
-        formula=AtgCurveConstructor(18.7647, 152196.2414, 2.5375, 62),
+        formula=AtgFormula(18.7647, 152196.2414, 2.5375, 62),
     ),
     CountryPrediction(
         prediction_event=BK_20200411,
         country="Czechia",
-        formula=AtgCurveConstructor(13.1119, 40609.4029, 3.3322, 35),
+        formula=AtgFormula(13.1119, 40609.4029, 3.3322, 35),
     ),
     CountryPrediction(
         prediction_event=BK_20200411,
         country="Netherlands",
-        formula=AtgCurveConstructor(16.7206, 157176.2658, 3.7562, 57),
+        formula=AtgFormula(16.7206, 157176.2658, 3.7562, 57),
     ),
     CountryPrediction(
         prediction_event=BK_20200411,
         country="Norway",
-        formula=AtgCurveConstructor(15.5411, 48762.3895, 3.4325, 18),
+        formula=AtgFormula(15.5411, 48762.3895, 3.4325, 18),
     ),
     CountryPrediction(
         prediction_event=BK_20200411,
         country="Portugal",
-        formula=AtgCurveConstructor(11.2156, 31461.9423, 4.2779, 34),
+        formula=AtgFormula(11.2156, 31461.9423, 4.2779, 34),
     ),
     CountryPrediction(
         prediction_event=BK_20200411,
         country="USA",
-        formula=AtgCurveConstructor(12.8446, 1406472.4, 4.3383, 1083),
+        formula=AtgFormula(12.8446, 1406472.4, 4.3383, 1083),
     ),
     CountryPrediction(
         prediction_event=BK_20200411,
         country="Latvia",
-        formula=AtgCurveConstructor(17.3709, 16679.8421, 2.3218, 10),
+        formula=AtgFormula(17.3709, 16679.8421, 2.3218, 10),
     ),
     CountryPrediction(
         prediction_event=BK_20200411,
         country="Lithuania",
-        formula=AtgCurveConstructor(12.792, 11603.8935, 2.8746, 10),
+        formula=AtgFormula(12.792, 11603.8935, 2.8746, 10),
     ),
 ]
 

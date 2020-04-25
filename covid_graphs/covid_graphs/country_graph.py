@@ -8,7 +8,7 @@ import click
 import click_pathlib
 from plotly.graph_objs import Figure, Layout, Scatter
 
-from .country_report import CountryReport
+from .country_report import CountryReport, create_report
 from .predictions import CountryPrediction, prediction_db
 
 
@@ -171,6 +171,6 @@ class CountryGraph:
 )
 def show_country_plot(data_dir: Path, country_name: str):
     country_predictions = prediction_db.predictions_for_country(country=country_name)
-    country_report = CountryReport(data_dir / f"{country_name}.data", short_name=country_name)
+    country_report = create_report(data_dir / f"{country_name}.data", short_name=country_name)
     country_graph = CountryGraph(report=country_report, country_predictions=country_predictions)
     country_graph.create_country_figure(GraphType.Normal).show()

@@ -39,14 +39,14 @@ class Curve:
         self.y_max = self.ys[idx_max]
 
 
-class CurveConstructor:
+class Formula:
     @abstractmethod
     def get_curve(self, country_report: CountryReport) -> Curve:
         pass
 
 
 @dataclass
-class AtgCurveConstructor(CurveConstructor):
+class AtgFormula(Formula):
     tg: float
     a: float
     exponent: float

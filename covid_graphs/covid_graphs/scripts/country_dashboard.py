@@ -221,8 +221,7 @@ class CountryDashboard:
         def update_country_graphs_20200411(graph_type_str):
             result = []
             for graph in self.graph_dict[BK_20200411.name]:
-                graph.update_graph_type(GraphType[graph_type_str])
-                result.append(graph.figure)
+                result.append(graph.update_graph_type(GraphType[graph_type_str]))
             return result
 
         @self.app.callback(

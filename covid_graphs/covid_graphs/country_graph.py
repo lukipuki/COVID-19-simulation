@@ -155,6 +155,7 @@ class CountryGraph:
         elif graph_type == GraphType.LogLog:
             self.figure.update_xaxes(type="log", title=self.log_title)
             self.figure.update_yaxes(type="log", autorange=False, range=self.log_yrange)
+        return self.figure
 
 
 @click.command(help="COVID-19 country growth visualization")

@@ -28,5 +28,6 @@ matrix:
         directories:
           - node_modules
       script:
+        - cd web
         - npm test
         - npm run build

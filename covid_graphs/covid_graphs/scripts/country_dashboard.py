@@ -6,12 +6,11 @@ from typing import Any, Dict, List, Tuple
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output
-from flask import Flask, jsonify, abort
-
 from covid_graphs.country_graph import CountryGraph, GraphType
 from covid_graphs.country_report import CountryReport
 from covid_graphs.predictions import BK_20200411, OTHER, PredictionEvent, prediction_db
+from dash.dependencies import Input, Output
+from flask import Flask, abort, jsonify
 
 
 class DashboardType(Enum):
@@ -272,18 +271,19 @@ def _get_header_content(title: str):
         ),
     ]
 
+
 class PredictionRest:
     def __init__(self, data_dir: Path):
         prediction_event_by_name, graph_dict = _prepare_data_structures(data_dir)
         self.prediction_event_by_name = prediction_event_by_name
         self.graph_dict = graph_dict
-    
+
     def get_available_predictions(self):
         result = {}
         for x in prediction_db.get_prediction_events():
             result[x.name] = {
                 "label": x.date,
-                "countries": [p.country for p in prediction_db.predictions_for_event(x)]
+                "countries": [p.country for p in prediction_db.predictions_for_event(x)],
             }
         return jsonify(result)
 
@@ -296,10 +296,9 @@ class PredictionRest:
                 return jsonify(graph.create_country_rest_data())
 
         abort(404)
-        return null
-    
+
 
 def create_prediction_rest(data_dir: Path, server: Flask):
-	# TODO(rejdi): Don't use print.
+    # TODO(rejdi): Don't use print.
     print("Creating dashboard for rest calls.")
     return PredictionRest(data_dir)

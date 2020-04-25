@@ -4,8 +4,9 @@ from pathlib import Path
 from typing import List
 
 import click
-import click_pathlib
 import numpy as np
+
+import click_pathlib
 from plotly.graph_objs import Figure, Layout, Scatter
 
 from .country_report import CountryReport
@@ -49,7 +50,7 @@ class CountryGraph:
         self.cumulative_active = report.cumulative_active[first_idx:]
         self.date_list = report.dates_str[first_idx:]
         self.t = np.arange(len(self.cumulative_active)) + 1
-		
+
     def create_country_rest_data(self):
         # TODO: consider types as shared enum
         series = [
@@ -59,24 +60,27 @@ class CountryGraph:
                 "date_list": curve.date_list,
                 "max_value_date": curve.date_list[curve.maximal_idx],
                 "max_value": curve.maximal_y,
-                "text": curve.text
+                "text": curve.text,
             }
             for curve in self.curves
         ]
-        series.append({
-            "type": "other",
-            "date_list": self.date_list,
-            "values": self.cumulative_active.tolist()
-        })
-        
+
+        series.append(
+            {
+                "type": "other",
+                "date_list": self.date_list,
+                "values": self.cumulative_active.tolist(),
+            }
+        )
+
         return {
             "short_name": self.short_name,
             "long_name": self.long_name,
             "prediction_at_date": self.prediction_date,
             "min_case_count": self.min_case_count,
-            "series": series
+            "series": series,
         }
-		
+
     def create_country_figure(self, graph_type: GraphType):
 
         # Due to plotly limitations, we can only have graphs with dates on the x-axis when we

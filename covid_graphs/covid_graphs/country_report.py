@@ -26,7 +26,6 @@ def create_report(country_data_file: Path, short_name: str) -> CountryReport:
     country_data = CountryData()
     text_format.Parse(country_data_file.read_text(), country_data)
 
-    short_name = short_name
     long_name = country_data.name
     dates = [
         datetime.date(day=day.date.day, month=day.date.month, year=day.date.year)

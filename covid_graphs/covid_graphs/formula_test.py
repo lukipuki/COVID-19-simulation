@@ -32,7 +32,7 @@ def test_two_curves():
     max_t2, start_date2, length2 = 6, datetime.date(2020, 4, 19), math.ceil(3 * (2 + math.sqrt(2)))
 
     curve1 = f1.get_curve(report)
-    assert pytest.approx(curve1.y_max, (47 / 2) * (max_t1 / 2) ** 1.5 * math.exp(-max_t1 / 2))
+    assert curve1.y_max == pytest.approx((47 / 2) * (max_t1 / 2) ** 1.5 * math.exp(-max_t1 / 2))
     assert curve1.start_date == start_date1
     assert curve1.x_max == start_date1 + datetime.timedelta(days=max_t1 - 1)
     # TODO(lukas/miskosz): The length is dominated by adding one week after cumulative active, which
@@ -40,7 +40,7 @@ def test_two_curves():
     assert curve1.end_date == datetime.date(2020, 4, 30)
 
     curve2 = f2.get_curve(report)
-    assert pytest.approx(curve2.y_max, (12 / 3) * (max_t2 / 3) ** 2 * math.exp(-max_t2 / 3))
+    assert curve2.y_max == pytest.approx((12 / 3) * (max_t2 / 3) ** 2 * math.exp(-max_t2 / 3))
     assert curve2.start_date == start_date2
     assert curve2.x_max == curve2.start_date + datetime.timedelta(days=max_t2 - 1)
     assert curve2.end_date == curve2.start_date + datetime.timedelta(days=length2)

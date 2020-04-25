@@ -103,7 +103,7 @@ class App extends Component {
                                 <div className='content'>
                                     <Graph />
                                 </div>
-                                <img src={require('./Hamburger_icon.svg')} className='side_switch' onClick={this.toggleSidebar}/>
+                                <img src={require('./Hamburger_icon.svg')} className='side_switch' onClick={this.toggleSidebar} alt='Show/Hide graph'/>
                             </div>
                         </GraphDetailContext.Provider>
                     </DataContext.Provider>

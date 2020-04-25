@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
-import {SelectionContext, DataContext, GraphDetailContext, MODE_LINEAR, MODE_LOG, MODE_LOG_LOG} from "../sharedObjects";
-import {renderMath, updateMath} from "./mathjax";
+import {DataContext, GraphDetailContext, MODE_LINEAR, MODE_LOG, MODE_LOG_LOG, SelectionContext} from "../sharedObjects";
+import {renderMath} from "./mathjax";
 
 const colors = ["#7cb5ec", "#434348", "#90ed7d", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"];
 const bandColors = [
@@ -92,9 +92,10 @@ class Graph extends Component {
                                         if (dataContext.hasOwnProperty(key)) {
                                             const data = dataContext[key];
                                             countries.push(data.long_name);
-                                            data.series.forEach(serie => {
+                                            for (let j = 0; j < data.series.length; j++) {
+                                                const serie = data.series[j];
                                                 xValues = xValues.concat(serie.date_list);
-                                            });
+                                            }
                                         }
                                     }
 
@@ -139,7 +140,7 @@ class Graph extends Component {
                                                 let name = '';
                                                 if (serie.type === 'prediction') {
                                                     id = `legend-${si}-${key}`;
-                                                    name = `Prediction for ${data.long_name}<br/><span id="${id}" style="display: inline-block; height: 60px; visibility: hidden">\$${serie.text}\$</span>`
+                                                    name = `Prediction for ${data.long_name}<br/><span id="${id}" style="display: inline-block; height: 60px; visibility: hidden">$${serie.text}$</span>`
                                                 } else {
                                                     name = `Active cases for ${data.long_name}`
                                                 }
@@ -183,6 +184,7 @@ class Graph extends Component {
                                     );
 
                                     switch (mode) {
+                                        default:
                                         case MODE_LINEAR:
                                             finalOptions.xAxis.type = 'linear';
                                             finalOptions.yAxis.type = 'linear';

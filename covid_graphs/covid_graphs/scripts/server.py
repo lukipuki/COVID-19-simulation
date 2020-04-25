@@ -3,12 +3,12 @@ from pathlib import Path
 from time import sleep
 
 import click
-
 import click_pathlib
-from covid_graphs.heat_map import create_heat_map_dashboard
-from covid_graphs.simulation_report import GrowthType
 from flask import Flask, redirect, render_template, send_file, send_from_directory, url_for
 from inotify import adapters, constants
+
+from covid_graphs.heat_map import create_heat_map_dashboard
+from covid_graphs.simulation_report import GrowthType
 
 from . import country_dashboard
 

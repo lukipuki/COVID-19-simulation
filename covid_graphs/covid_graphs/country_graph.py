@@ -4,9 +4,8 @@ from pathlib import Path
 from typing import List
 
 import click
-import numpy as np
-
 import click_pathlib
+import numpy as np
 from plotly.graph_objs import Figure, Layout, Scatter
 
 from .country_report import CountryReport

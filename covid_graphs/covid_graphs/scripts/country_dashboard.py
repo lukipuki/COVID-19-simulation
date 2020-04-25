@@ -6,11 +6,12 @@ from typing import Any, Dict, List, Tuple
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+from dash.dependencies import Input, Output
+from flask import Flask, abort, jsonify
+
 from covid_graphs.country_graph import CountryGraph, GraphType
 from covid_graphs.country_report import CountryReport
 from covid_graphs.predictions import BK_20200411, OTHER, PredictionEvent, prediction_db
-from dash.dependencies import Input, Output
-from flask import Flask, abort, jsonify
 
 
 class DashboardType(Enum):

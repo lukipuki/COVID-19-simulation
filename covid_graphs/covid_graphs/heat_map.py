@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import Dict, List, Tuple
 
 import click
-
 import click_pathlib
 import dash
 import dash_core_components as dcc

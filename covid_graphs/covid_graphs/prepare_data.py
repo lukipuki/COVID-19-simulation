@@ -1,9 +1,8 @@
 import argparse
 from datetime import datetime, timedelta
 
-from google.protobuf import text_format  # type: ignore
-
 import pandas as pd
+from google.protobuf import text_format  # type: ignore
 
 from .pb.country_data_pb2 import CountryData, DailyStats
 

@@ -111,7 +111,7 @@ class CountryDashboard:
                 id="graph-type",
                 options=[
                     {"label": graph_type.value, "value": graph_type.name}
-                    for graph_type in [GraphType.Normal, GraphType.SemiLog, GraphType.LogLog]
+                    for graph_type in [GraphType.Normal, GraphType.SemiLog]
                 ],
                 value="Normal",
                 labelStyle={"display": "inline-block", "margin": "0 4px 0 0"},

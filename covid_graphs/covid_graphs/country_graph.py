@@ -38,6 +38,9 @@ class CountryGraph:
             prediction.formula.get_curve(country_report=report)
             for prediction in country_predictions
         ]
+        self.min_case_count = min(
+            prediction.formula.min_case_count for prediction in country_predictions
+        )
 
         # Crop country data to display.
         min_start_date = min(curve.start_date for curve in self.curves)
@@ -50,14 +53,11 @@ class CountryGraph:
 
         def adjust_xlabel(date: datetime.date):
             # Due to plotly limitations, we can only have graphs with dates on the x-axis when we
-            # aren't using logs.
-            # if graph_type == GraphType.Normal:
-            #     return date
-            # else:
-            #     return (date - log_xaxis_date_since).days
-
-            # Figure out a way to update this
-            return (date - log_xaxis_date_since).days
+            # x-axis isn't log-scale.
+            if graph_type != GraphType.LogLog:
+                return date
+            else:
+                return (date - log_xaxis_date_since).days
 
         colors = ["SteelBlue", "Purple", "Green"][: len(self.curves)]
 
@@ -142,9 +142,7 @@ class CountryGraph:
             math.log10(maximal_y) + 0.3,
         ]
         self.log_title = f"Days [since {log_xaxis_date_since.strftime('%b %d, %Y')}]"
-        # This doesn't reflect the reality yet
-        # self.lin_title = f"Date [starting on {log_xaxis_date_since.strftime('%b %d, %Y')}]"
-        self.lin_title = self.log_title
+        self.date_title = f"Date [starting from {self.min_case_count}th case]"
 
         self.figure = Figure(data=traces, layout=layout)
         self.update_graph_type(graph_type)
@@ -152,10 +150,10 @@ class CountryGraph:
 
     def update_graph_type(self, graph_type: GraphType):
         if graph_type == GraphType.Normal:
-            self.figure.update_xaxes(type="linear", title=self.lin_title)
+            self.figure.update_xaxes(type="date", title=self.date_title)
             self.figure.update_yaxes(type="linear", autorange=True)
         elif graph_type == GraphType.SemiLog:
-            self.figure.update_xaxes(type="linear", title=self.log_title)
+            self.figure.update_xaxes(type="date", title=self.date_title)
             self.figure.update_yaxes(type="log", autorange=False, range=self.log_yrange)
         elif graph_type == GraphType.LogLog:
             self.figure.update_xaxes(type="log", title=self.log_title)

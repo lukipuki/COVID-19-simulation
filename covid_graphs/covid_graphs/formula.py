@@ -2,7 +2,7 @@ import datetime
 import math
 from abc import abstractmethod
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, List, Tuple
 
 import numpy as np
 
@@ -17,7 +17,7 @@ class Curve:
     display_at_least_until: datetime.date
     label: str
 
-    def generate_trace(self, end_date: datetime.date) -> np.ndarray:
+    def generate_trace(self, end_date: datetime.date) -> Tuple[List[datetime.date], np.ndarray]:
         """Generates trace corresponding to the half-open interval [self.start_date, end_date)"""
         raw_xs = np.arange((end_date - self.start_date).days)
         ys = np.array([self.func(x) for x in raw_xs])

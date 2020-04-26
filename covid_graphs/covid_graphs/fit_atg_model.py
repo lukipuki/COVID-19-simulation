@@ -13,7 +13,7 @@ class AtgModelFit:
     t0: float
 
     def predict(self, x: float) -> float:
-        ys = _model(params=[self.a, self.tg, self.exp, 0], xs=np.array([x]))
+        ys = _model(params=[self.a, self.tg, self.exp, self.t0], xs=np.array([x]))
         return ys[0]
 
 
@@ -26,7 +26,7 @@ def fit_atg_model(xs: np.ndarray, ys: np.ndarray) -> AtgModelFit:
     a_init = 2000.0
     tg_init = 7.0
     exp_init = 6.23
-    t0_init = 0.0
+    t0_init = xs[0]
     least_squares_result = least_squares(
         fun=_residuals,
         x0=[a_init, tg_init, exp_init, t0_init],

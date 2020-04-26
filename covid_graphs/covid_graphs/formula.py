@@ -2,7 +2,7 @@ import datetime
 import math
 from abc import abstractmethod
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, List, Tuple
 
 import numpy as np
 
@@ -10,40 +10,65 @@ from . import fit_atg_model
 from .country_report import CountryReport
 
 
+@dataclass
 class Curve:
-    def __init__(
-        self,
-        func: Callable[[datetime.date], float],
-        start_date: datetime.date,
-        end_date: datetime.date,
-        label: str,
-    ) -> None:
-        """
-        Calculates function trace for dates in a half-open interval [start_date, end_date).
+    func: Callable
+    start_date: datetime.date
+    display_at_least_until: datetime.date
+    label: str
 
-        Sets the trace as properties `xs` and `ys`. Also calculates a point (x_max, y_max)
-        for which the maximum is achieved.
+    """
+    Curve is created from a function `func(x)`, which has x=0 at `start_date`. It's only defined for
+    x >= 0.
+    """
 
-        Note: The current design assumes the range of the plot is known at initialisation.
-        """
-        self.start_date = start_date
-        self.end_date = end_date
-        self.label = label
-
-        self.xs = [
-            start_date + datetime.timedelta(days=d) for d in range((end_date - start_date).days)
-        ]
-        self.ys = [func(x) for x in self.xs]
-
-        idx_max = np.argmax(self.ys)
-        self.x_max = self.xs[idx_max]
-        self.y_max = self.ys[idx_max]
+    def generate_trace(self, end_date: datetime.date) -> Tuple[List[datetime.date], np.ndarray]:
+        """Generates trace corresponding to the closed interval [self.start_date, end_date]"""
+        raw_xs = np.arange((end_date - self.start_date).days + 1)
+        ys = np.array([self.func(x) for x in raw_xs])
+        xs = [self.start_date + datetime.timedelta(days=int(x)) for x in raw_xs]
+        return xs, ys
 
 
 class Formula:
     @abstractmethod
     def get_curve(self, country_report: CountryReport) -> Curve:
         pass
+
+
+@dataclass
+class PolynomialFormula(Formula):
+    a: float
+    exponent: float
+    min_case_count: int
+
+    def get_curve(self, country_report: CountryReport) -> Curve:
+        label = r"$_a \cdot t^{_expon}$"
+        label = label.replace("_a", f"{self.a:.0f}").replace("_expon", f"{self.exponent}")
+
+        start_idx = np.argmax(country_report.cumulative_active >= self.min_case_count)
+        # start_idx marks t=1, so t=0 is one day earlier
+        start_date = country_report.dates[start_idx - 1]
+        display_at_least_until = country_report.dates[-1]
+
+        return Curve(
+            func=lambda x: self.a * (x ** self.exponent),
+            start_date=start_date,
+            display_at_least_until=display_at_least_until,
+            label=label,
+        )
+
+
+def _create_atg_label(a: float, tg: float, exponent: float, prefix=""):
+    label = (
+        r"$\textrm{_prefix}\frac{_A}{_TG} \cdot \left(\frac{t}{_TG}\right)^{_expon} / e^{t/_TG}$"
+    )
+    return (
+        label.replace("_A", f"{a:.0f}")
+        .replace("_TG", f"{tg:.2f}")
+        .replace("_expon", f"{exponent:.2f}")
+        .replace("_prefix", prefix)
+    )
 
 
 @dataclass
@@ -54,30 +79,26 @@ class AtgFormula(Formula):
     min_case_count: int
 
     def get_curve(self, country_report: CountryReport) -> Curve:
-        label = r"$\frac{_A}{_TG} \cdot \left(\frac{t}{_TG}\right)^{_expon} / e^{t/_TG}$"
-        label = (
-            label.replace("_A", f"{self.a:.0f}")
-            .replace("_TG", f"{self.tg}")
-            .replace("_expon", f"{self.exponent}")
-        )
+        label = _create_atg_label(self.a, self.tg, self.exponent)
 
         # Display values from the first day for which the number of cumulative active is
         # at least min_case_count. This day is also "day one".
         start_idx = np.argmax(country_report.cumulative_active >= self.min_case_count)
-        start_date = country_report.dates[start_idx]
-        day_zero = start_date - datetime.timedelta(days=1)
-        end_date = _get_display_end_date(
-            tg=self.tg,
-            exp=self.exponent,
-            start_date=day_zero,
-            data_end_date=country_report.dates[-1],
+        start_date = country_report.dates[start_idx - 1]
+        display_at_least_until = _get_display_at_least_until(
+            tg=self.tg, exp=self.exponent, start_date=start_date,
         )
 
-        def formula(date: datetime.date):
-            x = (date - day_zero).days / self.tg
+        def formula(x: float):
+            x /= self.tg
             return (self.a / self.tg) * x ** self.exponent / np.exp(x)
 
-        return Curve(func=formula, start_date=start_date, end_date=end_date, label=label)
+        return Curve(
+            func=formula,
+            start_date=start_date,
+            display_at_least_until=display_at_least_until,
+            label=label,
+        )
 
 
 @dataclass
@@ -86,7 +107,6 @@ class FittedFormula(Formula):
     until_date: datetime.date
 
     def get_curve(self, country_report: CountryReport) -> Curve:
-        label = f"Daily fit {self.until_date.strftime('%d. %b')}"
         until_idx = country_report.dates.index(self.until_date)
 
         # The choice of date zero is in theory arbitrary.
@@ -95,26 +115,25 @@ class FittedFormula(Formula):
         fit = fit_atg_model.fit_atg_model(
             xs=xs, ys=country_report.cumulative_active[: until_idx + 1],
         )
+        prefix = f"{self.until_date.strftime('%b %d')}: "
+        label = _create_atg_label(fit.a, fit.tg, fit.exp, prefix=prefix)
         # TODO(miskosz): Remove the print when we integrate with a dashboard.
         print(fit)
 
         start_date = date_zero + datetime.timedelta(days=fit.t0)
-        end_date = _get_display_end_date(
-            tg=fit.tg, exp=fit.exp, start_date=start_date, data_end_date=country_report.dates[-1],
+        display_at_least_until = _get_display_at_least_until(
+            tg=fit.tg, exp=fit.exp, start_date=start_date,
         )
 
-        def formula(date: datetime.date):
-            x = (date - date_zero).days
-            return fit.predict(x)
+        return Curve(
+            func=lambda x: fit.predict(x),
+            start_date=start_date,
+            display_at_least_until=display_at_least_until,
+            label=label,
+        )
 
-        return Curve(func=formula, start_date=start_date, end_date=end_date, label=label)
 
-
-def _get_display_end_date(
-    tg: float, exp: float, start_date: datetime.date, data_end_date: datetime.date
-) -> datetime.date:
-    # Display values until the second inflection point or one week after data finishes.
-    days_till_second_ip = math.ceil(tg * exp + math.sqrt(exp))
-    second_ip_date = start_date + datetime.timedelta(days=days_till_second_ip)
-    week_after_data_ends_date = data_end_date + datetime.timedelta(days=7)
-    return max(second_ip_date, week_after_data_ends_date)
+def _get_display_at_least_until(tg: float, exp: float, start_date: datetime.date) -> datetime.date:
+    # Display values until the second inflection point.
+    days_till_second_ip = math.ceil(tg * (exp + math.sqrt(exp)))
+    return start_date + datetime.timedelta(days=days_till_second_ip)

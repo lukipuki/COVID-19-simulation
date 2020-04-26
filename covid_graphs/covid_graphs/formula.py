@@ -17,9 +17,14 @@ class Curve:
     display_at_least_until: datetime.date
     label: str
 
+    """
+    Curve is created from a function `func(x)`, which has x=0 at `start_date`. It's only defined for
+    x >= 0.
+    """
+
     def generate_trace(self, end_date: datetime.date) -> Tuple[List[datetime.date], np.ndarray]:
-        """Generates trace corresponding to the half-open interval [self.start_date, end_date)"""
-        raw_xs = np.arange((end_date - self.start_date).days)
+        """Generates trace corresponding to the closed interval [self.start_date, end_date]"""
+        raw_xs = np.arange((end_date - self.start_date).days + 1)
         ys = np.array([self.func(x) for x in raw_xs])
         xs = [self.start_date + datetime.timedelta(days=int(x)) for x in raw_xs]
         return xs, ys
@@ -54,7 +59,7 @@ class PolynomialFormula(Formula):
         )
 
 
-def create_label(a: float, tg: float, exponent: float, prefix=""):
+def _create_atg_label(a: float, tg: float, exponent: float, prefix=""):
     label = (
         r"$\textrm{_prefix}\frac{_A}{_TG} \cdot \left(\frac{t}{_TG}\right)^{_expon} / e^{t/_TG}$"
     )
@@ -74,7 +79,7 @@ class AtgFormula(Formula):
     min_case_count: int
 
     def get_curve(self, country_report: CountryReport) -> Curve:
-        label = create_label(self.a, self.tg, self.exponent)
+        label = _create_atg_label(self.a, self.tg, self.exponent)
 
         # Display values from the first day for which the number of cumulative active is
         # at least min_case_count. This day is also "day one".
@@ -111,7 +116,7 @@ class FittedFormula(Formula):
             xs=xs, ys=country_report.cumulative_active[: until_idx + 1],
         )
         prefix = f"{self.until_date.strftime('%b %d')}: "
-        label = create_label(fit.a, fit.tg, fit.exp, prefix=prefix)
+        label = _create_atg_label(fit.a, fit.tg, fit.exp, prefix=prefix)
         # TODO(miskosz): Remove the print when we integrate with a dashboard.
         print(fit)
 

@@ -2,14 +2,14 @@ import datetime
 import math
 from enum import Enum
 from pathlib import Path
-from typing import List
+from typing import List, Tuple
 
 import click
 import click_pathlib
 from plotly.graph_objs import Figure, Layout, Scatter
 
 from .country_report import CountryReport, create_report
-from .formula import FittedFormula
+from .formula import Curve, FittedFormula
 from .predictions import CountryPrediction, PredictionEvent, prediction_db
 
 EXTENSION_PERIOD = datetime.timedelta(days=7)
@@ -22,6 +22,17 @@ class GraphType(Enum):
 
     def __str__(self):
         return self.value
+
+
+def _get_display_range(
+    report: CountryReport, curves: List[Curve]
+) -> Tuple[datetime.date, datetime.date]:
+    start_date = min(curve.start_date for curve in curves)
+
+    display_until = max(
+        max(curve.display_at_least_until for curve in curves), report.dates[-1] + EXTENSION_PERIOD,
+    )
+    return start_date, display_until
 
 
 class CountryGraph:
@@ -42,15 +53,11 @@ class CountryGraph:
             for prediction in country_predictions
         ]
 
-        # Crop country data to display.
-        min_start_date = min(curve.start_date for curve in self.curves)
+        min_start_date, self.display_until = _get_display_range(report, self.curves)
         min_start_date_idx = report.dates.index(min_start_date)
+        # Crop country data to display.
         self.cropped_dates = report.dates[min_start_date_idx:]
         self.cropped_cumulative_active = report.cumulative_active[min_start_date_idx:]
-        self.display_at_least_until = max(
-            max(curve.display_at_least_until for curve in self.curves) + datetime.timedelta(days=1),
-            self.cropped_dates[-1] + EXTENSION_PERIOD,
-        )
 
     def create_country_figure(self, graph_type=GraphType.Linear):
         log_xaxis_date_since = self.cropped_dates[0] - datetime.timedelta(days=1)
@@ -68,7 +75,7 @@ class CountryGraph:
         traces, shapes = [], []
         maximal_y = max(self.cropped_cumulative_active)
         for color, curve in zip(colors, self.curves):
-            xs, ys = curve.generate_trace(self.display_at_least_until)
+            xs, ys = curve.generate_trace(self.display_until)
             idx_max = ys.argmax()
             maximal_y = max(maximal_y, ys.max())
 
@@ -138,7 +145,7 @@ class CountryGraph:
 
         # Note: We silently assume `self.cropped_cumulative_active` does not contain zeros.
         self.log_yrange = [
-            math.log10(max(0.1, self.cropped_cumulative_active.min())) - 0.3,
+            math.log10(max(1, self.cropped_cumulative_active.min())) - 0.3,
             math.log10(maximal_y) + 0.3,
         ]
         self.log_title = f"Days [since {log_xaxis_date_since.strftime('%b %d, %Y')}]"
@@ -173,7 +180,8 @@ def show_country_plot(data_dir: Path, country_name: str):
     country_report = create_report(data_dir / f"{country_name}.data", short_name=country_name)
 
     for until_date in [
-        datetime.date(2020, 4, 11),
+        country_report.dates[-12],
+        country_report.dates[-7],
         country_report.dates[-1],
     ]:
         country_predictions.append(

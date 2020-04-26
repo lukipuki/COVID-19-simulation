@@ -30,7 +30,7 @@ def fit_atg_model(xs: np.ndarray, ys: np.ndarray) -> AtgModelFit:
     least_squares_result = least_squares(
         fun=_residuals,
         x0=[a_init, tg_init, exp_init, t0_init],
-        bounds=([0.0, 0.0, 0.0, -np.inf], np.inf),
+        bounds=([0.0, 0.0, 0.0, xs[0]], np.inf),
         args=(xs, ys),
     )
     a, tg, exp, t0 = least_squares_result.x

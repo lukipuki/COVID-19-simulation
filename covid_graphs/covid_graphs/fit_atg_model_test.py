@@ -22,41 +22,19 @@ def test_fit_atg_model():
     fit = fit_atg_model.fit_atg_model(xs=xs, ys=ys)
     assert [fit.a, fit.tg, fit.exp, fit.t0] == pytest.approx([a, tg, exp, t0], rel=0.1)
 
-    # Test with real-world data. (UK active since 2020-3-7.)
-    xs = np.arange(1, 27)
+    # Test with real-world data. (Jordan until 2020-4-23.)
+    # fmt: off
     ys = np.array(
         [
-            186.0,
-            252.0,
-            299.0,
-            358.0,
-            430.0,
-            430.0,
-            772.0,
-            1101.0,
-            1101.0,
-            1468.0,
-            1843.0,
-            2490.0,
-            2487.0,
-            3741.0,
-            4720.0,
-            5337.0,
-            6250.0,
-            7520.0,
-            8929.0,
-            10945.0,
-            13649.0,
-            15935.0,
-            18159.0,
-            20598.0,
-            23226.0,
-            26987.0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 7, 16, 33, 51, 68, 84, 84, 111, 126, 153, 171,
+            211, 216, 227, 238, 237, 239, 237, 249, 247, 244, 230, 217, 209, 202, 204, 195, 197,
+            181, 169, 155, 144, 136, 135, 137, 134, 136, 124, 113, 112,
         ]
     )
+    # fmt: on
+    xs = np.arange(len(ys))
     fit = fit_atg_model.fit_atg_model(xs=xs, ys=ys)
-    # TODO(miskosz): Use a country that is after IP for a stable fit.
-    assert [fit.a, fit.tg, fit.exp, fit.t0] == pytest.approx([10, 10, 9, -18], abs=1.0)
+    assert [fit.a, fit.tg, fit.exp, fit.t0] == pytest.approx([2243, 7, 2, 11], abs=1.0)
 
 
 def test_atg_model_fit_predict():

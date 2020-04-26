@@ -110,7 +110,7 @@ class FittedFormula(Formula):
         until_idx = country_report.dates.index(self.until_date)
 
         # The choice of date zero is in theory arbitrary.
-        date_zero = datetime.date(2020, 2, 1)
+        date_zero = country_report.dates[0]
         xs = [(date - date_zero).days for date in country_report.dates[: until_idx + 1]]
         fit = fit_atg_model.fit_atg_model(
             xs=xs, ys=country_report.cumulative_active[: until_idx + 1],

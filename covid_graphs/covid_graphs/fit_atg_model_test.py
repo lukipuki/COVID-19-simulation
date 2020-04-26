@@ -55,7 +55,8 @@ def test_fit_atg_model():
         ]
     )
     fit = fit_atg_model.fit_atg_model(xs=xs, ys=ys)
-    assert [fit.a, fit.tg, fit.exp, fit.t0] == pytest.approx([247, 12, 8, -16], abs=1.0)
+    # TODO(miskosz): Use a country that is after IP for a stable fit.
+    assert [fit.a, fit.tg, fit.exp, fit.t0] == pytest.approx([10, 10, 9, -18], abs=1.0)
 
 
 def test_atg_model_fit_predict():

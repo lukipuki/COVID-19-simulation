@@ -177,11 +177,7 @@ def _get_fitted_predictions(report: CountryReport) -> List[CountryPrediction]:
             country=report.short_name,
             formula=FittedFormula(until_date=until_date),
         )
-        for until_date in [
-            report.dates[-12],
-            report.dates[-7],
-            report.dates[-1],
-        ]
+        for until_date in [report.dates[-12], report.dates[-7], report.dates[-1]]
     ]
 
 

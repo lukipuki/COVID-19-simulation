@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from . import fit_atg_model
+from .fit_atg_model import AtgModelFit
 
 
 def test_fit_atg_model():
@@ -55,3 +56,11 @@ def test_fit_atg_model():
     )
     fit = fit_atg_model.fit_atg_model(xs=xs, ys=ys)
     assert [fit.a, fit.tg, fit.exp, fit.t0] == pytest.approx([247, 12, 8, -16], abs=1.0)
+
+
+def test_atg_model_fit_predict():
+    fit = AtgModelFit(a=1.2, tg=2.3, exp=3.4, t0=5.6)
+    x = 10.0
+    expected = 1.2 / 2.3 * ((x - 5.6) / 2.3) ** 3.4 / np.exp((x - 5.6) / 2.3)
+    assert fit.predict(x) == pytest.approx(expected)
+    assert fit.predict(4.0) == pytest.approx(0.0)

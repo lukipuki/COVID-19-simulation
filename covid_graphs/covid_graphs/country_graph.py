@@ -168,6 +168,23 @@ class CountryGraph:
         return self.figure
 
 
+def _get_fitted_predictions(report: CountryReport) -> List[CountryPrediction]:
+    return [
+        CountryPrediction(
+            prediction_event=PredictionEvent(
+                name=f"daily_fit_{until_date.strftime('%Y_%m_%d')}", date=until_date
+            ),
+            country=report.short_name,
+            formula=FittedFormula(until_date=until_date),
+        )
+        for until_date in [
+            report.dates[-12],
+            report.dates[-7],
+            report.dates[-1],
+        ]
+    ]
+
+
 @click.command(help="COVID-19 country growth visualization")
 @click.argument(
     "data_dir", required=True, type=click_pathlib.Path(exists=True),
@@ -178,21 +195,6 @@ class CountryGraph:
 def show_country_plot(data_dir: Path, country_name: str):
     country_predictions = prediction_db.predictions_for_country(country=country_name)
     country_report = create_report(data_dir / f"{country_name}.data", short_name=country_name)
-
-    for until_date in [
-        country_report.dates[-12],
-        country_report.dates[-7],
-        country_report.dates[-1],
-    ]:
-        country_predictions.append(
-            CountryPrediction(
-                prediction_event=PredictionEvent(
-                    name=f"daily_fit_{until_date.strftime('%Y_%m_%d')}", date=until_date
-                ),
-                country=country_report.short_name,
-                formula=FittedFormula(until_date=until_date),
-            ),
-        )
-
+    country_predictions.extend(_get_fitted_predictions(report=country_report))
     country_graph = CountryGraph(report=country_report, country_predictions=country_predictions)
     country_graph.create_country_figure().show()

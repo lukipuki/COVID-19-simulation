@@ -120,13 +120,15 @@ class FittedFormula(Formula):
         # TODO(miskosz): Remove the print when we integrate with a dashboard.
         print(fit)
 
-        start_date = date_zero + datetime.timedelta(days=fit.t0)
+        # Counterintuitively, `date` + `timedelta` results in `date`.
+        whole_day_offset = np.floor(fit.t0)
+        start_date = date_zero + datetime.timedelta(days=whole_day_offset)
         display_at_least_until = _get_display_at_least_until(
             tg=fit.tg, exp=fit.exp, start_date=start_date,
         )
 
         return Curve(
-            func=lambda x: fit.predict(x),
+            func=lambda x: fit.predict(x + whole_day_offset),
             start_date=start_date,
             display_at_least_until=display_at_least_until,
             label=label,

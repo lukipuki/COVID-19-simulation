@@ -4,7 +4,7 @@ from time import sleep
 
 import click
 import click_pathlib
-from flask import Flask, redirect, render_template, send_file, send_from_directory, url_for
+from flask import Flask, redirect, render_template, url_for
 
 from covid_graphs.heat_map import create_heat_map_dashboard
 from covid_graphs.simulation_report import GrowthType
@@ -73,7 +73,6 @@ def _run_flask_server(server: Flask, data_dir: Path):
     _create_prediction_apps(server=server, data_dir=data_dir)
     _create_simulation_apps(server=server, data_dir=data_dir)
     _create_rest(server=server, data_dir=data_dir)
-    _create_react_web(server=server)
     server.run(host="0.0.0.0", port=8081)
 
 
@@ -91,17 +90,6 @@ def _create_rest(data_dir: Path, server: Flask):
     @server.route("/covid19/predictions/data/<date>/<country>")
     def covid19_get_specific_prediction(date, country):
         return rest.get_specific_prediction(date, country)
-
-
-def _create_react_web(server: Flask):
-    # TODO (rejdi): It's better to use nginx for static files
-    @server.route("/covid19/graphs/")
-    def covid_19_graphs_index():
-        return send_file("../../react-web/build/index.html", add_etags=True)
-
-    @server.route("/covid19/graphs/<path:filename>")
-    def covid_19_graphs(filename):
-        return send_from_directory("../../react-web/build/", filename, add_etags=True)
 
 
 def _create_prediction_apps(data_dir: Path, server: Flask):

@@ -11,14 +11,14 @@ from .country_report import CountryReport
 
 
 @dataclass
-class Curve:
+class TraceGenerator:
     func: Callable
     start_date: datetime.date
     display_at_least_until: datetime.date
     label: str
 
     """
-    Curve is created from a function `func(x)`, which has x=0 at `start_date`. It's only defined for
+    Trace is created from a function `func(x)`, which has x=0 at `start_date`. It's only defined for
     x >= 0.
     """
 
@@ -32,7 +32,7 @@ class Curve:
 
 class Formula:
     @abstractmethod
-    def get_curve(self, country_report: CountryReport) -> Curve:
+    def get_trace_generator(self, country_report: CountryReport) -> TraceGenerator:
         pass
 
 
@@ -42,7 +42,7 @@ class PolynomialFormula(Formula):
     exponent: float
     min_case_count: int
 
-    def get_curve(self, country_report: CountryReport) -> Curve:
+    def get_trace_generator(self, country_report: CountryReport) -> TraceGenerator:
         label = r"$_a \cdot t^{_expon}$"
         label = label.replace("_a", f"{self.a:.0f}").replace("_expon", f"{self.exponent}")
 
@@ -51,7 +51,7 @@ class PolynomialFormula(Formula):
         start_date = country_report.dates[start_idx - 1]
         display_at_least_until = country_report.dates[-1]
 
-        return Curve(
+        return TraceGenerator(
             func=lambda x: self.a * (x ** self.exponent),
             start_date=start_date,
             display_at_least_until=display_at_least_until,
@@ -78,7 +78,7 @@ class AtgFormula(Formula):
     exponent: float
     min_case_count: int
 
-    def get_curve(self, country_report: CountryReport) -> Curve:
+    def get_trace_generator(self, country_report: CountryReport) -> TraceGenerator:
         label = _create_atg_label(self.a, self.tg, self.exponent)
 
         # Display values from the first day for which the number of cumulative active is
@@ -93,7 +93,7 @@ class AtgFormula(Formula):
             x /= self.tg
             return (self.a / self.tg) * x ** self.exponent / np.exp(x)
 
-        return Curve(
+        return TraceGenerator(
             func=formula,
             start_date=start_date,
             display_at_least_until=display_at_least_until,
@@ -106,7 +106,7 @@ class FittedFormula(Formula):
     # Date until which to consider data. Inclusive.
     until_date: datetime.date
 
-    def get_curve(self, country_report: CountryReport) -> Curve:
+    def get_trace_generator(self, country_report: CountryReport) -> TraceGenerator:
         until_idx = country_report.dates.index(self.until_date)
 
         # The choice of date zero is in theory arbitrary.
@@ -127,7 +127,7 @@ class FittedFormula(Formula):
             tg=fit.tg, exp=fit.exp, start_date=start_date,
         )
 
-        return Curve(
+        return TraceGenerator(
             func=lambda x: fit.predict(x + whole_day_offset),
             start_date=start_date,
             display_at_least_until=display_at_least_until,

@@ -59,16 +59,18 @@ class Rest:
                 "long_name": country_report.long_name,
             }
             for prediction, curve in zip(country_predictions, graph.curves):
+                xs, ys = curve.generate_trace(graph.display_until)
+                idx_max = ys.argmax()
                 predictions.append(
                     {
                         "type": "prediction",
-                        "date_list": curve.xs,
-                        "values": curve.ys,
+                        "date_list": xs,
+                        "values": ys.tolist(),
                         "description": curve.label,
                         "short_name": country_report.short_name,
                         "long_name": country_report.long_name,
-                        "max_value_date": curve.x_max,
-                        "max_value": curve.y_max,
+                        "max_value_date": xs[idx_max],
+                        "max_value": ys.max(),
                         "date_name": prediction.prediction_event.name,
                         "date": prediction.prediction_event.date,
                     }
@@ -83,7 +85,6 @@ class Rest:
         return jsonify(self.available_predictions)
 
     def get_specific_prediction(self, date: str, country: str):
-        print(self.predictions)
         for prediction in self.predictions:
             if prediction["short_name"] == country and prediction["date_name"] == date:
                 return jsonify(prediction)

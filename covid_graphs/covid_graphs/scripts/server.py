@@ -73,6 +73,7 @@ def _run_flask_server(server: Flask, data_dir: Path):
     _create_prediction_apps(server=server, data_dir=data_dir)
     _create_simulation_apps(server=server, data_dir=data_dir)
     _create_rest(server=server, data_dir=data_dir)
+    _create_react_web(server=server)
     server.run(host="0.0.0.0", port=8081)
 
 
@@ -91,6 +92,8 @@ def _create_rest(data_dir: Path, server: Flask):
     def covid19_get_specific_prediction(date, country):
         return rest.get_specific_prediction(date, country)
 
+
+def _create_react_web(server: Flask):
     # TODO (rejdi): It's better to use nginx for static files
     @server.route("/covid19/graphs/")
     def covid_19_graphs_index():

@@ -74,7 +74,7 @@ class CountryGraph:
         # 1. A formula is first shifted to the appropriate date on the graph, creating a
         #    trace generator.
         # 2. The trace generators are used to calculate the last date of the graph, since each trace
-        #    generators stores the minimal display length of its trace.
+        #    generator stores the minimal display length of its trace.
         # 3. Once we know the date range of the graph, we can plot the formulas, creating traces.
         trace_generators = [
             prediction.formula.get_trace_generator(country_report=report)

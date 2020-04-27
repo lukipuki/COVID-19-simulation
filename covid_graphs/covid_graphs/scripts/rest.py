@@ -58,19 +58,18 @@ class Rest:
                 "short_name": country_report.short_name,
                 "long_name": country_report.long_name,
             }
-            for prediction, curve in zip(country_predictions, graph.curves):
-                xs, ys = curve.generate_trace(graph.display_until)
-                idx_max = ys.argmax()
+            # Here we assume that traces and country_predictions are in the same order
+            for prediction, trace in zip(country_predictions, graph.traces):
                 predictions.append(
                     {
                         "type": "prediction",
-                        "date_list": xs,
-                        "values": ys.tolist(),
-                        "description": curve.label,
+                        "date_list": trace.xs,
+                        "values": trace.ys.tolist(),
+                        "description": trace.label,
                         "short_name": country_report.short_name,
                         "long_name": country_report.long_name,
-                        "max_value_date": xs[idx_max],
-                        "max_value": ys.max(),
+                        "max_value_date": trace.x_max,
+                        "max_value": trace.y_max,
                         "date_name": prediction.prediction_event.name,
                         "date": prediction.prediction_event.date,
                     }

@@ -79,15 +79,15 @@ def _run_flask_server(server: Flask, data_dir: Path):
 def _create_rest(data_dir: Path, server: Flask):
     rest = Rest(data_dir=data_dir)
 
-    @server.route("/covid19/data/<country>")
+    @server.route("/covid19/rest/data/<country>")
     def covid19_country_data(country):
         return rest.get_country_data(country)
 
-    @server.route("/covid19/predictions/list/")
+    @server.route("/covid19/rest/predictions/list/")
     def covid19_available_predictions():
         return rest.get_available_predictions()
 
-    @server.route("/covid19/predictions/data/<date>/<country>")
+    @server.route("/covid19/rest/predictions/data/<date>/<country>")
     def covid19_get_specific_prediction(date, country):
         return rest.get_specific_prediction(date, country)
 

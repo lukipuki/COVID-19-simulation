@@ -68,8 +68,8 @@ class Rest:
                         "description": trace.label,
                         "short_name": country_report.short_name,
                         "long_name": country_report.long_name,
-                        "max_value_date": trace.x_max,
-                        "max_value": trace.y_max,
+                        "max_value_date": trace.max_value_date,
+                        "max_value": trace.max_value,
                         "date_name": prediction.prediction_event.name,
                         "date": prediction.prediction_event.date,
                     }

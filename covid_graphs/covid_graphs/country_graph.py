@@ -1,13 +1,11 @@
 import datetime
 import math
-from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from typing import List, Tuple
 
 import click
 import click_pathlib
-import numpy as np
 from plotly.graph_objs import Figure, Layout, Scatter
 
 from .country_report import CountryReport, create_report
@@ -26,22 +24,6 @@ class GraphType(Enum):
         return self.value
 
 
-@dataclass
-class Trace:
-    xs: List[datetime.date]
-    ys: np.ndarray
-    x_max: datetime.date
-    y_max: float
-    label: str
-
-
-def _create_trace(trace_generator: TraceGenerator, display_until: datetime.date) -> Trace:
-    xs, ys = trace_generator.generate_trace(display_until)
-    idx_max = ys.argmax()
-    x_max, y_max = xs[idx_max], ys[idx_max]
-    return Trace(xs, ys, x_max, y_max, label=trace_generator.label)
-
-
 def _get_display_range(
     report: CountryReport, trace_generators: List[TraceGenerator]
 ) -> Tuple[datetime.date, datetime.date]:
@@ -54,7 +36,6 @@ def _get_display_range(
     return start_date, display_until
 
 
-# @dataclass
 class CountryGraph:
     """Constructs a graph for a given country"""
 
@@ -83,7 +64,7 @@ class CountryGraph:
         start_date, display_until = _get_display_range(report, trace_generators)
 
         self.traces = [
-            _create_trace(trace_generator, display_until) for trace_generator in trace_generators
+            trace_generator.generate_trace(display_until) for trace_generator in trace_generators
         ]
 
         start_date_idx = report.dates.index(start_date)
@@ -92,14 +73,14 @@ class CountryGraph:
         self.cropped_cumulative_active = report.cumulative_active[start_date_idx:]
         self.log_xaxis_date_since = self.cropped_dates[0] - datetime.timedelta(days=1)
         self.log_title = f"Days [since {self.log_xaxis_date_since.strftime('%b %d, %Y')}]"
-        self.date_title = f"Date [starting from {self.cropped_dates[0].strftime('%b %d, %Y')}]"
+        self.date_title = "Date"
 
-        maximal_y = max(
-            max(self.cropped_cumulative_active), max(trace.y_max for trace in self.traces)
+        max_value = max(
+            max(self.cropped_cumulative_active), max(trace.max_value for trace in self.traces)
         )
         self.log_yrange = [
             math.log10(max(1, self.cropped_cumulative_active.min())) - 0.3,
-            math.log10(maximal_y) + 0.3,
+            math.log10(max_value) + 0.3,
         ]
 
     def create_country_figure(self, graph_type=GraphType.Linear):
@@ -129,10 +110,10 @@ class CountryGraph:
             shapes.append(
                 dict(
                     type="line",
-                    x0=adjust_xlabel(trace.x_max),
+                    x0=adjust_xlabel(trace.max_value_date),
                     y0=1,
-                    x1=adjust_xlabel(trace.x_max),
-                    y1=trace.y_max,
+                    x1=adjust_xlabel(trace.max_value_date),
+                    y1=trace.max_value,
                     line=dict(width=2, dash="dash", color=color),
                 )
             )
@@ -204,7 +185,7 @@ def _get_fitted_predictions(report: CountryReport) -> List[CountryPrediction]:
             country=report.short_name,
             formula=FittedFormula(until_date=until_date),
         )
-        for until_date in [report.dates[-12], report.dates[-7], report.dates[-1]]
+        for until_date in [report.dates[-13], report.dates[-7], report.dates[-1]]
     ]
 
 

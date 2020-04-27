@@ -4,7 +4,6 @@ import math
 import numpy as np
 import pytest
 
-from .country_graph import _create_trace
 from .country_report import CountryReport
 from .formula import AtgFormula
 
@@ -35,15 +34,15 @@ def test_two_traces():
     max_t2, start_date2, length2 = 6, datetime.date(2020, 4, 18), math.ceil(3 * (2 + math.sqrt(2)))
 
     trace_generator1 = f1.get_trace_generator(report)
-    trace1 = _create_trace(trace_generator1, display_until)
-    assert trace1.y_max == pytest.approx((47 / 2) * (max_t1 / 2) ** 1.5 * math.exp(-max_t1 / 2))
-    assert trace1.x_max == start_date1 + datetime.timedelta(days=max_t1)
+    trace1 = trace_generator1.generate_trace(display_until)
+    assert trace1.max_value == pytest.approx((47 / 2) * (max_t1 / 2) ** 1.5 * math.exp(-max_t1 / 2))
+    assert trace1.max_value_date == start_date1 + datetime.timedelta(days=max_t1)
     assert trace1.xs[0] == start_date1
     assert trace_generator1.display_at_least_until == start_date1 + datetime.timedelta(days=length1)
 
     trace_generator2 = f2.get_trace_generator(report)
-    trace2 = _create_trace(trace_generator2, display_until)
-    assert trace2.y_max == pytest.approx((12 / 3) * (max_t2 / 3) ** 2 * math.exp(-max_t2 / 3))
-    assert trace2.x_max == start_date2 + datetime.timedelta(days=max_t2)
+    trace2 = trace_generator2.generate_trace(display_until)
+    assert trace2.max_value == pytest.approx((12 / 3) * (max_t2 / 3) ** 2 * math.exp(-max_t2 / 3))
+    assert trace2.max_value_date == start_date2 + datetime.timedelta(days=max_t2)
     assert trace2.xs[0] == start_date2
     assert trace_generator2.display_at_least_until == start_date2 + datetime.timedelta(days=length2)

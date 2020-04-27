@@ -2,12 +2,21 @@ import datetime
 import math
 from abc import abstractmethod
 from dataclasses import dataclass
-from typing import Callable, List, Tuple
+from typing import Callable, List
 
 import numpy as np
 
 from . import fit_atg_model
 from .country_report import CountryReport
+
+
+@dataclass
+class Trace:
+    xs: List[datetime.date]
+    ys: np.ndarray
+    max_value_date: datetime.date
+    max_value: float
+    label: str
 
 
 @dataclass
@@ -22,12 +31,14 @@ class TraceGenerator:
     x >= 0.
     """
 
-    def generate_trace(self, end_date: datetime.date) -> Tuple[List[datetime.date], np.ndarray]:
+    def generate_trace(self, display_until: datetime.date) -> Trace:
         """Generates trace corresponding to the closed interval [self.start_date, end_date]"""
-        raw_xs = np.arange((end_date - self.start_date).days + 1)
+        raw_xs = np.arange((display_until - self.start_date).days + 1)
         ys = np.array([self.func(x) for x in raw_xs])
         xs = [self.start_date + datetime.timedelta(days=int(x)) for x in raw_xs]
-        return xs, ys
+        idx_max = ys.argmax()
+        max_value_date, max_value = xs[idx_max], ys[idx_max]
+        return Trace(xs, ys, max_value_date, max_value, label=self.label)
 
 
 class Formula:

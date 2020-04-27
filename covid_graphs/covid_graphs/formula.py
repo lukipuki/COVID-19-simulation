@@ -107,6 +107,7 @@ class FittedFormula(Formula):
     until_date: datetime.date
 
     def get_curve(self, country_report: CountryReport) -> Curve:
+        print(f"Fitting {country_report.short_name} until {self.until_date}.")
         until_idx = country_report.dates.index(self.until_date)
 
         # The choice of date zero is in theory arbitrary.
@@ -117,8 +118,6 @@ class FittedFormula(Formula):
         )
         prefix = f"{self.until_date.strftime('%b %d')}: "
         label = _create_atg_label(fit.a, fit.tg, fit.exp, prefix=prefix)
-        # TODO(miskosz): Remove the print when we integrate with a dashboard.
-        print(fit)
 
         # Counterintuitively, `date` + `timedelta` results in `date`.
         whole_day_offset = np.floor(fit.t0)

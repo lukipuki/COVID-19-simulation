@@ -137,7 +137,7 @@ class Graph extends Component {
                 name = `Prediction for ${data.long_name} ${new Date(Date.parse(data.date)).toLocaleDateString()}<br/><span id="${id}" style="display: inline-block; height: 60px; visibility: hidden">$${data.description}$</span>`
 
                 if (relative) {
-                    predictionEnds.push(xValues.indexOf(data.date) + 1);
+                    predictionEnds.push(data.date_list.indexOf(data.date) + 1);
                 } else {
                     predictionEnds.push(Date.parse(data.date));
                 }

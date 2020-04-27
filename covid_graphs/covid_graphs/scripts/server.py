@@ -9,7 +9,7 @@ from flask import Flask, redirect, render_template, url_for
 from covid_graphs.heat_map import create_heat_map_dashboard
 from covid_graphs.simulation_report import GrowthType
 
-from .country_dashboard import CountryDashboard, DashboardType
+from .country_dashboard import DashboardFactory, DashboardType
 from .rest import Rest
 
 CURRENT_DIR = Path(__file__).parent
@@ -93,15 +93,16 @@ def _create_rest(data_dir: Path, server: Flask):
 
 
 def _create_prediction_apps(data_dir: Path, server: Flask):
-    single_prediction_app = CountryDashboard(
-        DashboardType.SingleCountry, data_dir=data_dir, server=server
-    ).get_app()
-    single_country_all_predictions_app = CountryDashboard(
-        DashboardType.SingleCountryAllPredictions, data_dir=data_dir, server=server
-    ).get_app()
-    all_predictions_app = CountryDashboard(
-        DashboardType.AllCountries, data_dir=data_dir, server=server
-    ).get_app()
+    dashboard_factory = DashboardFactory(data_dir)
+    single_prediction_app = dashboard_factory.create_dashboard(
+        DashboardType.SingleCountry, server=server
+    )
+    single_country_all_predictions_app = dashboard_factory.create_dashboard(
+        DashboardType.SingleCountryAllPredictions, server=server
+    )
+    all_predictions_app = dashboard_factory.create_dashboard(
+        DashboardType.AllCountries, server=server
+    )
 
     @server.route("/covid19/predictions/single/")
     def covid19_single_predictions():

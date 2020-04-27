@@ -1,7 +1,7 @@
 from datetime import timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Dict, List
 
 import dash
 import dash_core_components as dcc
@@ -29,8 +29,8 @@ TITLE = "COVID-19 predictions of Boďová and Kollár"
 CountryGraphsByReportName = Dict[str, List[CountryGraph]]
 
 
-class CountryDashboard:
-    def __init__(self, dashboard_type: DashboardType, data_dir: Path, server: Flask):
+class DashboardFactory:
+    def __init__(self, data_dir: Path):
         prediction_events = prediction_db.get_prediction_events()
         prediction_events.sort(key=lambda event: event.date, reverse=True)
         self.prediction_event_by_name = {
@@ -46,17 +46,14 @@ class CountryDashboard:
         ]
         self.report_by_short_name = {report.short_name: report for report in reports}
 
-        if (
-            dashboard_type == DashboardType.SingleCountry
-            or dashboard_type == DashboardType.AllCountries
-        ):
-            self.graph_dict = {
-                prediction_event.name: CountryDashboard._create_graphs(
-                    self.report_by_short_name, prediction_event
-                )
-                for prediction_event in prediction_db.get_prediction_events()
-            }
+        self.graph_dict = {
+            prediction_event.name: DashboardFactory._create_graphs(
+                self.report_by_short_name, prediction_event
+            )
+            for prediction_event in prediction_db.get_prediction_events()
+        }
 
+    def create_dashboard(self, dashboard_type: DashboardType, server: Flask) -> dash.Dash:
         if dashboard_type == DashboardType.AllCountries:
             extra_content = [html.Div(id="country-graphs")]
         else:
@@ -68,16 +65,37 @@ class CountryDashboard:
                 )
             ]
 
-        self.app = self._create_dash_app(dashboard_type, server, extra_content)
-        if dashboard_type == DashboardType.SingleCountry:
-            self._create_single_country_callbacks()
-        elif dashboard_type == DashboardType.SingleCountryAllPredictions:
-            self._create_single_country_all_predictions_callbacks()
-        else:
-            self._create_all_countries_callbacks()
+        app = dash.Dash(
+            name=f"COVID-19 predictions",
+            url_base_pathname=f"/covid19/predictions/{dashboard_type}/",
+            server=server,
+            external_scripts=[
+                "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"
+            ],
+            meta_tags=[{"name": "viewport", "content": "width=750"}],
+        )
+        content = _get_header_content(TITLE)
+        content += [html.Hr(), html.H1(id="graph-title")]
+        content += DashboardFactory._create_buttons(dashboard_type, self.report_by_short_name)
+        content += extra_content
 
-    def get_app(self):
-        return self.app
+        app.title = TITLE
+        app.layout = html.Div(
+            children=content,
+            style={
+                "font-family": "sans-serif",
+                "text-size-adjust": "none",
+                "-webkit-text-size-adjust": "none",
+            },
+        )
+        if dashboard_type == DashboardType.SingleCountry:
+            self._create_single_country_callbacks(app)
+        elif dashboard_type == DashboardType.SingleCountryAllPredictions:
+            self._create_single_country_all_predictions_callbacks(app)
+        else:
+            self._create_all_countries_callbacks(app)
+
+        return app
 
     @staticmethod
     def _create_graphs(
@@ -94,7 +112,7 @@ class CountryDashboard:
     @staticmethod
     def _create_buttons(
         dashboard_type: DashboardType, report_by_short_name: Dict[str, CountryReport]
-    ):
+    ) -> List[dash.development.base_component.Component]:
         buttons = []
         if (
             dashboard_type == DashboardType.SingleCountry
@@ -150,36 +168,8 @@ class CountryDashboard:
         )
         return buttons
 
-    def _create_dash_app(
-        self, dashboard_type: DashboardType, server: Flask, extra_content: List[Any]
-    ):
-        app = dash.Dash(
-            name=f"COVID-19 predictions",
-            url_base_pathname=f"/covid19/predictions/{dashboard_type}/",
-            server=server,
-            external_scripts=[
-                "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"
-            ],
-            meta_tags=[{"name": "viewport", "content": "width=750"}],
-        )
-        content = _get_header_content(TITLE)
-        content += [html.Hr(), html.H1(id="graph-title")]
-        content += CountryDashboard._create_buttons(dashboard_type, self.report_by_short_name)
-        content += extra_content
-
-        app.title = TITLE
-        app.layout = html.Div(
-            children=content,
-            style={
-                "font-family": "sans-serif",
-                "text-size-adjust": "none",
-                "-webkit-text-size-adjust": "none",
-            },
-        )
-        return app
-
-    def _create_single_country_callbacks(self):
-        @self.app.callback(
+    def _create_single_country_callbacks(self, app: dash.Dash) -> None:
+        @app.callback(
             [
                 Output("country-short-name", component_property="options"),
                 Output("graph-title", component_property="children"),
@@ -194,7 +184,7 @@ class CountryDashboard:
             next_day = self.prediction_event_by_name[prediction_event_name].date + timedelta(days=1)
             return options, f"{next_day.strftime('%B %d')} predictions"
 
-        @self.app.callback(
+        @app.callback(
             Output("country-graph", component_property="figure"),
             [
                 Input("prediction-event", "value"),
@@ -216,7 +206,7 @@ class CountryDashboard:
             figure = graphs[0].create_country_figure(graph_type)
             return figure
 
-    def _create_single_country_all_predictions_callbacks(self):
+    def _create_single_country_all_predictions_callbacks(self, app: dash.Dash) -> None:
         # TODO: Predictions will be generated statically in the future.
         graph_by_short_name = {}
         for country_short_name in prediction_db.get_countries():
@@ -227,7 +217,7 @@ class CountryDashboard:
                 report=report, country_predictions=country_predictions
             )
 
-        @self.app.callback(
+        @app.callback(
             Output("country-graph", component_property="figure"),
             [Input("graph-type", "value"), Input("country-short-name", "value")],
         )
@@ -236,7 +226,7 @@ class CountryDashboard:
             figure = graph_by_short_name[country_short_name].create_country_figure(graph_type)
             return figure
 
-    def _create_all_countries_callbacks(self):
+    def _create_all_countries_callbacks(self, app: dash.Dash) -> None:
         dash_graph_dict = {
             prediction_event_name: [
                 dcc.Graph(
@@ -249,7 +239,7 @@ class CountryDashboard:
             for prediction_event_name in self.prediction_event_by_name.keys()
         }
 
-        @self.app.callback(
+        @app.callback(
             [
                 Output("country-graphs", component_property="children"),
                 Output("graph-title", component_property="children"),
@@ -262,7 +252,7 @@ class CountryDashboard:
             return graphs, f"{next_day.strftime('%B %d')} predictions"
 
         # TODO(lukas): only have one callback for all prediction events
-        @self.app.callback(
+        @app.callback(
             [
                 Output(f"{graph.short_name}-graph-{BK_20200411.name}", component_property="figure")
                 for graph in self.graph_dict[BK_20200411.name]
@@ -275,7 +265,7 @@ class CountryDashboard:
                 result.append(graph.update_graph_type(GraphType[graph_type_str]))
             return result
 
-        @self.app.callback(
+        @app.callback(
             [
                 Output(f"{graph.short_name}-graph-{BK_20200329.name}", component_property="figure")
                 for graph in self.graph_dict[BK_20200329.name]

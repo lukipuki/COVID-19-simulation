@@ -107,7 +107,7 @@ def _create_prediction_apps(data_dir: Path, server: Flask):
     def covid19_single_predictions():
         return single_prediction_app.index()
 
-    @server.route("/covid19/predictions/country/")
+    @server.route("/covid19/predictions/daily/")
     def covid19_single_country_all_predictions():
         return single_country_all_predictions_app.index()
 

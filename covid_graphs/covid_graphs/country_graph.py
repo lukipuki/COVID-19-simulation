@@ -180,7 +180,9 @@ def get_fitted_predictions(report: CountryReport) -> List[CountryPrediction]:
     return [
         CountryPrediction(
             prediction_event=PredictionEvent(
-                name=f"daily_fit_{until_date.strftime('%Y_%m_%d')}", date=until_date
+                name=f"daily_fit_{until_date.strftime('%Y_%m_%d')}",
+                date=until_date,
+                creation_date=until_date,
             ),
             country=report.short_name,
             formula=FittedFormula(until_date=until_date),

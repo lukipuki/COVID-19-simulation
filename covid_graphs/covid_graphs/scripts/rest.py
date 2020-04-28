@@ -72,6 +72,7 @@ class Rest:
                         "max_value": trace.max_value,
                         "date_name": prediction.prediction_event.name,
                         "date": prediction.prediction_event.date,
+                        "creation_date": prediction.prediction_event.creation_date,
                     }
                 )
 

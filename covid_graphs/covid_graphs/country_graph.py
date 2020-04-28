@@ -9,7 +9,7 @@ import click_pathlib
 from plotly.graph_objs import Figure, Layout, Scatter
 
 from .country_report import CountryReport, create_report
-from .formula import Curve, FittedFormula
+from .formula import FittedFormula, TraceGenerator
 from .predictions import CountryPrediction, PredictionEvent, prediction_db
 
 EXTENSION_PERIOD = datetime.timedelta(days=7)
@@ -25,12 +25,13 @@ class GraphType(Enum):
 
 
 def _get_display_range(
-    report: CountryReport, curves: List[Curve]
+    report: CountryReport, trace_generators: List[TraceGenerator]
 ) -> Tuple[datetime.date, datetime.date]:
-    start_date = min(curve.start_date for curve in curves)
+    start_date = min(trace_generator.start_date for trace_generator in trace_generators)
 
     display_until = max(
-        max(curve.display_at_least_until for curve in curves), report.dates[-1] + EXTENSION_PERIOD,
+        max(trace_generator.display_at_least_until for trace_generator in trace_generators),
+        report.dates[-1] + EXTENSION_PERIOD,
     )
     return start_date, display_until
 
@@ -44,48 +45,64 @@ class CountryGraph:
         self.short_name = report.short_name
         self.long_name = report.long_name
 
-        # TODO(lukas): Figure out better strategy for more predictions
         if len(country_predictions) >= 1:
-            self.prediction_date = country_predictions[0].prediction_event.date
+            self.prediction_date = max(
+                country_prediction.prediction_event.date
+                for country_prediction in country_predictions
+            )
 
-        self.curves = [
-            prediction.formula.get_curve(country_report=report)
+        # We create traces in three steps:
+        # 1. A formula is first shifted to the appropriate date on the graph, creating a
+        #    trace generator.
+        # 2. The trace generators are used to calculate the last date of the graph, since each trace
+        #    generator stores the minimal display length of its trace.
+        # 3. Once we know the date range of the graph, we can plot the formulas, creating traces.
+        trace_generators = [
+            prediction.formula.get_trace_generator(country_report=report)
             for prediction in country_predictions
         ]
+        start_date, display_until = _get_display_range(report, trace_generators)
 
-        min_start_date, self.display_until = _get_display_range(report, self.curves)
-        min_start_date_idx = report.dates.index(min_start_date)
+        self.traces = [
+            trace_generator.generate_trace(display_until) for trace_generator in trace_generators
+        ]
+
+        start_date_idx = report.dates.index(start_date)
         # Crop country data to display.
-        self.cropped_dates = report.dates[min_start_date_idx:]
-        self.cropped_cumulative_active = report.cumulative_active[min_start_date_idx:]
+        self.cropped_dates = report.dates[start_date_idx:]
+        self.cropped_cumulative_active = report.cumulative_active[start_date_idx:]
+        self.log_xaxis_date_since = self.cropped_dates[0] - datetime.timedelta(days=1)
+        self.log_title = f"Days [since {self.log_xaxis_date_since.strftime('%b %d, %Y')}]"
+        self.date_title = "Date"
+
+        max_value = max(
+            max(self.cropped_cumulative_active), max(trace.max_value for trace in self.traces)
+        )
+        self.log_yrange = [
+            math.log10(max(1, self.cropped_cumulative_active.min())) - 0.3,
+            math.log10(max_value) + 0.3,
+        ]
 
     def create_country_figure(self, graph_type=GraphType.Linear):
-        log_xaxis_date_since = self.cropped_dates[0] - datetime.timedelta(days=1)
-
         def adjust_xlabel(date: datetime.date):
             # Due to plotly limitations, we can only have graphs with dates on the x-axis when we
             # x-axis isn't log-scale.
             if graph_type != GraphType.LogLog:
                 return date
             else:
-                return (date - log_xaxis_date_since).days
+                return (date - self.log_xaxis_date_since).days
 
-        colors = ["SteelBlue", "Purple", "Green", "Orange", "Gray"][: len(self.curves)]
+        colors = ["SteelBlue", "Purple", "Green", "Orange", "Gray"][: len(self.traces)]
 
         traces, shapes = [], []
-        maximal_y = max(self.cropped_cumulative_active)
-        for color, curve in zip(colors, self.curves):
-            xs, ys = curve.generate_trace(self.display_until)
-            idx_max = ys.argmax()
-            maximal_y = max(maximal_y, ys.max())
-
+        for color, trace in zip(colors, self.traces):
             traces.append(
                 Scatter(
-                    x=list(map(adjust_xlabel, xs)),
-                    y=ys,
-                    text=xs,
+                    x=list(map(adjust_xlabel, trace.xs)),
+                    y=trace.ys,
+                    text=trace.xs,
                     mode="lines",
-                    name=curve.label,
+                    name=trace.label,
                     line={"width": 2, "color": color},
                 )
             )
@@ -93,10 +110,10 @@ class CountryGraph:
             shapes.append(
                 dict(
                     type="line",
-                    x0=adjust_xlabel(xs[idx_max]),
+                    x0=adjust_xlabel(trace.max_value_date),
                     y0=1,
-                    x1=adjust_xlabel(xs[idx_max]),
-                    y1=ys.max(),
+                    x1=adjust_xlabel(trace.max_value_date),
+                    y1=trace.max_value,
                     line=dict(width=2, dash="dash", color=color),
                 )
             )
@@ -143,17 +160,8 @@ class CountryGraph:
             plot_bgcolor="White",
         )
 
-        # Note: We silently assume `self.cropped_cumulative_active` does not contain zeros.
-        self.log_yrange = [
-            math.log10(max(1, self.cropped_cumulative_active.min())) - 0.3,
-            math.log10(maximal_y) + 0.3,
-        ]
-        self.log_title = f"Days [since {log_xaxis_date_since.strftime('%b %d, %Y')}]"
-        self.date_title = f"Date [starting from {self.cropped_dates[0].strftime('%b %d, %Y')}]"
-
         self.figure = Figure(data=traces, layout=layout)
-        self.update_graph_type(graph_type)
-        return self.figure
+        return self.update_graph_type(graph_type)
 
     def update_graph_type(self, graph_type: GraphType):
         if graph_type == GraphType.Linear:
@@ -177,7 +185,7 @@ def _get_fitted_predictions(report: CountryReport) -> List[CountryPrediction]:
             country=report.short_name,
             formula=FittedFormula(until_date=until_date),
         )
-        for until_date in [report.dates[-12], report.dates[-7], report.dates[-1]]
+        for until_date in [report.dates[-13], report.dates[-7], report.dates[-1]]
     ]
 
 

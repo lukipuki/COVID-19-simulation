@@ -128,8 +128,6 @@ class FittedFormula(Formula):
         )
         prefix = f"{self.until_date.strftime('%b %d')}: "
         label = _create_atg_label(fit.a, fit.tg, fit.exp, prefix=prefix)
-        # TODO(miskosz): Remove the print when we integrate with a dashboard.
-        print(fit)
 
         # Counterintuitively, `date` + `timedelta` results in `date`.
         whole_day_offset = np.floor(fit.t0)

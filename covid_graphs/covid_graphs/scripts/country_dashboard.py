@@ -10,6 +10,7 @@ from dash.dependencies import Input, Output
 from flask import Flask
 
 import covid_graphs.country_report as country_report
+from covid_graphs import country_graph
 from covid_graphs.country_graph import CountryGraph, GraphType
 from covid_graphs.country_report import CountryReport
 from covid_graphs.predictions import BK_20200329, BK_20200411, OTHER, PredictionEvent, prediction_db
@@ -17,6 +18,7 @@ from covid_graphs.predictions import BK_20200329, BK_20200411, OTHER, Prediction
 
 class DashboardType(Enum):
     SingleCountry = "single"
+    SingleCountryAllPredictions = "country"
     AllCountries = "all"
 
     def __str__(self):
@@ -35,7 +37,6 @@ class CountryDashboard:
             prediction_event.name: prediction_event for prediction_event in prediction_events
         }
 
-        # TODO: parsing the proto can fail
         reports = [
             country_report.create_report(
                 data_dir / f"{country_short_name}.data", country_short_name
@@ -43,15 +44,22 @@ class CountryDashboard:
             for country_short_name in prediction_db.get_countries()
             if (data_dir / f"{country_short_name}.data").is_file()
         ]
-        report_by_short_name = {report.short_name: report for report in reports}
-        self.graph_dict = {
-            prediction_event.name: CountryDashboard._create_graphs(
-                report_by_short_name, prediction_event
-            )
-            for prediction_event in prediction_db.get_prediction_events()
-        }
+        self.report_by_short_name = {report.short_name: report for report in reports}
 
-        if dashboard_type == DashboardType.SingleCountry:
+        if (
+            dashboard_type == DashboardType.SingleCountry
+            or dashboard_type == DashboardType.AllCountries
+        ):
+            self.graph_dict = {
+                prediction_event.name: CountryDashboard._create_graphs(
+                    self.report_by_short_name, prediction_event
+                )
+                for prediction_event in prediction_db.get_prediction_events()
+            }
+
+        if dashboard_type == DashboardType.AllCountries:
+            extra_content = [html.Div(id="country-graphs")]
+        else:
             extra_content = [
                 dcc.Graph(
                     id="country-graph",
@@ -59,12 +67,12 @@ class CountryDashboard:
                     config=dict(modeBarButtons=[["toImage"]]),
                 )
             ]
-        else:
-            extra_content = [html.Div(id="country-graphs")]
 
         self.app = self._create_dash_app(dashboard_type, server, extra_content)
         if dashboard_type == DashboardType.SingleCountry:
             self._create_single_country_callbacks()
+        elif dashboard_type == DashboardType.SingleCountryAllPredictions:
+            self._create_single_country_all_predictions_callbacks()
         else:
             self._create_all_countries_callbacks()
 
@@ -84,23 +92,46 @@ class CountryDashboard:
         return country_graphs
 
     @staticmethod
-    def _create_buttons(dashboard_type: DashboardType):
-        buttons = [
-            dcc.Dropdown(
-                id="prediction-event",
-                options=[
-                    dict(label=(event.date + timedelta(days=1)).strftime("%B %d"), value=event.name)
-                    for event in prediction_db.get_prediction_events()
-                    if event != OTHER
-                ],
-                value=BK_20200411.name,
-                style={"width": "220px", "margin": "8px 0"},
+    def _create_buttons(
+        dashboard_type: DashboardType, report_by_short_name: Dict[str, CountryReport]
+    ):
+        buttons = []
+        if (
+            dashboard_type == DashboardType.SingleCountry
+            or dashboard_type == DashboardType.AllCountries
+        ):
+            buttons.append(
+                dcc.Dropdown(
+                    id="prediction-event",
+                    options=[
+                        dict(
+                            label=(event.date + timedelta(days=1)).strftime("%B %d"),
+                            value=event.name,
+                        )
+                        for event in prediction_db.get_prediction_events()
+                        if event != OTHER
+                    ],
+                    value=BK_20200411.name,
+                    style={"width": "220px", "margin": "8px 0"},
+                )
             )
-        ]
+
         if dashboard_type == DashboardType.SingleCountry:
             buttons.append(
                 dcc.Dropdown(
                     id="country-short-name",
+                    value="Italy",
+                    style={"width": "220px", "margin": "8px 0"},
+                )
+            )
+        elif dashboard_type == DashboardType.SingleCountryAllPredictions:
+            buttons.append(
+                dcc.Dropdown(
+                    id="country-short-name",
+                    options=[
+                        dict(label=report.long_name, value=report.short_name)
+                        for report in report_by_short_name.values()
+                    ],
                     value="Italy",
                     style={"width": "220px", "margin": "8px 0"},
                 )
@@ -133,7 +164,7 @@ class CountryDashboard:
         )
         content = _get_header_content(TITLE)
         content += [html.Hr(), html.H1(id="graph-title")]
-        content += CountryDashboard._create_buttons(dashboard_type)
+        content += CountryDashboard._create_buttons(dashboard_type, self.report_by_short_name)
         content += extra_content
 
         app.title = TITLE
@@ -183,6 +214,26 @@ class CountryDashboard:
                 return dash.no_update
 
             figure = graphs[0].create_country_figure(graph_type)
+            return figure
+
+    def _create_single_country_all_predictions_callbacks(self):
+        # TODO: Predictions will be generated statically in the future.
+        graph_by_short_name = {}
+        for country_short_name in prediction_db.get_countries():
+            report = self.report_by_short_name[country_short_name]
+            country_predictions = prediction_db.predictions_for_country(country=country_short_name)
+            country_predictions.extend(country_graph.get_fitted_predictions(report=report))
+            graph_by_short_name[country_short_name] = CountryGraph(
+                report=report, country_predictions=country_predictions
+            )
+
+        @self.app.callback(
+            Output("country-graph", component_property="figure"),
+            [Input("graph-type", "value"), Input("country-short-name", "value")],
+        )
+        def update_graph(graph_type_str, country_short_name):
+            graph_type = GraphType[graph_type_str]
+            figure = graph_by_short_name[country_short_name].create_country_figure(graph_type)
             return figure
 
     def _create_all_countries_callbacks(self):

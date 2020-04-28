@@ -176,7 +176,7 @@ class CountryGraph:
         return self.figure
 
 
-def _get_fitted_predictions(report: CountryReport) -> List[CountryPrediction]:
+def get_fitted_predictions(report: CountryReport) -> List[CountryPrediction]:
     return [
         CountryPrediction(
             prediction_event=PredictionEvent(
@@ -185,7 +185,7 @@ def _get_fitted_predictions(report: CountryReport) -> List[CountryPrediction]:
             country=report.short_name,
             formula=FittedFormula(until_date=until_date),
         )
-        for until_date in [report.dates[-13], report.dates[-7], report.dates[-1]]
+        for until_date in [report.dates[-1]]
     ]
 
 
@@ -199,6 +199,6 @@ def _get_fitted_predictions(report: CountryReport) -> List[CountryPrediction]:
 def show_country_plot(data_dir: Path, country_name: str):
     country_predictions = prediction_db.predictions_for_country(country=country_name)
     country_report = create_report(data_dir / f"{country_name}.data", short_name=country_name)
-    country_predictions.extend(_get_fitted_predictions(report=country_report))
+    country_predictions.extend(get_fitted_predictions(report=country_report))
     country_graph = CountryGraph(report=country_report, country_predictions=country_predictions)
     country_graph.create_country_figure().show()

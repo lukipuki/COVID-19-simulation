@@ -96,6 +96,9 @@ def _create_prediction_apps(data_dir: Path, server: Flask):
     single_prediction_app = CountryDashboard(
         DashboardType.SingleCountry, data_dir=data_dir, server=server
     ).get_app()
+    single_country_all_predictions_app = CountryDashboard(
+        DashboardType.SingleCountryAllPredictions, data_dir=data_dir, server=server
+    ).get_app()
     all_predictions_app = CountryDashboard(
         DashboardType.AllCountries, data_dir=data_dir, server=server
     ).get_app()
@@ -103,6 +106,10 @@ def _create_prediction_apps(data_dir: Path, server: Flask):
     @server.route("/covid19/predictions/single/")
     def covid19_single_predictions():
         return single_prediction_app.index()
+
+    @server.route("/covid19/predictions/daily/")
+    def covid19_single_country_all_predictions():
+        return single_country_all_predictions_app.index()
 
     @server.route("/covid19/predictions/all/")
     def covid19_all_predictions():

@@ -739,6 +739,7 @@ stats {
 }
 stats {
   positive: 13
+  recovered: 167
   date {
     day: 20
     month: 4
@@ -747,6 +748,7 @@ stats {
 }
 stats {
   positive: 22
+  recovered: 404
   date {
     day: 21
     month: 4
@@ -755,6 +757,7 @@ stats {
 }
 stats {
   positive: 7
+  recovered: 237
   date {
     day: 22
     month: 4
@@ -764,8 +767,48 @@ stats {
 stats {
   dead: 8
   positive: 10
+  recovered: 115
   date {
     day: 23
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 4
+  positive: 15
+  recovered: 89
+  date {
+    day: 24
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 17
+  recovered: 240
+  date {
+    day: 25
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 3
+  positive: 20
+  recovered: 165
+  date {
+    day: 26
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  positive: 7
+  recovered: 47
+  date {
+    day: 27
     month: 4
     year: 2020
   }

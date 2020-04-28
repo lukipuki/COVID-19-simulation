@@ -1,10 +1,10 @@
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from flask import Flask, abort, jsonify
 
 from covid_graphs.country_graph import CountryGraph
-from covid_graphs.country_report import create_report
+from covid_graphs.country_report import CountryReport, create_report
 from covid_graphs.predictions import prediction_db
 
 TITLE = "COVID-19 predictions of Boďová and Kollár"
@@ -13,8 +13,6 @@ CountryGraphsByReportName = Dict[str, List[CountryGraph]]
 
 class Rest:
     def __init__(self, data_dir: Path):
-        # vytvor strukturu pre predikcie a krajiny
-        # vytvor strukturu pre data
         self.available_predictions = Rest._create_available_predictions_by_date()
         self.country_reports = Rest._create_country_reports(data_dir)
         predictions, country_reports_active = Rest._create_predictions(self.country_reports)
@@ -22,7 +20,7 @@ class Rest:
         self.country_reports_active = country_reports_active
 
     @staticmethod
-    def _create_available_predictions_by_date():
+    def _create_available_predictions_by_date() -> Dict[str, Dict]:
         result = {}
         for x in prediction_db.get_prediction_events():
             result[x.name] = {
@@ -32,7 +30,7 @@ class Rest:
         return result
 
     @staticmethod
-    def _create_country_reports(data_dir: Path):
+    def _create_country_reports(data_dir: Path) -> Dict[str, CountryReport]:
         country_reports = {}
         for country_short_name in prediction_db.get_countries():
             if (data_dir / f"{country_short_name}.data").is_file():
@@ -44,7 +42,9 @@ class Rest:
         return country_reports
 
     @staticmethod
-    def _create_predictions(country_reports):
+    def _create_predictions(
+        country_reports: Dict[str, CountryReport]
+    ) -> Tuple[List[Dict], Dict[str, Dict]]:
         predictions = []
         country_reports_active = {}
         for country in prediction_db.get_countries():
@@ -58,19 +58,18 @@ class Rest:
                 "short_name": country_report.short_name,
                 "long_name": country_report.long_name,
             }
-            for prediction, curve in zip(country_predictions, graph.curves):
-                xs, ys = curve.generate_trace(graph.display_until)
-                idx_max = ys.argmax()
+            # Here we assume that traces and country_predictions are in the same order
+            for prediction, trace in zip(country_predictions, graph.traces):
                 predictions.append(
                     {
                         "type": "prediction",
-                        "date_list": xs,
-                        "values": ys.tolist(),
-                        "description": curve.label,
+                        "date_list": trace.xs,
+                        "values": trace.ys.tolist(),
+                        "description": trace.label,
                         "short_name": country_report.short_name,
                         "long_name": country_report.long_name,
-                        "max_value_date": xs[idx_max],
-                        "max_value": ys.max(),
+                        "max_value_date": trace.max_value_date,
+                        "max_value": trace.max_value,
                         "date_name": prediction.prediction_event.name,
                         "date": prediction.prediction_event.date,
                     }

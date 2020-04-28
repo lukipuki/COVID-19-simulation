@@ -746,3 +746,38 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 5
+  positive: 62
+  date {
+    day: 24
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 36
+  date {
+    day: 25
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  positive: 28
+  date {
+    day: 26
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 4
+  positive: 72
+  date {
+    day: 27
+    month: 4
+    year: 2020
+  }
+}

@@ -31,7 +31,7 @@ CountryGraphsByReportName = Dict[str, List[CountryGraph]]
 class CountryDashboard:
     def __init__(self, dashboard_type: DashboardType, data_dir: Path, server: Flask):
         prediction_events = prediction_db.get_prediction_events()
-        prediction_events.sort(key=lambda event: event.date, reverse=True)
+        prediction_events.sort(key=lambda event: event.last_data_date, reverse=True)
         self.prediction_event_by_name = {
             prediction_event.name: prediction_event for prediction_event in prediction_events
         }
@@ -103,7 +103,7 @@ class CountryDashboard:
                 dcc.Dropdown(
                     id="prediction-event",
                     options=[
-                        dict(label=event.creation_date.strftime("%B %d"), value=event.name,)
+                        dict(label=event.prediction_date.strftime("%B %d"), value=event.name,)
                         for event in [BK_20200329, BK_20200411]
                     ],
                     value=BK_20200411.name,
@@ -188,8 +188,8 @@ class CountryDashboard:
                 dict(label=graph.long_name, value=graph.short_name)
                 for graph in self.graph_dict[prediction_event_name]
             ]
-            creation_date = self.prediction_event_by_name[prediction_event_name].creation_date
-            return options, f"{creation_date.strftime('%B %d')} predictions"
+            prediction_date = self.prediction_event_by_name[prediction_event_name].prediction_date
+            return options, f"{prediction_date.strftime('%B %d')} predictions"
 
         @self.app.callback(
             Output("country-graph", component_property="figure"),
@@ -255,7 +255,7 @@ class CountryDashboard:
         )
         def update_event(prediction_event_name):
             graphs = dash_graph_dict[prediction_event_name]
-            next_day = self.prediction_event_by_name[prediction_event_name].creation_date
+            next_day = self.prediction_event_by_name[prediction_event_name].prediction_date
             return graphs, f"{next_day.strftime('%B %d')} predictions"
 
         # TODO(lukas): only have one callback for all prediction events

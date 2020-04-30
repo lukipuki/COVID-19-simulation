@@ -24,7 +24,7 @@ class Rest:
         result = {}
         for x in prediction_db.get_prediction_events():
             result[x.name] = {
-                "label": x.date,
+                "label": x.last_data_date,
                 "countries": [p.country for p in prediction_db.predictions_for_event(x)],
             }
         return result
@@ -71,8 +71,8 @@ class Rest:
                         "max_value_date": trace.max_value_date,
                         "max_value": trace.max_value,
                         "date_name": prediction.prediction_event.name,
-                        "date": prediction.prediction_event.date,
-                        "creation_date": prediction.prediction_event.creation_date,
+                        "last_data_date": prediction.prediction_event.last_data_date,
+                        "prediction_date": prediction.prediction_event.prediction_date,
                     }
                 )
 

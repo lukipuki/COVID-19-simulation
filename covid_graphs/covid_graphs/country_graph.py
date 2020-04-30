@@ -46,8 +46,8 @@ class CountryGraph:
         self.long_name = report.long_name
 
         if len(country_predictions) >= 1:
-            self.prediction_date = max(
-                country_prediction.prediction_event.date
+            self.prediction_last_data_date = max(
+                country_prediction.prediction_event.last_data_date
                 for country_prediction in country_predictions
             )
 
@@ -135,7 +135,7 @@ class CountryGraph:
                 type="rect",
                 yref="paper",
                 x0=adjust_xlabel(self.cropped_dates[0]),
-                x1=adjust_xlabel(self.prediction_date),
+                x1=adjust_xlabel(self.prediction_last_data_date),
                 y0=0,
                 y1=1,
                 fillcolor="LightGreen",
@@ -180,14 +180,14 @@ def get_fitted_predictions(report: CountryReport) -> List[CountryPrediction]:
     return [
         CountryPrediction(
             prediction_event=PredictionEvent(
-                name=f"daily_fit_{until_date.strftime('%Y_%m_%d')}",
-                date=until_date,
-                creation_date=until_date,
+                name=f"daily_fit_{last_data_date.strftime('%Y_%m_%d')}",
+                last_data_date=last_data_date,
+                prediction_date=last_data_date,
             ),
             country=report.short_name,
-            formula=FittedFormula(until_date=until_date),
+            formula=FittedFormula(until_date=last_data_date),
         )
-        for until_date in [report.dates[-1]]
+        for last_data_date in [report.dates[-1]]
     ]
 
 

@@ -10,8 +10,8 @@ from .formula import AtgFormula, Formula
 class PredictionEvent:
     name: str
     # Data until this date (inclusive) was used for the prediction.
-    date: datetime.date
-    creation_date: datetime.date
+    last_data_date: datetime.date
+    prediction_date: datetime.date
 
 
 @dataclass
@@ -22,10 +22,14 @@ class CountryPrediction:
 
 
 BK_20200329 = PredictionEvent(
-    name="bk_20200329", date=datetime.date(2020, 3, 29), creation_date=datetime.date(2020, 3, 30)
+    name="bk_20200329",
+    last_data_date=datetime.date(2020, 3, 29),
+    prediction_date=datetime.date(2020, 3, 30),
 )
 BK_20200411 = PredictionEvent(
-    name="bk_20200411", date=datetime.date(2020, 4, 11), creation_date=datetime.date(2020, 4, 12)
+    name="bk_20200411",
+    last_data_date=datetime.date(2020, 4, 11),
+    prediction_date=datetime.date(2020, 4, 12),
 )
 
 _prediction_database = [

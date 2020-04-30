@@ -1,4 +1,3 @@
-from datetime import timedelta
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List
@@ -13,7 +12,7 @@ import covid_graphs.country_report as country_report
 from covid_graphs import country_graph
 from covid_graphs.country_graph import CountryGraph, GraphType
 from covid_graphs.country_report import CountryReport
-from covid_graphs.predictions import BK_20200329, BK_20200411, OTHER, PredictionEvent, prediction_db
+from covid_graphs.predictions import BK_20200329, BK_20200411, PredictionEvent, prediction_db
 
 
 class DashboardType(Enum):
@@ -32,7 +31,7 @@ CountryGraphsByReportName = Dict[str, List[CountryGraph]]
 class CountryDashboard:
     def __init__(self, dashboard_type: DashboardType, data_dir: Path, server: Flask):
         prediction_events = prediction_db.get_prediction_events()
-        prediction_events.sort(key=lambda event: event.date, reverse=True)
+        prediction_events.sort(key=lambda event: event.last_data_date, reverse=True)
         self.prediction_event_by_name = {
             prediction_event.name: prediction_event for prediction_event in prediction_events
         }
@@ -88,7 +87,7 @@ class CountryDashboard:
             CountryGraph(report_by_short_name[country_prediction.country], [country_prediction])
             for country_prediction in prediction_db.predictions_for_event(prediction_event)
         ]
-        country_graphs.sort(key=lambda graph: graph.short_name)
+        country_graphs.sort(key=lambda graph: graph.long_name)
         return country_graphs
 
     @staticmethod
@@ -104,12 +103,8 @@ class CountryDashboard:
                 dcc.Dropdown(
                     id="prediction-event",
                     options=[
-                        dict(
-                            label=(event.date + timedelta(days=1)).strftime("%B %d"),
-                            value=event.name,
-                        )
-                        for event in prediction_db.get_prediction_events()
-                        if event != OTHER
+                        dict(label=event.prediction_date.strftime("%B %d"), value=event.name,)
+                        for event in [BK_20200329, BK_20200411]
                     ],
                     value=BK_20200411.name,
                     style={"width": "220px", "margin": "8px 0"},
@@ -130,7 +125,9 @@ class CountryDashboard:
                     id="country-short-name",
                     options=[
                         dict(label=report.long_name, value=report.short_name)
-                        for report in report_by_short_name.values()
+                        for report in sorted(
+                            report_by_short_name.values(), key=lambda x: x.long_name
+                        )
                     ],
                     value="Italy",
                     style={"width": "220px", "margin": "8px 0"},
@@ -191,8 +188,8 @@ class CountryDashboard:
                 dict(label=graph.long_name, value=graph.short_name)
                 for graph in self.graph_dict[prediction_event_name]
             ]
-            next_day = self.prediction_event_by_name[prediction_event_name].date + timedelta(days=1)
-            return options, f"{next_day.strftime('%B %d')} predictions"
+            prediction_date = self.prediction_event_by_name[prediction_event_name].prediction_date
+            return options, f"{prediction_date.strftime('%B %d')} predictions"
 
         @self.app.callback(
             Output("country-graph", component_property="figure"),
@@ -258,7 +255,7 @@ class CountryDashboard:
         )
         def update_event(prediction_event_name):
             graphs = dash_graph_dict[prediction_event_name]
-            next_day = self.prediction_event_by_name[prediction_event_name].date + timedelta(days=1)
+            next_day = self.prediction_event_by_name[prediction_event_name].prediction_date
             return graphs, f"{next_day.strftime('%B %d')} predictions"
 
         # TODO(lukas): only have one callback for all prediction events

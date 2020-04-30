@@ -9,7 +9,9 @@ from .formula import AtgFormula, Formula
 @dataclass(frozen=True, eq=True)
 class PredictionEvent:
     name: str
-    date: datetime.date
+    # Data until this date (inclusive) was used for the prediction.
+    last_data_date: datetime.date
+    prediction_date: datetime.date
 
 
 @dataclass
@@ -19,9 +21,16 @@ class CountryPrediction:
     formula: Formula
 
 
-BK_20200329 = PredictionEvent(name="bk_20200329", date=datetime.date(2020, 3, 29))
-BK_20200411 = PredictionEvent(name="bk_20200411", date=datetime.date(2020, 4, 11))
-OTHER = PredictionEvent(name="other", date=datetime.date(2020, 4, 1))
+BK_20200329 = PredictionEvent(
+    name="bk_20200329",
+    last_data_date=datetime.date(2020, 3, 29),
+    prediction_date=datetime.date(2020, 3, 30),
+)
+BK_20200411 = PredictionEvent(
+    name="bk_20200411",
+    last_data_date=datetime.date(2020, 4, 11),
+    prediction_date=datetime.date(2020, 4, 12),
+)
 
 _prediction_database = [
     # BK_20200329

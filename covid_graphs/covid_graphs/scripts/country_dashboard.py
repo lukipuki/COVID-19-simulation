@@ -46,7 +46,7 @@ class DashboardFactory:
         ]
         self.report_by_short_name = {report.short_name: report for report in reports}
 
-        self.graph_dict = {
+        self.graphs_by_event = {
             prediction_event.name: DashboardFactory._create_graphs(
                 self.report_by_short_name, prediction_event
             )
@@ -179,7 +179,7 @@ class DashboardFactory:
         def update_event(prediction_event_name):
             options = [
                 dict(label=graph.long_name, value=graph.short_name)
-                for graph in self.graph_dict[prediction_event_name]
+                for graph in self.graphs_by_event[prediction_event_name]
             ]
             next_day = self.prediction_event_by_name[prediction_event_name].date + timedelta(days=1)
             return options, f"{next_day.strftime('%B %d')} predictions"
@@ -197,7 +197,7 @@ class DashboardFactory:
 
             graphs = [
                 country_graph
-                for country_graph in self.graph_dict[prediction_event_name]
+                for country_graph in self.graphs_by_event[prediction_event_name]
                 if country_graph.short_name == country_short_name
             ]
             if len(graphs) == 0:
@@ -234,7 +234,7 @@ class DashboardFactory:
                     figure=graph.create_country_figure(),
                     config=dict(modeBarButtons=[["toImage"]]),
                 )
-                for graph in self.graph_dict[prediction_event_name]
+                for graph in self.graphs_by_event[prediction_event_name]
             ]
             for prediction_event_name in self.prediction_event_by_name.keys()
         }
@@ -255,26 +255,26 @@ class DashboardFactory:
         @app.callback(
             [
                 Output(f"{graph.short_name}-graph-{BK_20200411.name}", component_property="figure")
-                for graph in self.graph_dict[BK_20200411.name]
+                for graph in self.graphs_by_event[BK_20200411.name]
             ],
             [Input("graph-type", "value")],
         )
         def update_country_graphs_20200411(graph_type_str):
             result = []
-            for graph in self.graph_dict[BK_20200411.name]:
+            for graph in self.graphs_by_event[BK_20200411.name]:
                 result.append(graph.update_graph_type(GraphType[graph_type_str]))
             return result
 
         @app.callback(
             [
                 Output(f"{graph.short_name}-graph-{BK_20200329.name}", component_property="figure")
-                for graph in self.graph_dict[BK_20200329.name]
+                for graph in self.graphs_by_event[BK_20200329.name]
             ],
             [Input("graph-type", "value")],
         )
         def update_country_graphs_20200329(graph_type_str):
             result = []
-            for graph in self.graph_dict[BK_20200329.name]:
+            for graph in self.graphs_by_event[BK_20200329.name]:
                 graph.update_graph_type(GraphType[graph_type_str])
                 result.append(graph.figure)
             return result

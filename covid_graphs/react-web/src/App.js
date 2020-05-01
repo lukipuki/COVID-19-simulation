@@ -62,7 +62,7 @@ class App extends Component {
     };
 
     fetchData = (what) => {
-        fetch(`/covid19/${what}`, {cache: 'no-cache'})
+        fetch(`/covid19/rest/${what}`, {cache: 'no-cache'})
             .then((response) => {
                 if (response.ok) {
                     return response.json();
@@ -81,7 +81,7 @@ class App extends Component {
     };
 
     componentDidMount() {
-        fetch('/covid19/predictions/list/', {cache: 'no-cache'})
+        fetch('/covid19/rest/predictions/list/', {cache: 'no-cache'})
             .then((response) => {
                 if (response.ok) {
                     return response.json();

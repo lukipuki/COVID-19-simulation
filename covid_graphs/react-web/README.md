@@ -22,13 +22,8 @@ docker-compose up --build # Optionally add -d for deamon
 ```
 You can then access the server locally at [localhost:8081](http://127.0.0.1:8081/covid19/graphs/).
 
-### Running without docker
-1. build the app
-1. start backend app. See [README](../README.md). Add `-w <path_to_build>` when running backend.
-1. new web should be available under http://localhost:8081/covid19/graphs/
-
 Application expects that after deployment, following paths will be answered by backend.
-* `/covid19/data/*`
-* `/covid19/predictions/list/`
-* `/covid19/predictions/data/*`
+* `/covid19/rest/data/*`
+* `/covid19/rest/predictions/list/`
+* `/covid19/rest/predictions/data/*`
 

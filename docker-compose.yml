@@ -15,6 +15,6 @@ services:
     volumes:
       - "./data:/covid19/data:ro"
     environment:
-      - DATA_PATH="/covid19/data/"
+      DATA_PATH: "/covid19/data/"
     restart: always
     command: "uwsgi --socket 0.0.0.0:5000 -M --die-on-term -w covid_graphs.wsgi:app"

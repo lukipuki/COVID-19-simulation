@@ -17,7 +17,7 @@ services:
     environment:
       DATA_PATH: "/covid19/data/"
     restart: always
-    command: "uwsgi --socket 0.0.0.0:5000 -M --die-on-term -w covid_graphs.wsgi:app"
+    command: "uwsgi --socket 0.0.0.0:5000 -M --die-on-term -w covid_graphs.wsgi:app --uid www-data --gid www-data"
 
 volumes:
   react-web:

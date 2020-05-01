@@ -9,15 +9,15 @@ services:
     ports:
       - 127.0.0.1:8081:80
     restart: always
-  dash_server:
-    build: covid_graphs/
-    image: covid19_predictions
+  flask_server:
+    build: .
+    image: flask_server
     volumes:
       - "./data:/covid19/data:ro"
     environment:
       DATA_PATH: "/covid19/data/"
     restart: always
-    command: "uwsgi --socket 0.0.0.0:5000 -M --die-on-term -w covid_graphs.wsgi:app --uid www-data --gid www-data"
+    command: "uwsgi --uid www-data --gid www-data --socket 0.0.0.0:5000 -M --die-on-term -w covid_web.wsgi:app"
 
 volumes:
   react-web:

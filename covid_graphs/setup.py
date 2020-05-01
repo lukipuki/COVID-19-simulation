@@ -32,5 +32,4 @@ setup(
             "covid_graphs.prepare_data = covid_graphs.prepare_data:main",
         ]
     },
-    package_data={"": ["*.html"]},
 )

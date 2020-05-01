@@ -11,3 +11,4 @@ RUN pip3 install /covid19_graphs && rm -rf /covid19_graphs
 
 COPY web /covid19_web
 RUN pip3 install /covid19_web && rm -rf /covid19_web
+RUN pip3 install uwsgi

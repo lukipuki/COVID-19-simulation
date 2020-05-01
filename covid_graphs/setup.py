@@ -17,8 +17,7 @@ setup(
         "protobuf",
         "plotly",
         "pytest",
-        "scipy",
-        "uwsgi"
+        "scipy"
     ],
     dependency_links=[],
     python_requires=">=3.7",

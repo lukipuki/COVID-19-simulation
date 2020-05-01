@@ -1,13 +1,20 @@
 version: "2.2"
 
 services:
+  nginx:
+    image: nginx:stable-alpine
+    volumes:
+      - "react-web:/app/covid19/graphs/"
+      - "covid_graphs/nginx/nginx.conf:/etc/nginx/nginx.conf:ro"
+    ports:
+      - 127.0.0.1:8081:80
+    restart: always
   dash_server:
     build: covid_graphs/
     image: covid19_predictions
     volumes:
       - "./data:/covid19/data:ro"
-    working_dir: "/covid19"
-    ports:
-      - 127.0.0.1:8081:8081
+    environment:
+      - DATA_PATH="/covid19/data/"
     restart: always
-    command: "covid_graphs.run_server --data-dir data"
+    command: "uwsgi --socket 0.0.0.0:5000 -M --die-on-term -w covid_graphs.wsgi:app"

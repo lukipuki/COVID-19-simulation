@@ -18,6 +18,7 @@ setup(
         "plotly",
         "pytest",
         "scipy",
+        "uwsgi"
     ],
     dependency_links=[],
     python_requires=">=3.7",
@@ -31,5 +32,5 @@ setup(
             "covid_graphs.prepare_data = covid_graphs.prepare_data:main",
         ]
     },
-    package_data={"": ["*.html"]},
+    package_data={"": ["*.html", "*.ini"]},
 )

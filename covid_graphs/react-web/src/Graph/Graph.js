@@ -134,7 +134,7 @@ class Graph extends Component {
             let name = '';
             if (data.type === 'prediction') {
                 id = `legend-${data.date_name}/${data.short_name}`;
-                name = `Prediction for ${data.long_name} ${new Date(Date.parse(data.date)).toLocaleDateString()}<br/><span id="${id}" style="display: inline-block; height: 60px; visibility: hidden">$${data.description}$</span>`
+                name = `Prediction for ${data.long_name} ${new Date(Date.parse(data.prediction_date)).toLocaleDateString()}<br/><span id="${id}" style="display: inline-block; height: 60px; visibility: hidden">$${data.description}$</span>`
 
                 if (relative) {
                     predictionEnds.push(data.date_list.indexOf(data.prediction_date) + 1);

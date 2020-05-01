@@ -5,7 +5,7 @@ services:
     image: nginx:stable-alpine
     volumes:
       - "react-web:/app/covid19/graphs/"
-      - "./covid_web/nginx/nginx.conf:/etc/nginx/nginx.conf:ro"
+      - "./web/nginx/nginx.conf:/etc/nginx/nginx.conf:ro"
     ports:
       - 127.0.0.1:8081:80
     restart: always

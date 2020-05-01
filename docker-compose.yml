@@ -5,7 +5,7 @@ services:
     image: nginx:stable-alpine
     volumes:
       - "react-web:/app/covid19/graphs/"
-      - "covid_graphs/nginx/nginx.conf:/etc/nginx/nginx.conf:ro"
+      - "./covid_graphs/nginx/nginx.conf:/etc/nginx/nginx.conf:ro"
     ports:
       - 127.0.0.1:8081:80
     restart: always
@@ -18,3 +18,6 @@ services:
       DATA_PATH: "/covid19/data/"
     restart: always
     command: "uwsgi --socket 0.0.0.0:5000 -M --die-on-term -w covid_graphs.wsgi:app"
+
+volumes:
+  react-web:

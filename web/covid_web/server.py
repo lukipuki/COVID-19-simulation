@@ -54,14 +54,7 @@ def run_server(data_dir: Path) -> None:
                 print("Server restarted.")
             sleep(10)
     else:
-        _run_flask_server(server=server)
-
-
-def uswgi_server(data_dir: Path) -> Flask:
-    server = Flask(__name__, template_folder=str(CURRENT_DIR))
-    _setup_server(server, data_dir)
-
-    return server
+        _run_flask_server(server=server, data_dir=data_dir)
 
 
 def _setup_server(server: Flask, data_dir: Path):
@@ -80,6 +73,13 @@ def _setup_server(server: Flask, data_dir: Path):
     _create_prediction_apps(server=server, data_dir=data_dir)
     _create_simulation_apps(server=server, data_dir=data_dir)
     _create_rest(server=server, data_dir=data_dir)
+
+
+def uswgi_server(data_dir: Path) -> Flask:
+    server = Flask(__name__, template_folder=str(CURRENT_DIR))
+    _setup_server(server, data_dir)
+
+    return server
 
 
 def _run_flask_server(server: Flask, data_dir: Path):

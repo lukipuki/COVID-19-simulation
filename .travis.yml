@@ -19,3 +19,15 @@ matrix:
         - pushd covid_graphs/
         - ./run_tests.sh
         - popd
+    - name: "Graphs web app"
+      language: node_js
+      node_js:
+        - "stable"
+      cache:
+        directories:
+          - node_modules
+      script:
+        - cd covid_graphs/react-web/
+        - npm install
+        - npm test
+        - npm run build

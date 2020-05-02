@@ -34,14 +34,11 @@ except AttributeError:
     help="Directory with country and simulation proto files",
 )
 def run_server(data_dir: Path) -> None:
-    """Creates and runs a flask server."""
-    server = Flask(__name__, template_folder=str(CURRENT_DIR))
-
     if platform_supports_inotify:
         i = adapters.InotifyTree(
             str(data_dir), mask=(constants.IN_MODIFY | constants.IN_DELETE | constants.IN_CREATE)
         )
-        p = Process(target=_run_flask_server, kwargs=dict(server=server, data_dir=data_dir))
+        p = Process(target=_run_flask_server, kwargs=dict(data_dir=data_dir))
         p.start()
         while True:
             events = list(i.event_gen(yield_nones=False, timeout_s=1))
@@ -49,15 +46,17 @@ def run_server(data_dir: Path) -> None:
                 print("Data changed. Restarting server...")
                 p.terminate()
                 p.join()
-                p = Process(target=_run_flask_server, kwargs=dict(server=server, data_dir=data_dir))
+                p = Process(target=_run_flask_server, kwargs=dict(data_dir=data_dir))
                 p.start()
                 print("Server restarted.")
             sleep(10)
     else:
-        _run_flask_server(server=server, data_dir=data_dir)
+        _run_flask_server(data_dir=data_dir)
 
 
-def _setup_server(server: Flask, data_dir: Path):
+def setup_server(data_dir: Path):
+    server = Flask(__name__, template_folder=str(CURRENT_DIR))
+
     @server.route("/")
     def home():
         return render_template("index.html")
@@ -74,16 +73,11 @@ def _setup_server(server: Flask, data_dir: Path):
     _create_simulation_apps(server=server, data_dir=data_dir)
     _create_rest(server=server, data_dir=data_dir)
 
-
-def uswgi_server(data_dir: Path) -> Flask:
-    server = Flask(__name__, template_folder=str(CURRENT_DIR))
-    _setup_server(server, data_dir)
-
     return server
 
 
-def _run_flask_server(server: Flask, data_dir: Path):
-    _setup_server(server, data_dir)
+def _run_flask_server(data_dir: Path):
+    server = setup_server(data_dir)
     server.run(host="0.0.0.0", port=8081)
 
 

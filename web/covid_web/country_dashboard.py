@@ -214,7 +214,7 @@ class DashboardFactory:
             if len(graphs) == 0:
                 return dash.no_update
 
-            figure = graphs[0].create_country_figure(graph_type)
+            figure = graphs[0].create_country_figure(graph_type=graph_type, show_green_zone=True)
             return figure
 
     def _create_single_country_all_predictions_callbacks(self, app: dash.Dash) -> None:
@@ -242,7 +242,7 @@ class DashboardFactory:
             prediction_event_name: [
                 dcc.Graph(
                     id=f"{graph.short_name}-graph-{prediction_event_name}",
-                    figure=graph.create_country_figure(),
+                    figure=graph.create_country_figure(show_green_zone=True),
                     config=dict(modeBarButtons=[["toImage"]]),
                 )
                 for graph in self.graphs_by_event[prediction_event_name]

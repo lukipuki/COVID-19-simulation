@@ -17,7 +17,7 @@ services:
     environment:
       DATA_PATH: "/covid19/data/"
     restart: always
-    command: "uwsgi --uid www-data --gid www-data --socket 0.0.0.0:5000 -M --die-on-term -w covid_web.wsgi:app"
+    command: "uwsgi --uid www-data --gid www-data --socket 0.0.0.0:5000 --die-on-term -w covid_web.wsgi:app"
   react-web:
     build: web/react-web/
     image: react-web

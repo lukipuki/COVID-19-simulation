@@ -14,6 +14,7 @@ from covid_graphs import country_graph
 from covid_graphs.country_graph import CountryGraph, GraphType
 from covid_graphs.country_report import CountryReport
 from covid_graphs.predictions import BK_20200329, BK_20200411, PredictionEvent, prediction_db
+from covid_graphs.prediction_generator import get_fitted_predictions
 
 
 class DashboardType(Enum):
@@ -223,7 +224,9 @@ class DashboardFactory:
         for country_short_name in prediction_db.get_countries():
             report = self.report_by_short_name[country_short_name]
             country_predictions = prediction_db.predictions_for_country(country=country_short_name)
-            country_predictions.extend(country_graph.get_fitted_predictions(report=report))
+            country_predictions.extend(
+                get_fitted_predictions(report=report, dates=[report.dates[-1], report.dates[-8]])
+            )
             graph_by_short_name[country_short_name] = CountryGraph(
                 report=report, country_predictions=country_predictions
             )

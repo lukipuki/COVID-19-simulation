@@ -6,6 +6,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
+from dash.development.base_component import Component
 from flask import Flask
 
 import covid_graphs.country_report as country_report
@@ -73,8 +74,21 @@ class DashboardFactory:
             ],
             meta_tags=[{"name": "viewport", "content": "width=750"}],
         )
-        content = _get_header_content(TITLE)
-        content += [html.Hr(), html.H1(id="graph-title")]
+
+        content = _get_header_content(title=TITLE)
+
+        if dashboard_type != DashboardType.SingleCountryAllPredictions:
+            content += [html.H1(id="graph-title")]
+        else:
+            content += [
+                html.H1(id="graph-title", children="Automated daily predictions"),
+                dcc.Markdown(
+                    f"""
+                    We display an automated prediction until yesterday and the week before. Note that the method to compute
+                    these predictions slightly differs from Boďová and Kollár due to differences in implementation details.
+                    """
+                ),
+            ]
         content += DashboardFactory._create_buttons(dashboard_type, self.report_by_short_name)
         content += extra_content
 
@@ -277,7 +291,7 @@ class DashboardFactory:
             return result
 
 
-def _get_header_content(title: str):
+def _get_header_content(title: str) -> List[Component]:
     mar30_prediction_link = (
         "https://www.facebook.com/permalink.php?story_fbid=10113020662000793&id=2247644"
     )
@@ -330,4 +344,5 @@ def _get_header_content(title: str):
                 ),
             ]
         ),
+        html.Hr(),
     ]

@@ -19,7 +19,7 @@ services:
     restart: always
     command: "uwsgi --uid www-data --gid www-data --socket 0.0.0.0:5000 -M --die-on-term -w covid_web.wsgi:app"
   react-web:
-    build: covid_graphs/react-web/
+    build: web/react-web/
     image: react-web
     volumes:
       - "react-web:/react-web"

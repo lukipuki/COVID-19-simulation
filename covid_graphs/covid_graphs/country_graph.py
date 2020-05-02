@@ -10,7 +10,7 @@ from plotly.graph_objs import Figure, Layout, Scatter
 
 from .country_report import CountryReport, create_report
 from .formula import FittedFormula, TraceGenerator
-from .predictions import CountryPrediction, PredictionEvent, prediction_db
+from .predictions import BK_20200329, BK_20200411, CountryPrediction, PredictionEvent, prediction_db
 
 EXTENSION_PERIOD = datetime.timedelta(days=7)
 
@@ -57,15 +57,19 @@ class CountryGraph:
         # 2. The trace generators are used to calculate the last date of the graph, since each trace
         #    generator stores the minimal display length of its trace.
         # 3. Once we know the date range of the graph, we can plot the formulas, creating traces.
-        trace_generators = [
-            prediction.formula.get_trace_generator(country_report=report)
+        trace_generator_by_event = {
+            prediction.prediction_event: prediction.formula.get_trace_generator(
+                country_report=report
+            )
             for prediction in country_predictions
-        ]
-        start_date, display_until = _get_display_range(report, trace_generators)
-
-        self.traces = [
-            trace_generator.generate_trace(display_until) for trace_generator in trace_generators
-        ]
+        }
+        start_date, display_until = _get_display_range(
+            report, list(trace_generator_by_event.values())
+        )
+        self.trace_by_event = {
+            event: trace_generator.generate_trace(display_until)
+            for event, trace_generator in trace_generator_by_event.items()
+        }
 
         start_date_idx = report.dates.index(start_date)
         # Crop country data to display.
@@ -76,7 +80,8 @@ class CountryGraph:
         self.date_title = "Date"
 
         max_value = max(
-            max(self.cropped_cumulative_active), max(trace.max_value for trace in self.traces)
+            max(self.cropped_cumulative_active),
+            max(trace.max_value for trace in self.trace_by_event.values()),
         )
         self.log_yrange = [
             math.log10(max(1, self.cropped_cumulative_active.min())) - 0.3,
@@ -92,18 +97,32 @@ class CountryGraph:
             else:
                 return (date - self.log_xaxis_date_since).days
 
-        colors = ["SteelBlue", "Purple", "Green", "Orange", "Gray"][: len(self.traces)]
+        # Matplotlib colors.
+        color_by_event = {
+            BK_20200329: "rgb(255, 123, 37)",
+            BK_20200411: "rgb(0, 121, 177)",
+        }
+        extra_colors = [
+            "rgba(43, 161, 59, 0.4)",
+            "rgba(43, 161, 59, 0.7)",
+            "rgba(43, 161, 59, 1.0)",
+        ]
+        for event in self.trace_by_event:
+            if event not in color_by_event:
+                color_by_event[event] = extra_colors.pop()
 
         traces, shapes = [], []
-        for color, trace in zip(colors, self.traces):
+        for event, trace in self.trace_by_event.items():
             traces.append(
                 Scatter(
                     x=list(map(adjust_xlabel, trace.xs)),
                     y=trace.ys,
                     text=trace.xs,
                     mode="lines",
-                    name=trace.label,
-                    line={"width": 2, "color": color},
+                    name=trace.label.replace(
+                        "%PREDICTION_DATE%", event.prediction_date.strftime("%b %d")
+                    ),
+                    line={"width": 2, "color": color_by_event[event]},
                 )
             )
             # Add vertical dotted line marking the maximum
@@ -114,7 +133,7 @@ class CountryGraph:
                     y0=1,
                     x1=adjust_xlabel(trace.max_value_date),
                     y1=trace.max_value,
-                    line=dict(width=2, dash="dash", color=color),
+                    line=dict(width=2, dash="dash", color=color_by_event[event]),
                 )
             )
 
@@ -187,7 +206,7 @@ def get_fitted_predictions(report: CountryReport) -> List[CountryPrediction]:
             country=report.short_name,
             formula=FittedFormula(until_date=last_data_date),
         )
-        for last_data_date in [report.dates[-1]]
+        for last_data_date in [report.dates[-1], report.dates[-7]]
     ]
 
 

@@ -16,6 +16,8 @@ class Trace:
     ys: np.ndarray
     max_value_date: datetime.date
     max_value: float
+
+    # The label uses a placeholder %PREDICTION_DATE%.
     label: str
 
 
@@ -70,16 +72,8 @@ class PolynomialFormula(Formula):
         )
 
 
-def _create_atg_label(a: float, tg: float, exponent: float, prefix=""):
-    label = (
-        r"$\textrm{_prefix}\frac{_A}{_TG} \cdot \left(\frac{t}{_TG}\right)^{_expon} / e^{t/_TG}$"
-    )
-    return (
-        label.replace("_A", f"{a:.0f}")
-        .replace("_TG", f"{tg:.2f}")
-        .replace("_expon", f"{exponent:.2f}")
-        .replace("_prefix", prefix)
-    )
+def _create_atg_label(prefix: str, tg: float, alpha: float) -> str:
+    return f"{prefix} %PREDICTION_DATE% (α={alpha:.2f}, T<sub>G</sub>={tg:.2f})"
 
 
 @dataclass
@@ -90,7 +84,7 @@ class AtgFormula(Formula):
     min_case_count: int
 
     def get_trace_generator(self, country_report: CountryReport) -> TraceGenerator:
-        label = _create_atg_label(self.a, self.tg, self.exponent)
+        label = _create_atg_label(prefix="Boďová and Kollár", tg=self.tg, alpha=self.exponent)
 
         # Display values from the first day for which the number of cumulative active is
         # at least min_case_count. This day is also "day one".
@@ -126,8 +120,7 @@ class FittedFormula(Formula):
         fit = fit_atg_model.fit_atg_model(
             xs=xs, ys=country_report.cumulative_active[: until_idx + 1],
         )
-        prefix = f"{self.until_date.strftime('%b %d')}: "
-        label = _create_atg_label(fit.a, fit.tg, fit.exp, prefix=prefix)
+        label = _create_atg_label("Daily prediction", tg=fit.tg, alpha=fit.exp)
 
         # Counterintuitively, `date` + `timedelta` results in `date`.
         whole_day_offset = np.floor(fit.t0)

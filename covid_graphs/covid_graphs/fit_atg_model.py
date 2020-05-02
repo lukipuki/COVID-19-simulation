@@ -16,6 +16,7 @@ class AtgModelFit:
         ys = _model(params=[self.a, self.tg, self.exp, self.t0], xs=np.array([x]))
         return ys[0]
 
+    # TODO: simplify the usage of this class so that we don't have to do this
     def shift_forward(self, day_count: int) -> None:
         self.t0 -= day_count
 

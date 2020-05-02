@@ -18,7 +18,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=b'\n\x14\x61tg_prediction.proto\"\xc9\x01\n\rAtgParameters\x12+\n\x0elast_data_date\x18\x01 \x01(\x0b\x32\x13.AtgParameters.Date\x12\r\n\x05\x61lpha\x18\x05 \x01(\x01\x12\n\n\x02tg\x18\x06 \x01(\x01\x12\t\n\x01\x61\x18\x07 \x01(\x01\x12\n\n\x02t0\x18\x08 \x01(\x01\x12\'\n\nstart_date\x18\t \x01(\x0b\x32\x13.AtgParameters.Date\x1a\x30\n\x04\x44\x61te\x12\x0b\n\x03\x64\x61y\x18\x01 \x01(\r\x12\r\n\x05month\x18\x02 \x01(\r\x12\x0c\n\x04year\x18\x03 \x01(\r\"q\n\x14\x43ountryAtgParameters\x12\"\n\nparameters\x18\x01 \x03(\x0b\x32\x0e.AtgParameters\x12\x1a\n\x12short_country_name\x18\x02 \x01(\t\x12\x19\n\x11long_country_name\x18\x03 \x01(\tb\x06proto3'
+  serialized_pb=b'\n\x14\x61tg_prediction.proto\"\xcd\x01\n\rAtgParameters\x12+\n\x0elast_data_date\x18\x01 \x01(\x0b\x32\x13.AtgParameters.Date\x12\r\n\x05\x61lpha\x18\x05 \x01(\x01\x12\n\n\x02tg\x18\x06 \x01(\x01\x12\t\n\x01\x61\x18\x07 \x01(\x01\x12\'\n\nstart_date\x18\t \x01(\x0b\x32\x13.AtgParameters.Date\x12\x0e\n\x06offset\x18\x08 \x01(\x01\x1a\x30\n\x04\x44\x61te\x12\x0b\n\x03\x64\x61y\x18\x01 \x01(\r\x12\r\n\x05month\x18\x02 \x01(\r\x12\x0c\n\x04year\x18\x03 \x01(\r\"q\n\x14\x43ountryAtgParameters\x12\"\n\nparameters\x18\x01 \x03(\x0b\x32\x0e.AtgParameters\x12\x1a\n\x12short_country_name\x18\x02 \x01(\t\x12\x19\n\x11long_country_name\x18\x03 \x01(\tb\x06proto3'
 )
 
 
@@ -64,8 +64,8 @@ _ATGPARAMETERS_DATE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=178,
-  serialized_end=226,
+  serialized_start=182,
+  serialized_end=230,
 )
 
 _ATGPARAMETERS = _descriptor.Descriptor(
@@ -104,16 +104,16 @@ _ATGPARAMETERS = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='t0', full_name='AtgParameters.t0', index=4,
-      number=8, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
+      name='start_date', full_name='AtgParameters.start_date', index=4,
+      number=9, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='start_date', full_name='AtgParameters.start_date', index=5,
-      number=9, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
+      name='offset', full_name='AtgParameters.offset', index=5,
+      number=8, type=1, cpp_type=5, label=1,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
@@ -130,7 +130,7 @@ _ATGPARAMETERS = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=25,
-  serialized_end=226,
+  serialized_end=230,
 )
 
 
@@ -174,8 +174,8 @@ _COUNTRYATGPARAMETERS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=228,
-  serialized_end=341,
+  serialized_start=232,
+  serialized_end=345,
 )
 
 _ATGPARAMETERS_DATE.containing_type = _ATGPARAMETERS

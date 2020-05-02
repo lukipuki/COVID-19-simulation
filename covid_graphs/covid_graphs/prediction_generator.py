@@ -28,6 +28,7 @@ def get_fitted_predictions(
             formula=FittedFormula(until_date=last_data_date, country_report=report),
         )
         for last_data_date in dates
+        if last_data_date in report.dates
     )
 
 
@@ -56,6 +57,7 @@ def generate_predictions(data_dir: Path, short_country_name: str, output_dir: Pa
     arg_parameters.short_country_name = short_country_name
     arg_parameters.long_country_name = country_report.long_name
     for last_data_date, formula in fitted_formulas.items():
+        # TODO(lukas): create a serialization function inside the trace generator
         parameters = AtgParameters()
         parameters.last_data_date.year = last_data_date.year
         parameters.last_data_date.month = last_data_date.month
@@ -64,7 +66,7 @@ def generate_predictions(data_dir: Path, short_country_name: str, output_dir: Pa
         trace_generator = formula.get_trace_generator(country_report)
         parameters.alpha = formula.fit.exp
         parameters.tg = formula.fit.tg
-        parameters.t0 = formula.fit.t0
+        parameters.offset = formula.fit.t0
         parameters.a = formula.fit.a
         parameters.start_date.year = trace_generator.start_date.year
         parameters.start_date.month = trace_generator.start_date.month

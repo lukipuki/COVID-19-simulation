@@ -58,7 +58,7 @@ class CountryGraph:
         #    generator stores the minimal display length of its trace.
         # 3. Once we know the date range of the graph, we can plot the formulas, creating traces.
         trace_generators = [
-            prediction.formula.get_trace_generator(country_report=report)
+            prediction.formula.get_trace_generator(country_report=report, prediction_date=prediction.prediction_event.prediction_date)
             for prediction in country_predictions
         ]
         start_date, display_until = _get_display_range(report, trace_generators)
@@ -187,7 +187,7 @@ def get_fitted_predictions(report: CountryReport) -> List[CountryPrediction]:
             country=report.short_name,
             formula=FittedFormula(until_date=last_data_date),
         )
-        for last_data_date in [report.dates[-1]]
+        for last_data_date in [report.dates[-1], report.dates[-7]]
     ]
 
 

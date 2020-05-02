@@ -9,7 +9,7 @@ import click_pathlib
 from plotly.graph_objs import Figure, Layout, Scatter
 
 from .country_report import CountryReport, create_report
-from .formula import FittedFormula, TraceGenerator
+from .formula import FittedFormula,BootstrappedFittedFormula, TraceGenerator
 from .predictions import CountryPrediction, PredictionEvent, prediction_db
 
 EXTENSION_PERIOD = datetime.timedelta(days=7)
@@ -183,22 +183,28 @@ def get_fitted_predictions(report: CountryReport) -> List[CountryPrediction]:
                 name=f"daily_fit_{until_date.strftime('%Y_%m_%d')}", date=until_date
             ),
             country=report.short_name,
-            formula=FittedFormula(until_date=until_date),
+            formula=BootstrappedFittedFormula(until_date=until_date),
+
         )
-        for until_date in [report.dates[-1]]
+
+        for until_date in [report.dates[-17]] 
     ]
 
 
-@click.command(help="COVID-19 country growth visualization")
-@click.argument(
-    "data_dir", required=True, type=click_pathlib.Path(exists=True),
-)
-@click.argument(
-    "country_name", required=True, type=str,
-)
+
+
+#@click.command(help="COVID-19 country growth visualization")
+#@click.argument(
+#    "data_dir", required=True, type=click_pathlib.Path(exists=True),
+#)
+#@click.argument(
+#    "country_name", required=True, type=str,
+#)
 def show_country_plot(data_dir: Path, country_name: str):
     country_predictions = prediction_db.predictions_for_country(country=country_name)
     country_report = create_report(data_dir / f"{country_name}.data", short_name=country_name)
     country_predictions.extend(get_fitted_predictions(report=country_report))
     country_graph = CountryGraph(report=country_report, country_predictions=country_predictions)
     country_graph.create_country_figure().show()
+
+show_country_plot(Path("../data"),"USA")

@@ -27,9 +27,11 @@ def fit_atg_model(xs: np.ndarray, ys: np.ndarray) -> AtgModelFit:
     tg_init = 7.0
     exp_init = 6.23
     t0_init = xs[0]
+    
     least_squares_result = least_squares(
         fun=_residuals,
         x0=[a_init, tg_init, exp_init, t0_init],
+        #bounds=([10000.0, 0.0, 0.0, xs[0]], [np.inf, 21.0, 15,np.inf ]),
         bounds=([0.0, 0.0, 0.0, xs[0]], np.inf),
         args=(xs, ys),
     )
@@ -46,7 +48,36 @@ def _residuals(params: List[float], xs: np.ndarray, ys: np.ndarray) -> float:
     with high values. However, it seems this method gives closest results to those of Bodova & Kollar.
     """
     return _model(params=params, xs=xs) - ys
+def fit_log_atg_model(xs: np.ndarray, ys: np.ndarray) -> AtgModelFit:
+    """
+    Fits atg model through `(xs, ys)` datapoints.
+    """
+    assert len(xs) == len(ys), "Inconsistent number of datapoints to fit."
+    assert np.all(ys >= 0), "No support for negative values for `ys`."
+    a_init = 2000.0
+    tg_init = 7.0
+    exp_init = 6.23
+    t0_init = xs[0]
+    least_squares_result = least_squares(
+        fun=_residuals,
+        x0=[a_init, tg_init, exp_init, t0_init],
+        #bounds=([10000.0, 0.0, 0.0, xs[0]], [np.inf, 21.0, 15,np.inf ]),
+        bounds=([0.0, 0.0, 0.0, xs[0]], np.inf),
+        args=(xs, ys),
+    )
+    a, tg, exp, t0 = least_squares_result.x
+    return AtgModelFit(a=a, tg=tg, exp=exp, t0=t0)
 
+
+def _log_residuals(params: List[float], xs: np.ndarray, ys: np.ndarray) -> float:
+    """
+    Returns the residual ("error") of model fitting with parameter values `params`
+    to the datapoints (xs, ys).
+
+    Note: The error terms could be computed in logspace so that they are not dominated by datapoints
+    with high values. However, it seems this method gives closest results to those of Bodova & Kollar.
+    """
+    return np.log(1 + _model(params=params, xs=xs)) - np.log(1 + ys)
 
 def _model(params: List[float], xs: np.ndarray) -> np.ndarray:
     """
@@ -59,3 +90,5 @@ def _model(params: List[float], xs: np.ndarray) -> np.ndarray:
     a, tg, exp, t0 = params
     x_prime = np.maximum(0.0, (xs - t0)) / tg
     return (a / tg) * x_prime ** exp * np.exp(-x_prime)
+
+

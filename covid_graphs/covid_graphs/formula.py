@@ -2,7 +2,7 @@ import datetime
 import math
 from abc import abstractmethod
 from dataclasses import dataclass
-from typing import Callable, List
+from typing import Callable, List, Any
 
 import numpy as np
 
@@ -116,16 +116,19 @@ class AtgFormula(Formula):
 class FittedFormula(Formula):
     # Date until which to consider data. Inclusive.
     until_date: datetime.date
-
+    use_log = False
+    
     def get_trace_generator(self, country_report: CountryReport) -> TraceGenerator:
         until_idx = country_report.dates.index(self.until_date)
 
         # The choice of date zero is in theory arbitrary.
         date_zero = country_report.dates[0]
         xs = [(date - date_zero).days for date in country_report.dates[: until_idx + 1]]
-        fit = fit_atg_model.fit_atg_model(
+
+        fit = (fit_atg_model.fit_atg_model if not self.use_log else fit_atg_model.fit_log_atg_model )(
             xs=xs, ys=country_report.cumulative_active[: until_idx + 1],
         )
+        self.fit= fit
         prefix = f"{self.until_date.strftime('%b %d')}: "
         label = _create_atg_label(fit.a, fit.tg, fit.exp, prefix=prefix)
 
@@ -143,6 +146,59 @@ class FittedFormula(Formula):
             label=label,
         )
 
+@dataclass
+class BootstrappedFittedFormula(Formula):
+    # Date until which to consider data. Inclusive.
+    until_date: datetime.date
+    #use_log = False
+    samples:Any=50
+    p_drop:Any=1/3
+    
+    def get_trace_generator(self, country_report: CountryReport) -> TraceGenerator:
+        until_idx = country_report.dates.index(self.until_date)
+
+        # The choice of date zero is in theory arbitrary.
+        date_zero = country_report.dates[0]
+        xs = [(date - date_zero).days for date in country_report.dates[: until_idx + 1]]
+
+        fits= []
+        for _ in range(self.samples):
+            
+            indices=np.random.rand(len(xs))>self.p_drop
+            xs_prime=np.array(xs)[indices]
+            ys_prime= np.array(country_report.cumulative_active[: until_idx + 1])[indices]            
+            fit=fit_atg_model.fit_atg_model( xs=xs_prime, ys=ys_prime  ) 
+            #print(_, fit)
+            fits.append(fit)
+
+        self.fit= fits
+        
+        prefix = f"{self.until_date.strftime('%b %d')}: "
+        label = _create_atg_label(fits[0].a, fits[0].tg, fits[0].exp, prefix=prefix)
+
+        # Counterintuitively, `date` + `timedelta` results in `date`.
+        whole_day_offsets = [np.floor(fit.t0) for fit in fits]
+        start_date =  date_zero + datetime.timedelta(days=min(whole_day_offsets)) 
+        display_at_least_until = max([ 
+            _get_display_at_least_until(
+                tg=fit.tg, 
+                exp=fit.exp, 
+                start_date=start_date,
+            ) for fit in fits])
+        print(display_at_least_until)
+        def predict(x):
+             
+            agg =sum( [fit.predict(x + whole_day_offset)  
+                    for fit,whole_day_offset in zip(fits, whole_day_offsets) ] )
+            return agg/len(fits)
+
+
+        return TraceGenerator(
+            func=predict,
+            start_date=start_date,
+            display_at_least_until=display_at_least_until,
+            label=label,
+        )
 
 def _get_display_at_least_until(tg: float, exp: float, start_date: datetime.date) -> datetime.date:
     # Display values until the second inflection point.

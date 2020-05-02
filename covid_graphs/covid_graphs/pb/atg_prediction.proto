@@ -18,4 +18,6 @@ message AtgTraceGenerator {
 
 message AtgTraceGenerators {
   repeated AtgTraceGenerator generators = 1;
+  string short_country_name = 2;
+  string long_country_name = 3;
 }

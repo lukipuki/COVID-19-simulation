@@ -18,7 +18,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=b'\n\x14\x61tg_prediction.proto\"0\n\x04\x44\x61te\x12\x0b\n\x03\x64\x61y\x18\x01 \x01(\r\x12\r\n\x05month\x18\x02 \x01(\r\x12\x0c\n\x04year\x18\x03 \x01(\r\"\x7f\n\x11\x41tgTraceGenerator\x12\x1d\n\x0elast_data_date\x18\x01 \x01(\x0b\x32\x05.Date\x12\r\n\x05\x61lpha\x18\x05 \x01(\x01\x12\n\n\x02tg\x18\x06 \x01(\x01\x12\t\n\x01\x61\x18\x07 \x01(\x01\x12\n\n\x02t0\x18\x08 \x01(\x01\x12\x19\n\nstart_date\x18\t \x01(\x0b\x32\x05.Date\"<\n\x12\x41tgTraceGenerators\x12&\n\ngenerators\x18\x01 \x03(\x0b\x32\x12.AtgTraceGeneratorb\x06proto3'
+  serialized_pb=b'\n\x14\x61tg_prediction.proto\"0\n\x04\x44\x61te\x12\x0b\n\x03\x64\x61y\x18\x01 \x01(\r\x12\r\n\x05month\x18\x02 \x01(\r\x12\x0c\n\x04year\x18\x03 \x01(\r\"\x7f\n\x11\x41tgTraceGenerator\x12\x1d\n\x0elast_data_date\x18\x01 \x01(\x0b\x32\x05.Date\x12\r\n\x05\x61lpha\x18\x05 \x01(\x01\x12\n\n\x02tg\x18\x06 \x01(\x01\x12\t\n\x01\x61\x18\x07 \x01(\x01\x12\n\n\x02t0\x18\x08 \x01(\x01\x12\x19\n\nstart_date\x18\t \x01(\x0b\x32\x05.Date\"s\n\x12\x41tgTraceGenerators\x12&\n\ngenerators\x18\x01 \x03(\x0b\x32\x12.AtgTraceGenerator\x12\x1a\n\x12short_country_name\x18\x02 \x01(\t\x12\x19\n\x11long_country_name\x18\x03 \x01(\tb\x06proto3'
 )
 
 
@@ -149,6 +149,20 @@ _ATGTRACEGENERATORS = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='short_country_name', full_name='AtgTraceGenerators.short_country_name', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='long_country_name', full_name='AtgTraceGenerators.long_country_name', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -162,7 +176,7 @@ _ATGTRACEGENERATORS = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=203,
-  serialized_end=263,
+  serialized_end=318,
 )
 
 _ATGTRACEGENERATOR.fields_by_name['last_data_date'].message_type = _DATE

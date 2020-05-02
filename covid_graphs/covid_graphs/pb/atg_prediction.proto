@@ -1,12 +1,12 @@
 syntax = "proto3";
 
-message Date {
-  uint32 day = 1;
-  uint32 month = 2;
-  uint32 year = 3;
-}
+message AtgParameters {
+  message Date {
+    uint32 day = 1;
+    uint32 month = 2;
+    uint32 year = 3;
+  }
 
-message AtgTraceGenerator {
   Date last_data_date = 1;
 
   double alpha = 5;
@@ -16,8 +16,8 @@ message AtgTraceGenerator {
   Date start_date = 9;
 }
 
-message AtgTraceGenerators {
-  repeated AtgTraceGenerator generators = 1;
+message CountryAtgParameters {
+  repeated AtgParameters parameters = 1;
   string short_country_name = 2;
   string long_country_name = 3;
 }

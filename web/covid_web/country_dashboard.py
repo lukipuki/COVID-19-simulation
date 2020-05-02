@@ -10,7 +10,6 @@ from dash.development.base_component import Component
 from flask import Flask
 
 import covid_graphs.country_report as country_report
-from covid_graphs import country_graph
 from covid_graphs.country_graph import CountryGraph, GraphType
 from covid_graphs.country_report import CountryReport
 from covid_graphs.predictions import BK_20200329, BK_20200411, PredictionEvent, prediction_db

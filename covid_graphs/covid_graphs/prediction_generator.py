@@ -8,7 +8,7 @@ from google.protobuf import text_format  # type: ignore
 
 from .country_report import CountryReport, create_report
 from .formula import FittedFormula
-from .pb.atg_prediction_pb2 import AtgTraceGenerator, AtgTraceGenerators
+from .pb.atg_prediction_pb2 import AtgParameters, CountryAtgParameters
 from .predictions import CountryPrediction, PredictionEvent
 
 PREDICTION_DAYS = 21
@@ -39,37 +39,38 @@ def get_fitted_predictions(
     "short_country_name", required=True, type=str,
 )
 @click.argument(
-    "prediction_dir", required=True, type=click_pathlib.Path(exists=True),
+    "output_dir", required=True, type=click_pathlib.Path(),
 )
-def store_predictions(data_dir: Path, short_country_name: str, prediction_dir: Path) -> None:
+def generate_predictions(data_dir: Path, short_country_name: str, output_dir: Path) -> None:
+    output_dir.mkdir(parents=True, exist_ok=True)
     country_report = create_report(
         data_dir / f"{short_country_name}.data", short_name=short_country_name
     )
     last_date_dates = country_report.dates[-PREDICTION_DAYS:]
-    fitted_formulas = list(
-        FittedFormula(until_date=last_data_date, country_report=country_report)
+    fitted_formulas = {
+        last_data_date: FittedFormula(until_date=last_data_date, country_report=country_report)
         for last_data_date in last_date_dates
-    )
+    }
 
-    trace_generators = AtgTraceGenerators()
-    trace_generators.short_country_name = short_country_name
-    trace_generators.long_country_name = country_report.long_name
-    for last_date_date, formula in zip(last_date_dates, fitted_formulas):
-        generator = AtgTraceGenerator()
-        generator.last_data_date.year = last_date_date.year
-        generator.last_data_date.month = last_date_date.month
-        generator.last_data_date.day = last_date_date.day
+    arg_parameters = CountryAtgParameters()
+    arg_parameters.short_country_name = short_country_name
+    arg_parameters.long_country_name = country_report.long_name
+    for last_data_date, formula in fitted_formulas.items():
+        parameters = AtgParameters()
+        parameters.last_data_date.year = last_data_date.year
+        parameters.last_data_date.month = last_data_date.month
+        parameters.last_data_date.day = last_data_date.day
 
         trace_generator = formula.get_trace_generator(country_report)
-        generator.alpha = formula.fit.exp
-        generator.tg = formula.fit.tg
-        generator.t0 = formula.fit.t0
-        generator.a = formula.fit.a
-        generator.start_date.year = trace_generator.start_date.year
-        generator.start_date.month = trace_generator.start_date.month
-        generator.start_date.day = trace_generator.start_date.day
+        parameters.alpha = formula.fit.exp
+        parameters.tg = formula.fit.tg
+        parameters.t0 = formula.fit.t0
+        parameters.a = formula.fit.a
+        parameters.start_date.year = trace_generator.start_date.year
+        parameters.start_date.month = trace_generator.start_date.month
+        parameters.start_date.day = trace_generator.start_date.day
 
-        trace_generators.generators.append(generator)
+        arg_parameters.parameters.append(parameters)
 
-    with open(prediction_dir / f"{short_country_name}.atg", "w") as output:
-        output.write(text_format.MessageToString(trace_generators))
+    with open(output_dir / f"{short_country_name}.atg", "w") as output:
+        output.write(text_format.MessageToString(arg_parameters))

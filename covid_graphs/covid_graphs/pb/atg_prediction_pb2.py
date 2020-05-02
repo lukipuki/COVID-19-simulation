@@ -18,35 +18,35 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=b'\n\x14\x61tg_prediction.proto\"0\n\x04\x44\x61te\x12\x0b\n\x03\x64\x61y\x18\x01 \x01(\r\x12\r\n\x05month\x18\x02 \x01(\r\x12\x0c\n\x04year\x18\x03 \x01(\r\"\x7f\n\x11\x41tgTraceGenerator\x12\x1d\n\x0elast_data_date\x18\x01 \x01(\x0b\x32\x05.Date\x12\r\n\x05\x61lpha\x18\x05 \x01(\x01\x12\n\n\x02tg\x18\x06 \x01(\x01\x12\t\n\x01\x61\x18\x07 \x01(\x01\x12\n\n\x02t0\x18\x08 \x01(\x01\x12\x19\n\nstart_date\x18\t \x01(\x0b\x32\x05.Date\"s\n\x12\x41tgTraceGenerators\x12&\n\ngenerators\x18\x01 \x03(\x0b\x32\x12.AtgTraceGenerator\x12\x1a\n\x12short_country_name\x18\x02 \x01(\t\x12\x19\n\x11long_country_name\x18\x03 \x01(\tb\x06proto3'
+  serialized_pb=b'\n\x14\x61tg_prediction.proto\"\xc9\x01\n\rAtgParameters\x12+\n\x0elast_data_date\x18\x01 \x01(\x0b\x32\x13.AtgParameters.Date\x12\r\n\x05\x61lpha\x18\x05 \x01(\x01\x12\n\n\x02tg\x18\x06 \x01(\x01\x12\t\n\x01\x61\x18\x07 \x01(\x01\x12\n\n\x02t0\x18\x08 \x01(\x01\x12\'\n\nstart_date\x18\t \x01(\x0b\x32\x13.AtgParameters.Date\x1a\x30\n\x04\x44\x61te\x12\x0b\n\x03\x64\x61y\x18\x01 \x01(\r\x12\r\n\x05month\x18\x02 \x01(\r\x12\x0c\n\x04year\x18\x03 \x01(\r\"q\n\x14\x43ountryAtgParameters\x12\"\n\nparameters\x18\x01 \x03(\x0b\x32\x0e.AtgParameters\x12\x1a\n\x12short_country_name\x18\x02 \x01(\t\x12\x19\n\x11long_country_name\x18\x03 \x01(\tb\x06proto3'
 )
 
 
 
 
-_DATE = _descriptor.Descriptor(
+_ATGPARAMETERS_DATE = _descriptor.Descriptor(
   name='Date',
-  full_name='Date',
+  full_name='AtgParameters.Date',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='day', full_name='Date.day', index=0,
+      name='day', full_name='AtgParameters.Date.day', index=0,
       number=1, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='month', full_name='Date.month', index=1,
+      name='month', full_name='AtgParameters.Date.month', index=1,
       number=2, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='year', full_name='Date.year', index=2,
+      name='year', full_name='AtgParameters.Date.year', index=2,
       number=3, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -64,55 +64,54 @@ _DATE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=24,
-  serialized_end=72,
+  serialized_start=178,
+  serialized_end=226,
 )
 
-
-_ATGTRACEGENERATOR = _descriptor.Descriptor(
-  name='AtgTraceGenerator',
-  full_name='AtgTraceGenerator',
+_ATGPARAMETERS = _descriptor.Descriptor(
+  name='AtgParameters',
+  full_name='AtgParameters',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='last_data_date', full_name='AtgTraceGenerator.last_data_date', index=0,
+      name='last_data_date', full_name='AtgParameters.last_data_date', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='alpha', full_name='AtgTraceGenerator.alpha', index=1,
+      name='alpha', full_name='AtgParameters.alpha', index=1,
       number=5, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='tg', full_name='AtgTraceGenerator.tg', index=2,
+      name='tg', full_name='AtgParameters.tg', index=2,
       number=6, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='a', full_name='AtgTraceGenerator.a', index=3,
+      name='a', full_name='AtgParameters.a', index=3,
       number=7, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='t0', full_name='AtgTraceGenerator.t0', index=4,
+      name='t0', full_name='AtgParameters.t0', index=4,
       number=8, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='start_date', full_name='AtgTraceGenerator.start_date', index=5,
+      name='start_date', full_name='AtgParameters.start_date', index=5,
       number=9, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -121,7 +120,7 @@ _ATGTRACEGENERATOR = _descriptor.Descriptor(
   ],
   extensions=[
   ],
-  nested_types=[],
+  nested_types=[_ATGPARAMETERS_DATE, ],
   enum_types=[
   ],
   serialized_options=None,
@@ -130,34 +129,34 @@ _ATGTRACEGENERATOR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=74,
-  serialized_end=201,
+  serialized_start=25,
+  serialized_end=226,
 )
 
 
-_ATGTRACEGENERATORS = _descriptor.Descriptor(
-  name='AtgTraceGenerators',
-  full_name='AtgTraceGenerators',
+_COUNTRYATGPARAMETERS = _descriptor.Descriptor(
+  name='CountryAtgParameters',
+  full_name='CountryAtgParameters',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='generators', full_name='AtgTraceGenerators.generators', index=0,
+      name='parameters', full_name='CountryAtgParameters.parameters', index=0,
       number=1, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='short_country_name', full_name='AtgTraceGenerators.short_country_name', index=1,
+      name='short_country_name', full_name='CountryAtgParameters.short_country_name', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='long_country_name', full_name='AtgTraceGenerators.long_country_name', index=2,
+      name='long_country_name', full_name='CountryAtgParameters.long_country_name', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -175,38 +174,39 @@ _ATGTRACEGENERATORS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=203,
-  serialized_end=318,
+  serialized_start=228,
+  serialized_end=341,
 )
 
-_ATGTRACEGENERATOR.fields_by_name['last_data_date'].message_type = _DATE
-_ATGTRACEGENERATOR.fields_by_name['start_date'].message_type = _DATE
-_ATGTRACEGENERATORS.fields_by_name['generators'].message_type = _ATGTRACEGENERATOR
-DESCRIPTOR.message_types_by_name['Date'] = _DATE
-DESCRIPTOR.message_types_by_name['AtgTraceGenerator'] = _ATGTRACEGENERATOR
-DESCRIPTOR.message_types_by_name['AtgTraceGenerators'] = _ATGTRACEGENERATORS
+_ATGPARAMETERS_DATE.containing_type = _ATGPARAMETERS
+_ATGPARAMETERS.fields_by_name['last_data_date'].message_type = _ATGPARAMETERS_DATE
+_ATGPARAMETERS.fields_by_name['start_date'].message_type = _ATGPARAMETERS_DATE
+_COUNTRYATGPARAMETERS.fields_by_name['parameters'].message_type = _ATGPARAMETERS
+DESCRIPTOR.message_types_by_name['AtgParameters'] = _ATGPARAMETERS
+DESCRIPTOR.message_types_by_name['CountryAtgParameters'] = _COUNTRYATGPARAMETERS
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-Date = _reflection.GeneratedProtocolMessageType('Date', (_message.Message,), {
-  'DESCRIPTOR' : _DATE,
-  '__module__' : 'atg_prediction_pb2'
-  # @@protoc_insertion_point(class_scope:Date)
-  })
-_sym_db.RegisterMessage(Date)
+AtgParameters = _reflection.GeneratedProtocolMessageType('AtgParameters', (_message.Message,), {
 
-AtgTraceGenerator = _reflection.GeneratedProtocolMessageType('AtgTraceGenerator', (_message.Message,), {
-  'DESCRIPTOR' : _ATGTRACEGENERATOR,
+  'Date' : _reflection.GeneratedProtocolMessageType('Date', (_message.Message,), {
+    'DESCRIPTOR' : _ATGPARAMETERS_DATE,
+    '__module__' : 'atg_prediction_pb2'
+    # @@protoc_insertion_point(class_scope:AtgParameters.Date)
+    })
+  ,
+  'DESCRIPTOR' : _ATGPARAMETERS,
   '__module__' : 'atg_prediction_pb2'
-  # @@protoc_insertion_point(class_scope:AtgTraceGenerator)
+  # @@protoc_insertion_point(class_scope:AtgParameters)
   })
-_sym_db.RegisterMessage(AtgTraceGenerator)
+_sym_db.RegisterMessage(AtgParameters)
+_sym_db.RegisterMessage(AtgParameters.Date)
 
-AtgTraceGenerators = _reflection.GeneratedProtocolMessageType('AtgTraceGenerators', (_message.Message,), {
-  'DESCRIPTOR' : _ATGTRACEGENERATORS,
+CountryAtgParameters = _reflection.GeneratedProtocolMessageType('CountryAtgParameters', (_message.Message,), {
+  'DESCRIPTOR' : _COUNTRYATGPARAMETERS,
   '__module__' : 'atg_prediction_pb2'
-  # @@protoc_insertion_point(class_scope:AtgTraceGenerators)
+  # @@protoc_insertion_point(class_scope:CountryAtgParameters)
   })
-_sym_db.RegisterMessage(AtgTraceGenerators)
+_sym_db.RegisterMessage(CountryAtgParameters)
 
 
 # @@protoc_insertion_point(module_scope)

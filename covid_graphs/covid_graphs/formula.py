@@ -107,7 +107,6 @@ class AtgFormula(Formula):
         )
 
 
-@dataclass
 class FittedFormula(Formula):
     fit: AtgModelFit
 
@@ -128,20 +127,20 @@ class FittedFormula(Formula):
         whole_day_offset = np.floor(self.fit.t0)
         self.fit.shift_forward(whole_day_offset)
 
-        date_zero = country_report.dates[0]
-        self.start_date = date_zero + datetime.timedelta(days=whole_day_offset)
-        self.display_at_least_until = _get_display_at_least_until(
-            tg=self.fit.tg, exp=self.fit.exp, start_date=self.start_date,
+        start_date = date_zero + datetime.timedelta(days=whole_day_offset)
+        display_at_least_until = _get_display_at_least_until(
+            tg=self.fit.tg, exp=self.fit.exp, start_date=start_date,
+        )
+        label = _create_atg_label("Daily prediction", tg=self.fit.tg, alpha=self.fit.exp)
+        self.trace_generator = TraceGenerator(
+            func=self.fit.predict,
+            start_date=start_date,
+            display_at_least_until=display_at_least_until,
+            label=label,
         )
 
     def get_trace_generator(self, country_report: CountryReport) -> TraceGenerator:
-        label = _create_atg_label("Daily prediction", tg=self.fit.tg, alpha=self.fit.exp)
-        return TraceGenerator(
-            func=self.fit.predict,
-            start_date=self.start_date,
-            display_at_least_until=self.display_at_least_until,
-            label=label,
-        )
+        return self.trace_generator
 
 
 def _get_display_at_least_until(tg: float, exp: float, start_date: datetime.date) -> datetime.date:

@@ -3,7 +3,7 @@
 You need to have [`NodeJS`](https://nodejs.org/) with [`npm`](https://www.npmjs.com/) or [`yarn`](https://yarnpkg.com/) and backend (see [README](../covid_graphs/README.md)).
 
 1. run `npm install` or `yarn install`. This step is needed only once.
-1. execute backend from `../covid_graphs`. See [README](../README.md) what step are needed.
+1. execute backend from. See [README](../README.md) what step are needed.
 1. run `yarn start` or `npm start`.
 
 Application should be available at http://localhost:3000/.

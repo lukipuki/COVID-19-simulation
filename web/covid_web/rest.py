@@ -58,8 +58,7 @@ class Rest:
                 "short_name": country_report.short_name,
                 "long_name": country_report.long_name,
             }
-            # Here we assume that traces and country_predictions are in the same order
-            for prediction, trace in zip(country_predictions, graph.traces):
+            for event, trace in graph.trace_by_event.items():
                 predictions.append(
                     {
                         "type": "prediction",
@@ -70,9 +69,9 @@ class Rest:
                         "long_name": country_report.long_name,
                         "max_value_date": trace.max_value_date,
                         "max_value": trace.max_value,
-                        "date_name": prediction.prediction_event.name,
-                        "last_data_date": prediction.prediction_event.last_data_date,
-                        "prediction_date": prediction.prediction_event.prediction_date,
+                        "date_name": event.name,
+                        "last_data_date": event.last_data_date,
+                        "prediction_date": event.prediction_date,
                     }
                 )
 

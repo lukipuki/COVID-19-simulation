@@ -16,6 +16,8 @@ class Trace:
     ys: np.ndarray
     max_value_date: datetime.date
     max_value: float
+
+    # The label uses a placeholder %PREDICTION_DATE%.
     label: str
 
 
@@ -43,7 +45,7 @@ class TraceGenerator:
 
 class Formula:
     @abstractmethod
-    def get_trace_generator(self, country_report: CountryReport, prediction_date: datetime.date) -> TraceGenerator:
+    def get_trace_generator(self, country_report: CountryReport) -> TraceGenerator:
         pass
 
 
@@ -53,7 +55,7 @@ class PolynomialFormula(Formula):
     exponent: float
     min_case_count: int
 
-    def get_trace_generator(self, country_report: CountryReport, prediction_date: datetime.date) -> TraceGenerator:
+    def get_trace_generator(self, country_report: CountryReport) -> TraceGenerator:
         label = r"$_a \cdot t^{_expon}$"
         label = label.replace("_a", f"{self.a:.0f}").replace("_expon", f"{self.exponent}")
 
@@ -70,8 +72,8 @@ class PolynomialFormula(Formula):
         )
 
 
-def _create_atg_label(prefix: str, prediction_date: datetime.date, tg: float, alpha: float) -> str:
-    return f"{prefix} {prediction_date.strftime('%b %d')} (α={alpha:.2f}, T<sub>G</sub>={tg:.2f})"
+def _create_atg_label(prefix: str, tg: float, alpha: float) -> str:
+    return f"{prefix} %PREDICTION_DATE% (α={alpha:.2f}, T<sub>G</sub>={tg:.2f})"
 
 
 @dataclass
@@ -81,8 +83,8 @@ class AtgFormula(Formula):
     exponent: float
     min_case_count: int
 
-    def get_trace_generator(self, country_report: CountryReport, prediction_date: datetime.date) -> TraceGenerator:
-        label = _create_atg_label(prefix="Boďová and Kollár", prediction_date=prediction_date, tg=self.tg, alpha=self.exponent)
+    def get_trace_generator(self, country_report: CountryReport) -> TraceGenerator:
+        label = _create_atg_label(prefix="Boďová and Kollár", tg=self.tg, alpha=self.exponent)
 
         # Display values from the first day for which the number of cumulative active is
         # at least min_case_count. This day is also "day one".
@@ -109,7 +111,7 @@ class FittedFormula(Formula):
     # Date until which to consider data. Inclusive.
     until_date: datetime.date
 
-    def get_trace_generator(self, country_report: CountryReport, prediction_date: datetime.date) -> TraceGenerator:
+    def get_trace_generator(self, country_report: CountryReport) -> TraceGenerator:
         until_idx = country_report.dates.index(self.until_date)
 
         # The choice of date zero is in theory arbitrary.
@@ -119,7 +121,7 @@ class FittedFormula(Formula):
             xs=xs, ys=country_report.cumulative_active[: until_idx + 1],
         )
         prefix = f"{self.until_date.strftime('%b %d')}: "
-        label = _create_atg_label(prefix="Daily prediction", prediction_date=prediction_date, tg=fit.tg, alpha=fit.exp)
+        label = _create_atg_label("Daily prediction", tg=fit.tg, alpha=fit.exp)
 
         # Counterintuitively, `date` + `timedelta` results in `date`.
         whole_day_offset = np.floor(fit.t0)

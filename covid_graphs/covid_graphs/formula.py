@@ -120,7 +120,6 @@ class FittedFormula(Formula):
         fit = fit_atg_model.fit_atg_model(
             xs=xs, ys=country_report.cumulative_active[: until_idx + 1],
         )
-        prefix = f"{self.until_date.strftime('%b %d')}: "
         label = _create_atg_label("Daily prediction", tg=fit.tg, alpha=fit.exp)
 
         # Counterintuitively, `date` + `timedelta` results in `date`.

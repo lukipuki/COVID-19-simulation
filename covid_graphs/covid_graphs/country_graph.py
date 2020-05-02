@@ -10,7 +10,7 @@ from plotly.graph_objs import Figure, Layout, Scatter
 
 from .country_report import CountryReport, create_report
 from .formula import FittedFormula, TraceGenerator
-from .predictions import CountryPrediction, PredictionEvent, prediction_db, BK_20200329, BK_20200411
+from .predictions import BK_20200329, BK_20200411, CountryPrediction, PredictionEvent, prediction_db
 
 EXTENSION_PERIOD = datetime.timedelta(days=7)
 
@@ -58,10 +58,14 @@ class CountryGraph:
         #    generator stores the minimal display length of its trace.
         # 3. Once we know the date range of the graph, we can plot the formulas, creating traces.
         trace_generator_by_event = {
-            prediction.prediction_event: prediction.formula.get_trace_generator(country_report=report)
+            prediction.prediction_event: prediction.formula.get_trace_generator(
+                country_report=report
+            )
             for prediction in country_predictions
         }
-        start_date, display_until = _get_display_range(report, trace_generator_by_event.values())
+        start_date, display_until = _get_display_range(
+            report, list(trace_generator_by_event.values())
+        )
         self.trace_by_event = {
             event: trace_generator.generate_trace(display_until)
             for event, trace_generator in trace_generator_by_event.items()
@@ -76,7 +80,8 @@ class CountryGraph:
         self.date_title = "Date"
 
         max_value = max(
-            max(self.cropped_cumulative_active), max(trace.max_value for trace in self.trace_by_event.values())
+            max(self.cropped_cumulative_active),
+            max(trace.max_value for trace in self.trace_by_event.values()),
         )
         self.log_yrange = [
             math.log10(max(1, self.cropped_cumulative_active.min())) - 0.3,
@@ -97,7 +102,11 @@ class CountryGraph:
             BK_20200329: "rgb(255, 123, 37)",
             BK_20200411: "rgb(0, 121, 177)",
         }
-        extra_colors = ["rgba(43, 161, 59, 0.4)", "rgba(43, 161, 59, 0.7)", "rgba(43, 161, 59, 1.0)"]
+        extra_colors = [
+            "rgba(43, 161, 59, 0.4)",
+            "rgba(43, 161, 59, 0.7)",
+            "rgba(43, 161, 59, 1.0)",
+        ]
         for event in self.trace_by_event:
             if event not in color_by_event:
                 color_by_event[event] = extra_colors.pop()
@@ -110,7 +119,9 @@ class CountryGraph:
                     y=trace.ys,
                     text=trace.xs,
                     mode="lines",
-                    name=trace.label.replace("%PREDICTION_DATE%", event.prediction_date.strftime("%b %d")),
+                    name=trace.label.replace(
+                        "%PREDICTION_DATE%", event.prediction_date.strftime("%b %d")
+                    ),
                     line={"width": 2, "color": color_by_event[event]},
                 )
             )

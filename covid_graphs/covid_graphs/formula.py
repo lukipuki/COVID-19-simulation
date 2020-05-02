@@ -117,20 +117,23 @@ class FittedFormula(Formula):
         # The choice of date zero is in theory arbitrary.
         date_zero = country_report.dates[0]
         xs = [(date - date_zero).days for date in country_report.dates[: until_idx + 1]]
-        fit = fit_atg_model.fit_atg_model(
+        self.fit = fit_atg_model.fit_atg_model(
             xs=xs, ys=country_report.cumulative_active[: until_idx + 1],
         )
-        label = _create_atg_label("Daily prediction", tg=fit.tg, alpha=fit.exp)
+        label = _create_atg_label("Daily prediction", tg=self.fit.tg, alpha=self.fit.exp)
 
         # Counterintuitively, `date` + `timedelta` results in `date`.
-        whole_day_offset = np.floor(fit.t0)
+        whole_day_offset = np.floor(self.fit.t0)
+        self.fit.shift_forward(whole_day_offset)
+
+        date_zero = country_report.dates[0]
         start_date = date_zero + datetime.timedelta(days=whole_day_offset)
         display_at_least_until = _get_display_at_least_until(
-            tg=fit.tg, exp=fit.exp, start_date=start_date,
+            tg=self.fit.tg, exp=self.fit.exp, start_date=start_date,
         )
 
         return TraceGenerator(
-            func=lambda x: fit.predict(x + whole_day_offset),
+            func=self.fit.predict,
             start_date=start_date,
             display_at_least_until=display_at_least_until,
             label=label,

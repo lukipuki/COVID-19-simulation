@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+message Date {
+  uint32 day = 1;
+  uint32 month = 2;
+  uint32 year = 3;
+}
+
+message AtgTraceGenerator {
+  Date last_data_date = 1;
+
+  double alpha = 5;
+  double tg = 6;
+  double a = 7;
+  double t0 = 8;
+  Date start_date = 9;
+}
+
+message AtgTraceGenerators {
+  repeated AtgTraceGenerator generators = 1;
+}

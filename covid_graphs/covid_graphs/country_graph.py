@@ -123,20 +123,36 @@ class CountryGraph:
                         "%PREDICTION_DATE%", event.prediction_date.strftime("%b %d")
                     ),
                     line={"width": 2, "color": color_by_event[event]},
+                    legendgroup=event.name,
                 )
             )
-            # Add vertical dotted line marking the maximum
-            shapes.append(
-                dict(
-                    type="line",
-                    x0=adjust_xlabel(trace.max_value_date),
-                    y0=1,
-                    x1=adjust_xlabel(trace.max_value_date),
-                    y1=trace.max_value,
+            # Add vertical dotted line marking the maximum.
+            traces.append(
+                Scatter(
+                    mode="lines",
+                    x=[adjust_xlabel(trace.max_value_date), adjust_xlabel(trace.max_value_date)],
+                    y=[1.0, trace.max_value],
                     line=dict(width=2, dash="dash", color=color_by_event[event]),
+                    legendgroup=event.name,
+                    showlegend=False,
+                )
+            )
+            # Add a point marking the last_data_date.
+            # data_until_idx = trace.xs.index(event.last_data_date)
+            # data_until_y = trace.ys[data_until_idx]
+            traces.append(
+                Scatter(
+                    x=[adjust_xlabel(event.last_data_date)],
+                    y=[1.0],
+                    mode="markers",
+                    marker=dict(size=20),
+                    line=dict(width=3, color=color_by_event[event]),
+                    legendgroup=event.name,
+                    showlegend=False,
                 )
             )
 
+        # Add cumulated active cases trace.
         traces.append(
             Scatter(
                 x=list(map(adjust_xlabel, self.cropped_dates)),
@@ -148,29 +164,13 @@ class CountryGraph:
             )
         )
 
-        # Add green zone marking the data available at the prediction date.
-        shapes.append(
-            dict(
-                type="rect",
-                yref="paper",
-                x0=adjust_xlabel(self.cropped_dates[0]),
-                x1=adjust_xlabel(self.prediction_last_data_date),
-                y0=0,
-                y1=1,
-                fillcolor="LightGreen",
-                opacity=0.4,
-                layer="below",
-                line_width=0,
-            )
-        )
-
         layout = Layout(
             title=f"Active cases in {self.long_name}",
             xaxis=dict(autorange=True, fixedrange=True, showgrid=False,),
             yaxis=dict(
                 tickformat=",.0f", gridcolor="LightGray", fixedrange=True, zerolinecolor="Gray",
             ),
-            height=700,
+            height=500,
             margin=dict(r=40),
             shapes=shapes,
             hovermode="x",

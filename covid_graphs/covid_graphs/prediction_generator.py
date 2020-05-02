@@ -25,7 +25,7 @@ def get_fitted_predictions(
                 prediction_date=last_data_date,
             ),
             country=report.short_name,
-            formula=FittedFormula(until_date=last_data_date),
+            formula=FittedFormula(until_date=last_data_date, country_report=report),
         )
         for last_data_date in dates
     )
@@ -47,7 +47,8 @@ def store_predictions(data_dir: Path, country_short_name: str, prediction_dir: P
     )
     last_date_dates = country_report.dates[-PREDICTION_DAYS:]
     fitted_formulas = list(
-        FittedFormula(until_date=last_data_date) for last_data_date in last_date_dates
+        FittedFormula(until_date=last_data_date, country_report=country_report)
+        for last_data_date in last_date_dates
     )
 
     trace_generators = AtgTraceGenerators()

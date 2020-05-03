@@ -1,9 +1,9 @@
 FROM node:latest
 
-COPY . /app
-WORKDIR /app
+COPY . /app-source
+WORKDIR /app-source
 RUN npm install
 RUN npm run build
-RUN mv build /
-WORKDIR /build
-RUN rm -rf /app
+RUN mv build /app
+WORKDIR /app
+RUN rm -rf /app-source

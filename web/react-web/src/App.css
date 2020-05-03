@@ -4,7 +4,7 @@
   height: 100%;
 }
 
-.side_switch {
+.App .side_switch {
   position: fixed;
   right: 10px;
   top: 10px;
@@ -15,7 +15,7 @@
   z-index: 2;
 }
 
-.sidebar {
+.App .sidebar {
   flex: 1;
   max-width: 30%;
   min-width: 300px;
@@ -28,12 +28,12 @@
   z-index: 1;
 }
 
-.content {
+.App .content {
   flex: 1;
   height: 100%;
 }
 
-button {
+.App button {
   background-color: transparent;
   padding: 5px 10px;
   border-radius: 5px;
@@ -44,49 +44,49 @@ button {
   margin-top: 10px;
 }
 
-button:hover {
+.App button:hover {
   background-color: lightgrey;
 }
 
-button:disabled,
-button:disabled:hover {
+.App button:disabled,
+.App button:disabled:hover {
   background-color: lightgrey;
   color: darkgrey;
 }
 
-button.active {
+.App button.active {
   background-color: orange;
 }
 
-.buttons {
+.App .buttons {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: space-around;
 }
 
-fieldset {
+.App fieldset {
   border-radius: 10px;
   border: 1px solid lightgrey;
   margin-top: 10px;
   overflow: auto;
 }
 
-fieldset table {
+.App fieldset table {
   text-align: center;
   width: 100%;
 }
 
-fieldset table button {
+.App fieldset table button {
   margin: 5px 0;
   width: 100%;
 }
 
-fieldset table td:first-child {
+.App fieldset table td:first-child {
   text-align: left;
 }
 
-fieldset table tbody tr:nth-child(even) {
+.App fieldset table tbody tr:nth-child(even) {
   background-color: rgba(160, 160, 160, 0.1);
 }
 
@@ -97,33 +97,33 @@ and (max-width: 599px) {
     overflow: auto;
   }
 
-  button {
+  .App.side-hidden .side_switch {
+    transform: rotate(90deg);
+  }
+
+  .App.side-hidden .sidebar {
+    display: none;
+  }
+
+  .App button {
     padding: 10px;
   }
 
-  .side_switch {
+  .App .side_switch {
     display: block;
     opacity: 0.2;
     transition: all 0.2s;
   }
 
-  .side_switch:hover {
+  .App .side_switch:hover {
     opacity: 1;
   }
 
-  .App.side-hidden .side_switch {
-    transform: rotate(90deg);
-  }
-
-  .sidebar {
+  .App .sidebar {
     max-width: initial;
     min-width: initial;
     position: absolute;
     min-height: 100%;
     overflow: initial;
-  }
-
-  .App.side-hidden .sidebar {
-    display: none;
   }
 }

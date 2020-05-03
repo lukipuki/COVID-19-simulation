@@ -44,6 +44,11 @@ const predefinedOptions = {
     plotOptions: {
         series: {
             animation: false
+        },
+        line: {
+            marker: {
+                symbol: 'circle'
+            }
         }
     },
 

@@ -211,7 +211,8 @@ class CountryGraph:
                         visible=True,
                     )
                 )
-            else:
+            elif graph_type != GraphType.BayesPredictions or count == 1:
+                # For Bayesian predictions we only want to draw one rectangle
                 rect_x = [
                     adjust_xlabel(self.cropped_dates[0]),
                     adjust_xlabel(event.last_data_date),
@@ -224,11 +225,11 @@ class CountryGraph:
                         mode="none",
                         fill="tozerox",
                         fillcolor="rgba(144, 238, 144, 0.4)",
-                        line=dict(color="rgba(255,255,255,0)"),
                         opacity=0.4,
-                        legendgroup=event.name,
+                        line=dict(color="rgba(255,255,255,0)"),
                         showlegend=False,
                         hoverinfo="skip",
+                        legendgroup=event.name,
                         visible=visibility,
                     )
                 )
@@ -310,6 +311,7 @@ class CountryGraph:
             hovermode="x" if graph_type != GraphType.MultiPredictions else "closest",
             font=dict(size=18),
             legend=dict(x=0.01, y=0.99, borderwidth=1),
+            showlegend=graph_type != GraphType.BayesPredictions,
             plot_bgcolor="White",
             sliders=sliders,
         )

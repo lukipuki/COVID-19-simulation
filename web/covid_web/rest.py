@@ -34,9 +34,7 @@ class Rest:
         country_reports = {}
         for country_short_name in prediction_db.get_countries():
             if (data_dir / f"{country_short_name}.data").is_file():
-                country_report = create_report(
-                    data_dir / f"{country_short_name}.data", country_short_name
-                )
+                country_report = create_report(data_dir / f"{country_short_name}.data")
                 country_reports[country_report.short_name] = country_report
 
         return country_reports

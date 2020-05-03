@@ -34,28 +34,24 @@ def get_fitted_predictions(
 
 @click.command(help="COVID-19 country predictions calculation")
 @click.argument(
-    "data_dir", required=True, type=click_pathlib.Path(exists=True),
-)
-@click.argument(
-    "short_country_name", required=True, type=str,
+    "filename", required=True, type=click_pathlib.Path(exists=True),
 )
 @click.argument(
     "output_dir", required=True, type=click_pathlib.Path(),
 )
-def generate_predictions(data_dir: Path, short_country_name: str, output_dir: Path) -> None:
+def generate_predictions(filename: Path, output_dir: Path) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
-    country_report = create_report(
-        data_dir / f"{short_country_name}.data", short_name=short_country_name
-    )
+    country_report = create_report(filename)
     last_date_dates = country_report.dates[-PREDICTION_DAYS:]
     fitted_formulas = {
         last_data_date: FittedFormula(until_date=last_data_date, country_report=country_report)
         for last_data_date in last_date_dates
     }
 
+    short_country_name = country_report.short_name
     arg_parameters = CountryAtgParameters()
-    arg_parameters.short_country_name = short_country_name
     arg_parameters.long_country_name = country_report.long_name
+    arg_parameters.short_country_name = short_country_name
     for last_data_date, formula in fitted_formulas.items():
         # TODO(lukas): create a serialization function inside the trace generator
         parameters = AtgParameters()

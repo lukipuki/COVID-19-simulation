@@ -6,7 +6,7 @@ short_names["United Kingdom"]=UK
 short_names["New Zealand"]=NZ
 short_names["South Korea"]=Korea
 
-python3.7 -m venv --system-site-packages venv && source venv/bin/activate
+python3 -m venv --system-site-packages venv && source venv/bin/activate
 pip install $1/
 
 countries=("United Kingdom" "South Korea" Austria Iceland Jordan Switzerland Croatia Australia
@@ -15,9 +15,12 @@ countries=("United Kingdom" "South Korea" Austria Iceland Jordan Switzerland Cro
 for country in $countries
 do
   if [[ -z $short_names["${country}"] ]]; then
-    covid_graphs.prepare_data ${(p)country}
+    covid_graphs.prepare_data ${country}
+    covid_graphs.generate_predictions . ${country} predictions
   else
-    covid_graphs.prepare_data ${(p)country} --short_name $short_names["${country}"]
+    short_name=$short_names["${country}"]
+    covid_graphs.prepare_data ${(p)country} --short_name ${short_name}
+    covid_graphs.generate_predictions . ${short_name} predictions
   fi
 done
 

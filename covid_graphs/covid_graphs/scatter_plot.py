@@ -56,7 +56,7 @@ class SimulationGraph:
             f"for prefix_length={self.prefix_length}, error={self.best_error}"
         )
 
-        country_report = create_report(country_data_file, "Slovakia")
+        country_report = create_report(country_data_file)
         # TODO: Complete Slovak data, so that we don't have to do this dance
         self.daily_positive = np.concatenate(
             (np.zeros(self.prefix_length), country_report.daily_positive)

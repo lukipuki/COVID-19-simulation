@@ -8,7 +8,9 @@ from .pb.country_data_pb2 import CountryData, DailyStats
 
 
 def main():
-    parser = argparse.ArgumentParser(description="COVID-19 data downloader")
+    parser = argparse.ArgumentParser(
+        description="COVID-19 data downloader, writes into current directory"
+    )
     parser.add_argument("country", metavar="country", type=str, help=f"Country")
     parser.add_argument(
         "--short_name",
@@ -49,6 +51,7 @@ def main():
     points = []
     country_data = CountryData()
     country_data.name = args.country
+    country_data.short_name = short_name
     for c, r, d, t in zip(data["confirmed"], data["recovered"], data["deaths"], dates):
         points.append({"positive": c, "recovered": r, "dead": d, "date": t.strftime("%Y-%m-%d")})
         stats = DailyStats()

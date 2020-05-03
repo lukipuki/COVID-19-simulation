@@ -21,12 +21,13 @@ class CountryReport:
     cumulative_active: np.ndarray
 
 
-def create_report(country_data_file: Path, short_name: str) -> CountryReport:
+def create_report(country_data_file: Path) -> CountryReport:
     """Constructs a numpy representation of data read from 'data_dir' a given country."""
     country_data = CountryData()
     text_format.Parse(country_data_file.read_text(), country_data)
 
     long_name = country_data.name
+    short_name = country_data.short_name
     dates = [
         datetime.date(day=day.date.day, month=day.date.month, year=day.date.year)
         for day in country_data.stats

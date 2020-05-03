@@ -238,7 +238,7 @@ class CountryGraph:
 )
 def show_country_plot(data_dir: Path, country_name: str):
     country_predictions = prediction_db.predictions_for_country(country=country_name)
-    country_report = create_report(data_dir / f"{country_name}.data", short_name=country_name)
+    country_report = create_report(data_dir / f"{country_name}.data")
 
     fitted_predictions = get_fitted_predictions(
         report=country_report, dates=[country_report.dates[-1], country_report.dates[-8]]

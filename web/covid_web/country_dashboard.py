@@ -38,9 +38,7 @@ class DashboardFactory:
         }
 
         reports = [
-            country_report.create_report(
-                data_dir / f"{country_short_name}.data", country_short_name
-            )
+            country_report.create_report(data_dir / f"{country_short_name}.data")
             for country_short_name in prediction_db.get_countries()
             if (data_dir / f"{country_short_name}.data").is_file()
         ]

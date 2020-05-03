@@ -1,4 +1,5 @@
 name: "Slovakia"
+short_name: "Slovakia"
 stats {
   tested: 37
   date {

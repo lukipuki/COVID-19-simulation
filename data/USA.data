@@ -391,7 +391,7 @@ stats {
   }
 }
 stats {
-  dead: 4
+  dead: 5
   positive: 382
   recovered: 4
   date {
@@ -401,7 +401,7 @@ stats {
   }
 }
 stats {
-  dead: 7
+  dead: 8
   positive: 516
   date {
     day: 13
@@ -410,7 +410,7 @@ stats {
   }
 }
 stats {
-  dead: 7
+  dead: 9
   positive: 548
   date {
     day: 14
@@ -419,7 +419,7 @@ stats {
   }
 }
 stats {
-  dead: 9
+  dead: 15
   positive: 772
   date {
     day: 15
@@ -428,7 +428,7 @@ stats {
   }
 }
 stats {
-  dead: 22
+  dead: 26
   positive: 1133
   recovered: 5
   date {
@@ -438,7 +438,7 @@ stats {
   }
 }
 stats {
-  dead: 23
+  dead: 34
   positive: 1789
   date {
     day: 17
@@ -447,7 +447,7 @@ stats {
   }
 }
 stats {
-  dead: 10
+  dead: 31
   positive: 1362
   recovered: 88
   date {
@@ -457,7 +457,7 @@ stats {
   }
 }
 stats {
-  dead: 82
+  dead: 94
   positive: 5964
   recovered: 16
   date {
@@ -467,7 +467,7 @@ stats {
   }
 }
 stats {
-  dead: 44
+  dead: 91
   positive: 5526
   recovered: 26
   date {
@@ -477,7 +477,7 @@ stats {
   }
 }
 stats {
-  dead: 63
+  dead: 93
   positive: 6327
   recovered: 29
   date {
@@ -487,7 +487,7 @@ stats {
   }
 }
 stats {
-  dead: 110
+  dead: 144
   positive: 7676
   recovered: 2
   date {
@@ -497,7 +497,7 @@ stats {
   }
 }
 stats {
-  dead: 140
+  dead: 200
   positive: 10567
   date {
     day: 23
@@ -506,7 +506,7 @@ stats {
   }
 }
 stats {
-  dead: 149
+  dead: 222
   positive: 9893
   recovered: 170
   date {
@@ -516,7 +516,7 @@ stats {
   }
 }
 stats {
-  dead: 236
+  dead: 308
   positive: 12042
   recovered: 13
   date {
@@ -526,7 +526,7 @@ stats {
   }
 }
 stats {
-  dead: 267
+  dead: 410
   positive: 18058
   recovered: 320
   date {
@@ -536,7 +536,7 @@ stats {
   }
 }
 stats {
-  dead: 372
+  dead: 539
   positive: 17821
   recovered: 188
   date {
@@ -546,7 +546,7 @@ stats {
   }
 }
 stats {
-  dead: 445
+  dead: 466
   positive: 19808
   recovered: 203
   date {
@@ -556,7 +556,7 @@ stats {
   }
 }
 stats {
-  dead: 441
+  dead: 689
   positive: 19444
   recovered: 1593
   date {
@@ -566,7 +566,7 @@ stats {
   }
 }
 stats {
-  dead: 511
+  dead: 772
   positive: 20922
   recovered: 2979
   date {
@@ -576,7 +576,7 @@ stats {
   }
 }
 stats {
-  dead: 896
+  dead: 1175
   positive: 26341
   recovered: 1380
   date {
@@ -586,7 +586,7 @@ stats {
   }
 }
 stats {
-  dead: 886
+  dead: 1134
   positive: 25070
   recovered: 1450
   date {
@@ -596,7 +596,7 @@ stats {
   }
 }
 stats {
-  dead: 1169
+  dead: 1420
   positive: 30380
   recovered: 527
   date {
@@ -606,7 +606,7 @@ stats {
   }
 }
 stats {
-  dead: 1161
+  dead: 1325
   positive: 31745
   recovered: 706
   date {
@@ -616,7 +616,7 @@ stats {
   }
 }
 stats {
-  dead: 1318
+  dead: 1609
   positive: 33283
   recovered: 4945
   date {
@@ -626,7 +626,7 @@ stats {
   }
 }
 stats {
-  dead: 1211
+  dead: 1520
   positive: 28152
   recovered: 2796
   date {
@@ -636,7 +636,7 @@ stats {
   }
 }
 stats {
-  dead: 1164
+  dead: 1519
   positive: 29515
   recovered: 2133
   date {
@@ -646,7 +646,7 @@ stats {
   }
 }
 stats {
-  dead: 2011
+  dead: 2297
   positive: 30804
   recovered: 2182
   date {
@@ -656,7 +656,7 @@ stats {
   }
 }
 stats {
-  dead: 1910
+  dead: 2079
   positive: 31533
   recovered: 1796
   date {
@@ -666,7 +666,7 @@ stats {
   }
 }
 stats {
-  dead: 1840
+  dead: 1985
   positive: 34126
   recovered: 1851
   date {
@@ -676,7 +676,7 @@ stats {
   }
 }
 stats {
-  dead: 2051
+  dead: 2078
   positive: 33755
   recovered: 3380
   date {
@@ -686,7 +686,7 @@ stats {
   }
 }
 stats {
-  dead: 1876
+  dead: 2009
   positive: 29861
   recovered: 2480
   date {
@@ -696,7 +696,7 @@ stats {
   }
 }
 stats {
-  dead: 1558
+  dead: 1744
   positive: 28917
   recovered: 1718
   date {
@@ -706,7 +706,7 @@ stats {
   }
 }
 stats {
-  dead: 1509
+  dead: 1784
   positive: 25306
   recovered: 10494
   date {
@@ -716,7 +716,7 @@ stats {
   }
 }
 stats {
-  dead: 2305
+  dead: 2392
   positive: 27051
   recovered: 4281
   date {
@@ -726,7 +726,7 @@ stats {
   }
 }
 stats {
-  dead: 2495
+  dead: 2472
   positive: 28680
   recovered: 4333
   date {
@@ -736,7 +736,7 @@ stats {
   }
 }
 stats {
-  dead: 4592
+  dead: 2093
   positive: 31242
   recovered: 2607
   date {
@@ -746,7 +746,7 @@ stats {
   }
 }
 stats {
-  dead: 3857
+  dead: 2584
   positive: 32114
   recovered: 3842
   date {
@@ -756,7 +756,7 @@ stats {
   }
 }
 stats {
-  dead: 1877
+  dead: 2342
   positive: 32491
   recovered: 6295
   date {
@@ -766,7 +766,7 @@ stats {
   }
 }
 stats {
-  dead: 1997
+  dead: 1192
   positive: 26612
   recovered: 5497
   date {
@@ -776,7 +776,7 @@ stats {
   }
 }
 stats {
-  dead: 1433
+  dead: 1714
   positive: 25517
   recovered: 1992
   date {
@@ -786,7 +786,7 @@ stats {
   }
 }
 stats {
-  dead: 2350
+  dead: 2427
   positive: 27539
   recovered: 2875
   date {
@@ -796,7 +796,7 @@ stats {
   }
 }
 stats {
-  dead: 2178
+  dead: 2326
   positive: 28486
   recovered: 2162
   date {
@@ -806,7 +806,7 @@ stats {
   }
 }
 stats {
-  dead: 3332
+  dead: 2312
   positive: 28819
   recovered: 2837
   date {
@@ -816,7 +816,7 @@ stats {
   }
 }
 stats {
-  dead: 1995
+  dead: 1769
   positive: 36188
   recovered: 18876
   date {
@@ -826,7 +826,7 @@ stats {
   }
 }
 stats {
-  dead: 1806
+  dead: 2262
   positive: 32796
   recovered: 1293
   date {
@@ -852,6 +852,56 @@ stats {
   date {
     day: 27
     month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 2096
+  positive: 24385
+  recovered: 4512
+  date {
+    day: 28
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 2612
+  positive: 27327
+  recovered: 4784
+  date {
+    day: 29
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 2029
+  positive: 29515
+  recovered: 33227
+  date {
+    day: 30
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 1947
+  positive: 34037
+  recovered: 10068
+  date {
+    day: 1
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1426
+  positive: 29078
+  recovered: 11367
+  date {
+    day: 2
+    month: 5
     year: 2020
   }
 }

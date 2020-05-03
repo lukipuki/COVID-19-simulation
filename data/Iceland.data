@@ -786,3 +786,46 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 3
+  recovered: 12
+  date {
+    day: 28
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  positive: 2
+  recovered: 20
+  date {
+    day: 29
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  recovered: 14
+  date {
+    day: 30
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  positive: 1
+  recovered: 19
+  date {
+    day: 1
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  recovered: 17
+  date {
+    day: 2
+    month: 5
+    year: 2020
+  }
+}

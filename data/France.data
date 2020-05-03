@@ -701,9 +701,9 @@ stats {
   }
 }
 stats {
-  dead: 762
+  dead: 745
   positive: 4971
-  recovered: 1097
+  recovered: 804
   date {
     day: 14
     month: 4
@@ -711,9 +711,9 @@ stats {
   }
 }
 stats {
-  dead: 1440
+  dead: 1438
   positive: 3220
-  recovered: 2372
+  recovered: 2150
   date {
     day: 15
     month: 4
@@ -731,9 +731,9 @@ stats {
   }
 }
 stats {
-  dead: 762
+  dead: 761
   positive: 2009
-  recovered: 1679
+  recovered: 1608
   date {
     day: 17
     month: 4
@@ -743,7 +743,7 @@ stats {
 stats {
   dead: 642
   positive: 2
-  recovered: 1581
+  recovered: 1563
   date {
     day: 18
     month: 4
@@ -751,9 +751,9 @@ stats {
   }
 }
 stats {
-  dead: 399
+  dead: 395
   positive: 4925
-  recovered: 596
+  recovered: 595
   date {
     day: 19
     month: 4
@@ -761,9 +761,9 @@ stats {
   }
 }
 stats {
-  dead: 548
+  dead: 547
   positive: 2382
-  recovered: 853
+  recovered: 831
   date {
     day: 20
     month: 4
@@ -771,9 +771,9 @@ stats {
   }
 }
 stats {
-  dead: 537
+  dead: 531
   positive: 2775
-  recovered: 1783
+  recovered: 1772
   date {
     day: 21
     month: 4
@@ -783,7 +783,7 @@ stats {
 stats {
   dead: 544
   positive: -2188
-  recovered: 1507
+  recovered: 1476
   date {
     day: 22
     month: 4
@@ -793,7 +793,7 @@ stats {
 stats {
   dead: 516
   positive: 2323
-  recovered: 1436
+  recovered: 1431
   date {
     day: 23
     month: 4
@@ -803,7 +803,7 @@ stats {
 stats {
   dead: 390
   positive: 1649
-  recovered: 1509
+  recovered: 1405
   date {
     day: 24
     month: 4
@@ -833,10 +833,60 @@ stats {
 stats {
   dead: 437
   positive: 3743
-  recovered: 612
+  recovered: 610
   date {
     day: 27
     month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 367
+  positive: 3090
+  recovered: 1373
+  date {
+    day: 28
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 427
+  positive: -2510
+  recovered: 1342
+  date {
+    day: 29
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 289
+  positive: 756
+  recovered: 1248
+  date {
+    day: 30
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 218
+  positive: 6
+  recovered: 736
+  date {
+    day: 1
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 166
+  positive: 1213
+  recovered: 451
+  date {
+    day: 2
+    month: 5
     year: 2020
   }
 }

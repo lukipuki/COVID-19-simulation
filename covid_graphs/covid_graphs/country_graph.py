@@ -167,6 +167,7 @@ class CountryGraph:
                     line=dict(width=3, color=color_by_event[event]),
                     legendgroup=event.name,
                     showlegend=False,
+                    visible=not show_green_zone,
                 )
             )
 

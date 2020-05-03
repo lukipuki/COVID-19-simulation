@@ -40,7 +40,7 @@ conan create .
 ```sh
 conan install -g virtualrunenv 'COVID-19-simulation/1.0.0@'
 source activate_run.sh
-simulation data/Slovakia.data
+simulation Slovakia.data
 source deactivate_run.sh  # deactivate once you're done
 # The simulation creates a proto file 'polynomial.sim' or 'exponential.sim', which can be examined using protoc
 cat polynomial.sim | protoc --decode SimulationResults src/simulation_results.proto

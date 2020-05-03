@@ -1,6 +1,4 @@
-from multiprocessing import Process
 from pathlib import Path
-from time import sleep
 
 import click
 import click_pathlib
@@ -15,16 +13,6 @@ from .rest import Rest
 CURRENT_DIR = Path(__file__).parent
 
 
-platform_supports_inotify = False
-try:
-    from inotify import adapters, constants
-
-    platform_supports_inotify = True
-except AttributeError:
-    print("⚠️  inotify is not supported! Will run the server without reloading.")
-    pass
-
-
 @click.command(help="COVID-19 web server")
 @click.option(
     "-d",
@@ -34,24 +22,8 @@ except AttributeError:
     help="Directory with country and simulation proto files",
 )
 def run_server(data_dir: Path) -> None:
-    if platform_supports_inotify:
-        i = adapters.InotifyTree(
-            str(data_dir), mask=(constants.IN_MODIFY | constants.IN_DELETE | constants.IN_CREATE)
-        )
-        p = Process(target=_run_flask_server, kwargs=dict(data_dir=data_dir))
-        p.start()
-        while True:
-            events = list(i.event_gen(yield_nones=False, timeout_s=1))
-            if len(events) != 0:
-                print("Data changed. Restarting server...")
-                p.terminate()
-                p.join()
-                p = Process(target=_run_flask_server, kwargs=dict(data_dir=data_dir))
-                p.start()
-                print("Server restarted.")
-            sleep(10)
-    else:
-        _run_flask_server(data_dir=data_dir)
+    server = setup_server(data_dir)
+    server.run(host="0.0.0.0", port=8081)
 
 
 def setup_server(data_dir: Path):
@@ -74,11 +46,6 @@ def setup_server(data_dir: Path):
     _create_rest(server=server, data_dir=data_dir)
 
     return server
-
-
-def _run_flask_server(data_dir: Path):
-    server = setup_server(data_dir)
-    server.run(host="0.0.0.0", port=8081)
 
 
 def _create_rest(data_dir: Path, server: Flask):

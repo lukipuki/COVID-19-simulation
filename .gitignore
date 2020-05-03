@@ -34,6 +34,7 @@
 # Compilation
 *build/
 compile_commands.json
+.idea
 
 # Python
 __pycache__

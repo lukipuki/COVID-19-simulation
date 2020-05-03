@@ -9,8 +9,9 @@ import click_pathlib
 from plotly.graph_objs import Figure, Layout, Scatter
 
 from .country_report import CountryReport, create_report
-from .formula import FittedFormula, TraceGenerator
-from .predictions import BK_20200329, BK_20200411, CountryPrediction, PredictionEvent, prediction_db
+from .formula import TraceGenerator
+from .prediction_generator import get_fitted_predictions
+from .predictions import BK_20200329, BK_20200411, CountryPrediction, prediction_db
 
 EXTENSION_PERIOD = datetime.timedelta(days=7)
 
@@ -228,21 +229,6 @@ class CountryGraph:
         return self.figure
 
 
-def get_fitted_predictions(report: CountryReport) -> List[CountryPrediction]:
-    return [
-        CountryPrediction(
-            prediction_event=PredictionEvent(
-                name=f"daily_fit_{last_data_date.strftime('%Y_%m_%d')}",
-                last_data_date=last_data_date,
-                prediction_date=last_data_date,
-            ),
-            country=report.short_name,
-            formula=FittedFormula(until_date=last_data_date),
-        )
-        for last_data_date in [report.dates[-1], report.dates[-8]]
-    ]
-
-
 @click.command(help="COVID-19 country growth visualization")
 @click.argument(
     "data_dir", required=True, type=click_pathlib.Path(exists=True),
@@ -253,6 +239,10 @@ def get_fitted_predictions(report: CountryReport) -> List[CountryPrediction]:
 def show_country_plot(data_dir: Path, country_name: str):
     country_predictions = prediction_db.predictions_for_country(country=country_name)
     country_report = create_report(data_dir / f"{country_name}.data", short_name=country_name)
-    country_predictions.extend(get_fitted_predictions(report=country_report))
+
+    fitted_predictions = get_fitted_predictions(
+        report=country_report, dates=[country_report.dates[-1], country_report.dates[-8]]
+    )
+    country_predictions.extend(fitted_predictions)
     country_graph = CountryGraph(report=country_report, country_predictions=country_predictions)
     country_graph.create_country_figure().show()

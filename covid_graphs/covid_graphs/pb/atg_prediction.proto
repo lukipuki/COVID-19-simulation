@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+message AtgParameters {
+  message Date {
+    uint32 day = 1;
+    uint32 month = 2;
+    uint32 year = 3;
+  }
+
+  Date last_data_date = 1;
+
+  double alpha = 5;
+  double tg = 6;
+  double a = 7;
+  // The ATG curve starts on start_date but is shifted by 'offset' days.
+  // Example: start_date is 2020-05-01 and offset=0.25, so the curve starts at 6:00 AM.
+  double offset = 8;
+  Date start_date = 9;
+}
+
+message CountryAtgParameters {
+  repeated AtgParameters parameters = 1;
+  string short_country_name = 2;
+  string long_country_name = 3;
+}

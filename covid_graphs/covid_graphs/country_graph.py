@@ -11,7 +11,7 @@ from plotly.graph_objs import Figure, Layout, Scatter
 from .country_report import CountryReport, create_report
 from .formula import TraceGenerator
 from .prediction_generator import get_fitted_predictions
-from .predictions import BK_20200329, BK_20200411, CountryPrediction
+from .predictions import BK_20200329, BK_20200411, CountryPrediction, PredictionEvent
 
 EXTENSION_PERIOD = datetime.timedelta(days=7)
 
@@ -98,29 +98,25 @@ class CountryGraph:
             math.log10(self.max_value) + 0.3,
         ]
 
-    def _create_slider(self, traces: List[Scatter]):
-        SUBTRACE_COUNT = 4
-
-        last_position = len(self.trace_by_event) - 1
-        # Mark last trace as visible
-        for i in range(last_position * SUBTRACE_COUNT, (last_position + 1) * SUBTRACE_COUNT):
-            traces[i].visible = True
-
-        def create_visibility_vector(position):
-            vector = [False] * len(traces)
-            for i in range(position * SUBTRACE_COUNT, (position + 1) * SUBTRACE_COUNT):
-                vector[i] = True
-            vector[-1] = True
-            return vector
+    def _create_slider(self, traces: List[Scatter], events: List[PredictionEvent]):
+        def _create_visibility_vector(event_name: str) -> List[bool]:
+            return [
+                trace.legendgroup == event_name or trace.legendgroup is None for trace in traces
+            ]
 
         steps = [
             dict(
                 method="restyle",
-                args=("visible", create_visibility_vector(i)),
+                args=("visible", _create_visibility_vector(event.name)),
                 label=event.last_data_date.strftime("%B %d"),
             )
-            for i, event in enumerate(self.trace_by_event.keys())
+            for event in self.trace_by_event.keys()
         ]
+        # Mark trace corresponding to the latest prediction event as visible
+        for trace in traces:
+            if trace.legendgroup == events[-1].name or trace.legendgroup is None:
+                trace.visible = True
+
         return dict(
             active=len(steps) - 1,
             currentvalue={"prefix": "Prediction date: "},
@@ -259,7 +255,7 @@ class CountryGraph:
 
         sliders = []
         if graph_type == GraphType.Slider:
-            sliders.append(self._create_slider(traces))
+            sliders.append(self._create_slider(traces, list(self.trace_by_event.keys())))
 
         layout = Layout(
             title=f"Active cases in {self.long_name}",

@@ -11,12 +11,21 @@ from plotly.graph_objs import Figure, Layout, Scatter
 from .country_report import CountryReport, create_report
 from .formula import TraceGenerator
 from .prediction_generator import get_fitted_predictions
-from .predictions import BK_20200329, BK_20200411, CountryPrediction, prediction_db
+from .predictions import BK_20200329, BK_20200411, CountryPrediction, PredictionEvent
 
 EXTENSION_PERIOD = datetime.timedelta(days=7)
 
 
 class GraphType(Enum):
+    Slider = "slider"
+    SinglePrediction = "single"
+    MultiPredictions = "multi"
+
+    def __str__(self):
+        return self.value
+
+
+class GraphAxisType(Enum):
     Linear = "linear"
     SemiLog = "semi-log"
     LogLog = "log-log"
@@ -80,22 +89,50 @@ class CountryGraph:
         self.log_title = f"Days [since {self.log_xaxis_date_since.strftime('%b %d, %Y')}]"
         self.date_title = "Date"
 
-        max_value = max(
+        self.max_value = max(
             max(self.cropped_cumulative_active),
             max(trace.max_value for trace in self.trace_by_event.values()),
         )
         self.log_yrange = [
             math.log10(max(1, self.cropped_cumulative_active.min())) - 0.3,
-            math.log10(max_value) + 0.3,
+            math.log10(self.max_value) + 0.3,
         ]
 
+    def _create_slider(self, traces: List[Scatter], events: List[PredictionEvent]):
+        def _create_visibility_vector(event_name: str) -> List[bool]:
+            return [
+                trace.legendgroup == event_name or trace.legendgroup is None for trace in traces
+            ]
+
+        steps = [
+            dict(
+                method="restyle",
+                args=("visible", _create_visibility_vector(event.name)),
+                label=event.last_data_date.strftime("%B %d"),
+            )
+            for event in self.trace_by_event.keys()
+        ]
+        # Mark trace corresponding to the latest prediction event as visible
+        for trace in traces:
+            if trace.legendgroup == events[-1].name or trace.legendgroup is None:
+                trace.visible = True
+
+        return dict(
+            active=len(steps) - 1,
+            currentvalue={"prefix": "Prediction date: "},
+            pad={"t": 60},
+            steps=steps,
+        )
+
     def create_country_figure(
-        self, graph_type: GraphType = GraphType.Linear, show_green_zone: bool = False
+        self,
+        graph_axis_type: GraphAxisType = GraphAxisType.Linear,
+        graph_type: GraphType = GraphType.SinglePrediction,
     ):
         def adjust_xlabel(date: datetime.date):
             # Due to plotly limitations, we can only have graphs with dates on the x-axis when we
             # x-axis isn't log-scale.
-            if graph_type != GraphType.LogLog:
+            if graph_axis_type != GraphAxisType.LogLog:
                 return date
             else:
                 return (date - self.log_xaxis_date_since).days
@@ -111,23 +148,68 @@ class CountryGraph:
             "rgba(43, 161, 59, 1.0)",
         ]
         for event in self.trace_by_event:
-            if event not in color_by_event:
-                color_by_event[event] = extra_colors.pop()
+            if graph_type == GraphType.Slider:
+                color_by_event[event] = extra_colors[-1]
+            else:
+                if event not in color_by_event:
+                    color_by_event[event] = extra_colors.pop()
 
-        traces, shapes = [], []
-
+        traces = []
+        visibility = graph_type != GraphType.Slider
         for event, trace in self.trace_by_event.items():
             prediction_date_str = event.prediction_date.strftime("%b %d")
             data_until_idx = trace.xs.index(event.last_data_date)
+            if graph_type == GraphType.MultiPredictions:
+                # Last data date mark.
+                data_until_y = trace.ys[data_until_idx]
+                traces.append(
+                    Scatter(
+                        x=[
+                            adjust_xlabel(event.last_data_date),
+                            adjust_xlabel(event.last_data_date),
+                        ],
+                        y=[1.0, data_until_y],
+                        mode="markers",
+                        name=f"Data cutoff",
+                        marker=dict(size=15, symbol="circle", color=color_by_event[event]),
+                        line=dict(width=3, color=color_by_event[event]),
+                        legendgroup=event.name,
+                        showlegend=False,
+                        visible=True,
+                    )
+                )
+            else:
+                rect_x = [
+                    adjust_xlabel(self.cropped_dates[0]),
+                    adjust_xlabel(event.last_data_date),
+                ]
+                rect_x = rect_x + rect_x[::-1]
+                traces.append(
+                    Scatter(
+                        x=rect_x,
+                        y=[0, 0, self.max_value, self.max_value],
+                        mode="none",
+                        fill="tozerox",
+                        fillcolor="rgba(144, 238, 144, 0.4)",
+                        opacity=0.4,
+                        line=dict(color="rgba(255,255,255,0)"),
+                        showlegend=False,
+                        legendgroup=event.name,
+                        visible=visibility,
+                    )
+                )
+
             traces.append(
                 Scatter(
                     x=list(map(adjust_xlabel, trace.xs[: data_until_idx + 1])),
                     y=trace.ys[: data_until_idx + 1],
                     text=trace.xs[: data_until_idx + 1],
                     mode="lines",
+                    # TODO(lukas): we should have a better API then '.replace'
                     name=trace.label.replace("%PREDICTION_DATE%", prediction_date_str),
                     line=dict(width=2, color=color_by_event[event]),
                     legendgroup=event.name,
+                    visible=visibility,
                 )
             )
             traces.append(
@@ -140,8 +222,10 @@ class CountryGraph:
                     line=dict(width=2, dash="dash", color=color_by_event[event]),
                     legendgroup=event.name,
                     showlegend=False,
+                    visible=visibility,
                 )
             )
+
             # Maximum mark.
             traces.append(
                 Scatter(
@@ -153,37 +237,7 @@ class CountryGraph:
                     marker=dict(size=15, symbol="star"),
                     legendgroup=event.name,
                     showlegend=False,
-                )
-            )
-            # Last data date mark.
-            data_until_y = trace.ys[data_until_idx]
-            traces.append(
-                Scatter(
-                    x=[adjust_xlabel(event.last_data_date), adjust_xlabel(event.last_data_date)],
-                    y=[1.0, data_until_y],
-                    mode="markers",
-                    name=f"Data cutoff",
-                    marker=dict(size=15, symbol="circle", color=color_by_event[event]),
-                    line=dict(width=3, color=color_by_event[event]),
-                    legendgroup=event.name,
-                    showlegend=False,
-                    visible=not show_green_zone,
-                )
-            )
-
-        if show_green_zone:
-            shapes.append(
-                dict(
-                    type="rect",
-                    yref="paper",
-                    x0=adjust_xlabel(self.cropped_dates[0]),
-                    x1=adjust_xlabel(self.prediction_last_data_date),
-                    y0=0,
-                    y1=1,
-                    fillcolor="LightGreen",
-                    opacity=0.4,
-                    layer="below",
-                    line_width=0,
+                    visible=visibility,
                 )
             )
 
@@ -199,6 +253,10 @@ class CountryGraph:
             )
         )
 
+        sliders = []
+        if graph_type == GraphType.Slider:
+            sliders.append(self._create_slider(traces, list(self.trace_by_event.keys())))
+
         layout = Layout(
             title=f"Active cases in {self.long_name}",
             xaxis=dict(autorange=True, fixedrange=True, showgrid=False,),
@@ -207,43 +265,40 @@ class CountryGraph:
             ),
             height=700,
             margin=dict(r=40),
-            shapes=shapes,
             hovermode="x",
             font=dict(size=18),
             legend=dict(x=0.01, y=0.99, borderwidth=1),
             plot_bgcolor="White",
+            sliders=sliders,
         )
 
         self.figure = Figure(data=traces, layout=layout)
-        return self.update_graph_type(graph_type)
+        return self.update_graph_axis_type(graph_axis_type)
 
-    def update_graph_type(self, graph_type: GraphType):
-        if graph_type == GraphType.Linear:
+    def update_graph_axis_type(self, graph_axis_type: GraphAxisType):
+        if graph_axis_type == GraphAxisType.Linear:
             self.figure.update_xaxes(type="date", title=self.date_title)
             self.figure.update_yaxes(type="linear", autorange=True)
-        elif graph_type == GraphType.SemiLog:
+        elif graph_axis_type == GraphAxisType.SemiLog:
             self.figure.update_xaxes(type="date", title=self.date_title)
             self.figure.update_yaxes(type="log", autorange=False, range=self.log_yrange)
-        elif graph_type == GraphType.LogLog:
+        elif graph_axis_type == GraphAxisType.LogLog:
             self.figure.update_xaxes(type="log", title=self.log_title)
             self.figure.update_yaxes(type="log", autorange=False, range=self.log_yrange)
         return self.figure
 
 
-@click.command(help="COVID-19 country growth visualization")
+@click.command(help="COVID-19 visualization of active cases")
 @click.argument(
-    "data_dir", required=True, type=click_pathlib.Path(exists=True),
+    "filename", required=True, type=click_pathlib.Path(exists=True),
 )
-@click.argument(
-    "country_name", required=True, type=str,
-)
-def show_country_plot(data_dir: Path, country_name: str):
-    country_predictions = prediction_db.predictions_for_country(country=country_name)
-    country_report = create_report(data_dir / f"{country_name}.data")
+def show_country_plot(filename: Path):
+    # Use country_predictions for non-slider graphs
+    # country_predictions = prediction_db.predictions_for_country(country=country_name)
+    country_report = create_report(filename)
 
     fitted_predictions = get_fitted_predictions(
-        report=country_report, dates=[country_report.dates[-1], country_report.dates[-8]]
+        report=country_report, dates=country_report.dates[-14:]
     )
-    country_predictions.extend(fitted_predictions)
-    country_graph = CountryGraph(report=country_report, country_predictions=country_predictions)
-    country_graph.create_country_figure().show()
+    country_graph = CountryGraph(report=country_report, country_predictions=fitted_predictions)
+    country_graph.create_country_figure(graph_type=GraphType.Slider).show()

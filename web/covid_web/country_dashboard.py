@@ -10,7 +10,7 @@ from dash.development.base_component import Component
 from flask import Flask
 
 import covid_graphs.country_report as country_report
-from covid_graphs.country_graph import CountryGraph, GraphType
+from covid_graphs.country_graph import CountryGraph, GraphAxisType, GraphType
 from covid_graphs.country_report import CountryReport
 from covid_graphs.predictions import BK_20200329, BK_20200411, PredictionEvent, prediction_db
 from covid_graphs.prediction_generator import get_fitted_predictions
@@ -125,10 +125,7 @@ class DashboardFactory:
         dashboard_type: DashboardType, report_by_short_name: Dict[str, CountryReport]
     ) -> List[dash.development.base_component.Component]:
         buttons = []
-        if (
-            dashboard_type == DashboardType.SingleCountry
-            or dashboard_type == DashboardType.AllCountries
-        ):
+        if dashboard_type == DashboardType.AllCountries:
             buttons.append(
                 dcc.Dropdown(
                     id="prediction-event",
@@ -141,15 +138,10 @@ class DashboardFactory:
                 )
             )
 
-        if dashboard_type == DashboardType.SingleCountry:
-            buttons.append(
-                dcc.Dropdown(
-                    id="country-short-name",
-                    value="Italy",
-                    style={"width": "220px", "margin": "8px 0"},
-                )
-            )
-        elif dashboard_type == DashboardType.SingleCountryAllPredictions:
+        if (
+            dashboard_type == DashboardType.SingleCountry
+            or dashboard_type == DashboardType.SingleCountryAllPredictions
+        ):
             buttons.append(
                 dcc.Dropdown(
                     id="country-short-name",
@@ -166,10 +158,10 @@ class DashboardFactory:
 
         buttons.append(
             dcc.RadioItems(
-                id="graph-type",
+                id="graph-axis-type",
                 options=[
-                    {"label": graph_type.value, "value": graph_type.name}
-                    for graph_type in [GraphType.Linear, GraphType.SemiLog]
+                    {"label": graph_axis_type.value, "value": graph_axis_type.name}
+                    for graph_axis_type in [GraphAxisType.Linear, GraphAxisType.SemiLog]
                 ],
                 value="Linear",
                 labelStyle={"display": "inline-block", "margin": "0 4px 0 0"},
@@ -178,42 +170,27 @@ class DashboardFactory:
         return buttons
 
     def _create_single_country_callbacks(self, app: dash.Dash) -> None:
-        @app.callback(
-            [
-                Output("country-short-name", component_property="options"),
-                Output("graph-title", component_property="children"),
-            ],
-            [Input("prediction-event", "value")],
-        )
-        def update_event(prediction_event_name):
-            options = [
-                dict(label=graph.long_name, value=graph.short_name)
-                for graph in self.graphs_by_event[prediction_event_name]
-            ]
-            prediction_date = self.prediction_event_by_name[prediction_event_name].prediction_date
-            return options, f"{prediction_date.strftime('%B %d')} predictions"
+        # TODO: Predictions will be generated statically in the future.
+        graphs_by_country = {
+            country_short_name: CountryGraph(
+                self.report_by_short_name[country_short_name],
+                get_fitted_predictions(
+                    self.report_by_short_name[country_short_name],
+                    dates=self.report_by_short_name[country_short_name].dates[-14:],
+                ),
+            )
+            for country_short_name in prediction_db.get_countries()
+        }
 
         @app.callback(
             Output("country-graph", component_property="figure"),
-            [
-                Input("prediction-event", "value"),
-                Input("graph-type", "value"),
-                Input("country-short-name", "value"),
-            ],
+            [Input("graph-axis-type", "value"), Input("country-short-name", "value")],
         )
-        def update_graph(prediction_event_name, graph_type_str, country_short_name):
-            graph_type = GraphType[graph_type_str]
-
-            graphs = [
-                country_graph
-                for country_graph in self.graphs_by_event[prediction_event_name]
-                if country_graph.short_name == country_short_name
-            ]
-            if len(graphs) == 0:
-                return dash.no_update
-
-            figure = graphs[0].create_country_figure(graph_type=graph_type, show_green_zone=True)
-            return figure
+        def update_graph(graph_axis_type_str, country_short_name):
+            graph = graphs_by_country[country_short_name]
+            return graph.create_country_figure(
+                graph_axis_type=GraphAxisType[graph_axis_type_str], graph_type=GraphType.Slider
+            )
 
     def _create_single_country_all_predictions_callbacks(self, app: dash.Dash) -> None:
         # TODO: Predictions will be generated statically in the future.
@@ -230,19 +207,20 @@ class DashboardFactory:
 
         @app.callback(
             Output("country-graph", component_property="figure"),
-            [Input("graph-type", "value"), Input("country-short-name", "value")],
+            [Input("graph-axis-type", "value"), Input("country-short-name", "value")],
         )
-        def update_graph(graph_type_str, country_short_name):
-            graph_type = GraphType[graph_type_str]
-            figure = graph_by_short_name[country_short_name].create_country_figure(graph_type)
-            return figure
+        def update_graph(graph_axis_type_str, country_short_name):
+            graph_axis_type = GraphAxisType[graph_axis_type_str]
+            return graph_by_short_name[country_short_name].create_country_figure(
+                graph_axis_type=graph_axis_type, graph_type=GraphType.MultiPredictions
+            )
 
     def _create_all_countries_callbacks(self, app: dash.Dash) -> None:
         dash_graph_dict = {
             prediction_event_name: [
                 dcc.Graph(
                     id=f"{graph.short_name}-graph-{prediction_event_name}",
-                    figure=graph.create_country_figure(show_green_zone=True),
+                    figure=graph.create_country_figure(graph_type=GraphType.SinglePrediction),
                     config=dict(modeBarButtons=[["toImage"]]),
                 )
                 for graph in self.graphs_by_event[prediction_event_name]
@@ -268,12 +246,12 @@ class DashboardFactory:
                 Output(f"{graph.short_name}-graph-{BK_20200411.name}", component_property="figure")
                 for graph in self.graphs_by_event[BK_20200411.name]
             ],
-            [Input("graph-type", "value")],
+            [Input("graph-axis-type", "value")],
         )
-        def update_country_graphs_20200411(graph_type_str):
+        def update_country_graphs_20200411(graph_axis_type_str):
             result = []
             for graph in self.graphs_by_event[BK_20200411.name]:
-                result.append(graph.update_graph_type(GraphType[graph_type_str]))
+                result.append(graph.update_graph_axis_type(GraphAxisType[graph_axis_type_str]))
             return result
 
         @app.callback(
@@ -281,12 +259,12 @@ class DashboardFactory:
                 Output(f"{graph.short_name}-graph-{BK_20200329.name}", component_property="figure")
                 for graph in self.graphs_by_event[BK_20200329.name]
             ],
-            [Input("graph-type", "value")],
+            [Input("graph-axis-type", "value")],
         )
-        def update_country_graphs_20200329(graph_type_str):
+        def update_country_graphs_20200329(graph_axis_type_str):
             result = []
             for graph in self.graphs_by_event[BK_20200329.name]:
-                graph.update_graph_type(GraphType[graph_type_str])
+                graph.update_graph_axis_type(GraphAxisType[graph_axis_type_str])
                 result.append(graph.figure)
             return result
 

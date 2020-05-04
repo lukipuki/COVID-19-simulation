@@ -2,22 +2,22 @@ import datetime
 import math
 from enum import Enum
 from pathlib import Path
-from typing import List, Tuple
+from typing import Iterable, List, Tuple
 
 import click
 import click_pathlib
 from google.protobuf import text_format  # type: ignore
 from plotly.graph_objs import Figure, Layout, Scatter
 
-from . import formula
+from . import formula, prediction_generator
 from .country_report import CountryReport, create_report
-from .formula import TraceGenerator
+from .formula import FittedFormula, TraceGenerator
 from .pb.atg_prediction_pb2 import CountryAtgParameters
-from .prediction_generator import get_fitted_predictions
 from .predictions import BK_20200329, BK_20200411, CountryPrediction, PredictionEvent, prediction_db
 
 # Extend the predictions at least by 1/5th of the length of active cases.
 EXTENSION_RATIO = 0.2
+MAX_PEAK_DISTANCE = datetime.timedelta(days=14)
 
 
 class GraphType(Enum):
@@ -40,7 +40,7 @@ class GraphAxisType(Enum):
 
 
 def _get_display_range(
-    report: CountryReport, trace_generators: List[TraceGenerator]
+    report: CountryReport, trace_generators: Iterable[TraceGenerator]
 ) -> Tuple[datetime.date, datetime.date]:
     start_date = min(trace_generator.start_date for trace_generator in trace_generators)
 
@@ -54,6 +54,26 @@ def _get_display_range(
     )
 
     return start_date, display_until
+
+
+# TODO: move this to another file
+def _get_earliest_displayable_idx(
+    fitted_formulas: Iterable[FittedFormula], max_peak_distance: datetime.timedelta
+) -> int:
+    peak_days = [
+        formula.get_peak(country_report=None) for formula in reversed(list(fitted_formulas))
+    ]
+
+    min_peak, max_peak = peak_days[0], peak_days[0]
+    take = 1
+    for peak in peak_days[1:]:
+        min_peak = min(min_peak, peak)
+        max_peak = max(max_peak, peak)
+        if max_peak - min_peak <= MAX_PEAK_DISTANCE:
+            take += 1
+        else:
+            return len(peak_days) - take
+    return len(peak_days) - take
 
 
 class CountryGraph:
@@ -83,9 +103,7 @@ class CountryGraph:
             )
             for prediction in country_predictions
         }
-        start_date, display_until = _get_display_range(
-            report, list(trace_generator_by_event.values())
-        )
+        start_date, display_until = _get_display_range(report, trace_generator_by_event.values())
         self.trace_by_event = {
             event: trace_generator.generate_trace(display_until)
             for event, trace_generator in trace_generator_by_event.items()
@@ -330,25 +348,20 @@ def show_country_plot(country_data_file: Path, prediction_file: Path):
             formula.create_formula_from_proto(atg_parameters)
             for atg_parameters in country_atg_parameters.parameters
         ]
+        start_idx = _get_earliest_displayable_idx(fitted_formulas, MAX_PEAK_DISTANCE)
 
-        fitted_predictions = [
-            # TODO: move this into a function, similar to get_fitted_predictions
-            CountryPrediction(
-                prediction_event=PredictionEvent(
-                    name=f"daily_fit_{formula.last_data_date.strftime('%Y_%m_%d')}",
-                    last_data_date=formula.last_data_date,
-                    prediction_date=formula.last_data_date,
-                ),
-                country=country_report.short_name,
-                formula=formula,
-            )
-            for formula in fitted_formulas
-        ]
+        fitted_predictions = prediction_generator.create_predictions_from_formulas(
+            fitted_formulas[start_idx:], country_report.short_name
+        )
     else:
         print("Since you didn't specify prediction_file, we will now compute predictions.")
         print("This might take a while ...")
-        fitted_predictions = get_fitted_predictions(
-            report=country_report, dates=country_report.dates[-14:]
+        fitted_formulas = prediction_generator.create_fitted_formulas(
+            country_report, last_data_dates=country_report.dates[-28:]
+        )
+        start_idx = _get_earliest_displayable_idx(fitted_formulas, MAX_PEAK_DISTANCE)
+        fitted_predictions = prediction_generator.create_predictions_from_formulas(
+            fitted_formulas[start_idx:], country_report.short_name
         )
         print("Done.")
     # country_graph = CountryGraph(report=country_report, country_predictions=fitted_predictions)

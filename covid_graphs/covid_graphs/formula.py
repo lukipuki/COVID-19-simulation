@@ -2,7 +2,7 @@ import datetime
 import math
 from abc import abstractmethod
 from dataclasses import dataclass
-from typing import Callable, List
+from typing import Callable, List, Optional
 
 import numpy as np
 
@@ -50,6 +50,10 @@ class Formula:
     def get_trace_generator(self, country_report: CountryReport) -> TraceGenerator:
         pass
 
+    @abstractmethod
+    def get_peak(self, country_report: CountryReport) -> Optional[datetime.datetime]:
+        pass
+
 
 @dataclass
 class PolynomialFormula(Formula):
@@ -72,6 +76,9 @@ class PolynomialFormula(Formula):
             display_at_least_until=display_at_least_until,
             label=label,
         )
+
+    def get_peak(self, country_report: CountryReport) -> Optional[datetime.datetime]:
+        return None
 
 
 def _create_atg_label(prefix: str, tg: float, alpha: float) -> str:
@@ -106,6 +113,14 @@ class AtgFormula(Formula):
             display_at_least_until=display_at_least_until,
             label=label,
         )
+
+    def get_peak(self, country_report: CountryReport) -> Optional[datetime.datetime]:
+        start_idx = np.argmax(country_report.cumulative_active >= self.min_case_count)
+        start_date = country_report.dates[start_idx - 1]
+
+        return datetime.datetime.combine(
+            start_date, datetime.datetime.min.time()
+        ) + datetime.timedelta(days=self.exponent * self.tg)
 
 
 def _set_proto_date(proto_date, date: datetime.date) -> None:
@@ -151,8 +166,13 @@ class FittedFormula(Formula):
             label=label,
         )
 
+    def get_peak(self, country_report: Optional[CountryReport]) -> datetime.datetime:
+        return datetime.datetime.combine(
+            self.start_date, datetime.datetime.min.time()
+        ) + datetime.timedelta(days=self.fit.exp * self.fit.tg + self.fit.t0)
 
-def fit_country_data(last_data_date: datetime.date, country_report: CountryReport) -> FittedFormula:
+
+def fit_country_data(country_report: CountryReport, last_data_date: datetime.date) -> FittedFormula:
     """
     last_data_date: Date until which to consider data. Inclusive.
     country_report: CountryReport containing epidemiological data for the country.

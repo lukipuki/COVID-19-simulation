@@ -46,6 +46,7 @@ class Sidebar extends Component {
                                         <button className={activeTab === 1 ? 'active' : ''} onClick={this.selectTab(1)}>Results</button>
                                     </div>
                                     {activeTab === 0 &&
+                                        //TODO: load markdown content from backend and render it, once it'll be available
                                         <>
                                             <h1>COVID-19 predictions of Boďová and Kollár</h1>
                                             <p>Mathematicians Katarína Boďová and Richard Kollár predicted in March and April 2020
@@ -67,7 +68,7 @@ class Sidebar extends Component {
                                                 <li><a href="https://www.medrxiv.org/content/10.1101/2020.02.16.20023820v2.full.pdf">Fractal kinetics of COVID-19 pandemic</a> by Robert Ziff and Anna Ziff</li>
                                                 <li>Unpublished manuscript by Katarína Boďová and Richard Kollár</li>
                                                 <li>March 30 predictions: <a href="https://www.facebook.com/permalink.php?story_fbid=10113020662000793&amp;id=2247644">Facebook post</a></li>
-                                                <li>April 13 predictions: Personal communication</li>
+                                                <li>April 12 predictions: Personal communication</li>
                                             </ul>
                                         </>}
                                     {activeTab === 1 &&

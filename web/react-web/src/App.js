@@ -67,7 +67,7 @@ class App extends Component {
                 if (response.ok) {
                     return response.json();
                 } else {
-                    throw new Error();
+                    throw new Error(response.statusText);
                 }
             })
             .then((data) => {
@@ -77,7 +77,10 @@ class App extends Component {
                     dataContext: newData
                 });
             })
-            .catch(() => {});
+            .catch((error) => {
+                //TODO: handle this better
+                console.log(error);
+            });
     };
 
     componentDidMount() {
@@ -86,11 +89,14 @@ class App extends Component {
                 if (response.ok) {
                     return response.json();
                 } else {
-                    throw new Error();
+                    throw new Error(response.statusText);
                 }
             })
             .then(this.setAvailablePredictions)
-            .catch(() => {});
+            .catch((error) => {
+                //TODO: handle this better
+                console.log(error);
+            });
     }
 
     render() {

@@ -24,14 +24,11 @@ class Countries extends Component {
 
         const countries = new Set();
         const predictionDates = Object.keys(predictions.data).sort();
-        for (let dateKey in predictions.data) {
-            if (predictions.data.hasOwnProperty(dateKey)) {
-                const prediction = predictions.data[dateKey];
-                prediction.countries.forEach(country => {
-                    countries.add(country);
-                });
-            }
-        }
+        Object.entries(predictions.data).forEach(([dateKey, prediction]) => {
+            prediction.countries.forEach(country => {
+                countries.add(country);
+            });
+        });
         const countryList = [...countries].sort().map((country, index) => {
             const checks = predictionDates.map((prediction, i) => {
                 const isAvailable = predictions.data[prediction].countries.indexOf(country) !== -1;
@@ -58,7 +55,7 @@ class Countries extends Component {
                         <th rowSpan={2}>Country<br/>(active cases)</th><th colSpan={predictionDates.length}>Predictions</th>
                     </tr>
                     <tr>
-                        {predictionDates.map((value, index) => <th key={index}>{new Date(Date.parse(predictions.data[value].label)).toLocaleDateString()}</th>)}
+                        {predictionDates.map((value, index) => <th key={index}>{new Date(predictions.data[value].label).toLocaleDateString()}</th>)}
                     </tr>
                 </thead>
                 <tbody>{countryList}</tbody>

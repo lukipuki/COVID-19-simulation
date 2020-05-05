@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {AvailablePredictionsContext, GraphDetailContext, MODE_LINEAR, MODE_LOG, MODE_LOG_LOG} from "../sharedObjects";
+import {AvailablePredictionsContext, GraphDetailContext, AXES_LINEAR, AXES_LOG, AXES_LOG_LOG} from "../sharedObjects";
 import CountriesWrapper from "./CountriesWrapper";
 
 const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -13,12 +13,12 @@ class Sidebar extends Component {
         this.setState({activeTab})
     };
 
-    changeGraphDetail = (mode, relative) => () => {
+    changeGraphDetail = (axesType, xAxisRelative) => () => {
         const {setOptions} = this.context;
-        if (!relative && mode === MODE_LOG_LOG) {
-            mode = MODE_LINEAR;
+        if (!xAxisRelative && axesType === AXES_LOG_LOG) {
+            axesType = AXES_LINEAR;
         }
-        setOptions({mode, relative});
+        setOptions({axesType, xAxisRelative});
     };
 
     render() {
@@ -28,12 +28,12 @@ class Sidebar extends Component {
                     <GraphDetailContext.Consumer>
                         {graphDetailContext => {
                             const dates = [];
-                            const {relative, mode} = graphDetailContext.options;
+                            const {xAxisRelative, axesType} = graphDetailContext.options;
                             const {activeTab} = this.state;
 
                             for (let key in context.data) {
                                 const item = context.data[key];
-                                const date = new Date(Date.parse(item.label));
+                                const date = new Date(item.label);
                                 const className = `tab${this.state.activeDateKey === key ? ' active' : ''}`;
 
                                 dates.push(<button key={key} className={className} onClick={this.selectTab(key)}>{date.toLocaleDateString(undefined, options)}</button>);
@@ -77,16 +77,16 @@ class Sidebar extends Component {
                                             <fieldset>
                                                 <legend>Show by:</legend>
                                                 <div className='buttons'>
-                                                    <button onClick={this.changeGraphDetail(mode, true)} className={relative ? 'active' : ''}>Day</button>
-                                                    <button onClick={this.changeGraphDetail(mode, false)} className={!relative ? 'active' : ''}>Date</button>
+                                                    <button onClick={this.changeGraphDetail(axesType, true)} className={xAxisRelative ? 'active' : ''}>Day</button>
+                                                    <button onClick={this.changeGraphDetail(axesType, false)} className={!xAxisRelative ? 'active' : ''}>Date</button>
                                                 </div>
                                             </fieldset>
                                             <fieldset>
                                                 <legend>Axes adjustments:</legend>
                                                 <div className='buttons'>
-                                                    <button onClick={this.changeGraphDetail(MODE_LINEAR, relative)} className={mode === MODE_LINEAR ? 'active' : ''}>Linear</button>
-                                                    <button onClick={this.changeGraphDetail(MODE_LOG, relative)} className={mode === MODE_LOG ? 'active' : ''}>Log Y</button>
-                                                    <button disabled={!relative} onClick={this.changeGraphDetail(MODE_LOG_LOG, relative)} className={mode === MODE_LOG_LOG ? 'active' : ''}>Log XY</button>
+                                                    <button onClick={this.changeGraphDetail(AXES_LINEAR, xAxisRelative)} className={axesType === AXES_LINEAR ? 'active' : ''}>Linear</button>
+                                                    <button onClick={this.changeGraphDetail(AXES_LOG, xAxisRelative)} className={axesType === AXES_LOG ? 'active' : ''}>Log Y</button>
+                                                    <button disabled={!xAxisRelative} onClick={this.changeGraphDetail(AXES_LOG_LOG, xAxisRelative)} className={axesType === AXES_LOG_LOG ? 'active' : ''}>Log XY</button>
                                                 </div>
                                             </fieldset>
                                             <fieldset>

@@ -18,7 +18,7 @@ Final application should be in `build` folder
 
 In the root directory of the repository, run `docker-compose`.
 ```sh
-docker-compose up --build # Optionally add -d for deamon
+docker-compose up --build # Optionally add -d for daemon
 ```
 You can then access the server locally at [localhost:8081](http://127.0.0.1:8081/covid19/graphs/).
 

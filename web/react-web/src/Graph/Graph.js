@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
-import {MODE_LINEAR, MODE_LOG, MODE_LOG_LOG} from "../sharedObjects";
+import {AXES_LINEAR, AXES_LOG, AXES_LOG_LOG} from "../sharedObjects";
 
 const colors = ["#7cb5ec", "#434348", "#90ed7d", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"];
 
@@ -11,7 +11,7 @@ const predefinedOptions = {
         colors,
     },
     title: {
-        text: 'USD to EUR exchange rate over time'
+        text: ''
     },
     subtitle: {
         text: document.ontouchstart === undefined ?
@@ -69,8 +69,8 @@ class Graph extends Component {
         } = this.props;
 
         const {
-            mode,
-            relative,
+            axesType,
+            xAxisRelative,
         } = options.options;
 
         const finalOptions = {
@@ -94,7 +94,7 @@ class Graph extends Component {
             let dashStyle = 'line';
 
             if (data.type === 'prediction') {
-                if (relative) {
+                if (xAxisRelative) {
                     maxXValue = data.date_list.indexOf(data.max_value_date) + 1;
                     predictionXValue = data.date_list.indexOf(data.prediction_date) + 1;
                 } else {
@@ -102,7 +102,7 @@ class Graph extends Component {
                     predictionXValue = Date.parse(data.prediction_date);
                 }
 
-                name = data.description.replace('%PREDICTION_DATE%', `<br/>${new Date(Date.parse(data.prediction_date)).toLocaleDateString()}`);
+                name = data.description.replace('%PREDICTION_DATE%', `<br/>${new Date(data.prediction_date).toLocaleDateString()}`);
 
                 zones.push({
                     value: predictionXValue,
@@ -118,39 +118,36 @@ class Graph extends Component {
                 const y = data.values[index];
 
                 let x = null;
-                if (relative) {
+                if (xAxisRelative) {
                     x = index + 1;
                 } else {
                     x = Date.parse(date);
                 }
 
+                let marker = null;
+                let enabled = null;
+
                 if (x === maxXValue) {
-                    return {
-                        enabled: true,
-                        x,
-                        y,
-                        marker: {
-                            symbol: 'triangle-down',
+                    enabled = true;
+                    marker = {
+                        symbol: 'triangle-down',
                             enabled: true,
                             radius: 8
-                        }
-                    }
+                    };
                 }
 
                 if (x === predictionXValue) {
-                    return {
+                    enabled = true;
+                    marker = {
+                        symbol: 'diamond',
                         enabled: true,
-                        x,
-                        y,
-                        marker: {
-                            symbol: 'diamond',
-                            enabled: true,
-                            radius: 8
-                        }
-                    }
+                        radius: 8
+                    };
                 }
 
-                return [x, y];
+                return {
+                    enabled, x, y, marker
+                };
             });
 
             series.push({
@@ -173,25 +170,29 @@ class Graph extends Component {
 
         finalOptions.series = series;
 
-        switch (mode) {
+        switch (axesType) {
             default:
-            case MODE_LINEAR:
+            case AXES_LINEAR:
                 finalOptions.xAxis.type = 'linear';
                 finalOptions.yAxis.type = 'linear';
                 break;
-            case MODE_LOG:
+            case AXES_LOG:
                 finalOptions.yAxis.type = 'logarithmic';
                 finalOptions.xAxis.type = 'linear';
                 break;
-            case MODE_LOG_LOG:
+            case AXES_LOG_LOG:
                 finalOptions.xAxis.type = 'logarithmic';
                 finalOptions.yAxis.type = 'logarithmic';
                 break;
         }
 
-        if (relative) {
+        if (xAxisRelative) {
+            finalOptions.xAxis.title.text = 'Day since relevant number of cases';
+
             finalOptions.tooltip.formatter = function() {
+                //https://api.highcharts.com/highcharts/tooltip.formatter
                 if (this.points) {
+                    //shared tooltip, we need extract data from every serie
                     return this.points.reduce((s, point) => {
                         const name = point.series.name;
                         return `${s}<br/><strong>${name}:</strong> ${Math.round(point.y)}`;
@@ -205,11 +206,13 @@ class Graph extends Component {
             finalOptions.xAxis.labels.formatter = function() {
                 return this.value;
             };
-
-            finalOptions.xAxis.title.text = 'Day since relevant number of cases';
         } else {
+            finalOptions.xAxis.title.text = 'Date';
+
             finalOptions.tooltip.formatter = function() {
+                //https://api.highcharts.com/highcharts/tooltip.formatter
                 if (this.points) {
+                    //shared tooltip, we need extract data from every serie
                     const date = new Date(this.x);
                     return this.points.reduce((s, point) => {
                         const name = point.series.name;
@@ -225,8 +228,6 @@ class Graph extends Component {
             finalOptions.xAxis.labels.formatter = function() {
                 return Highcharts.dateFormat('%e %b', this.value);
             };
-
-            finalOptions.xAxis.title.text = 'Date';
         }
 
         return <HighchartsReact

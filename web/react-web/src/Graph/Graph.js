@@ -55,6 +55,14 @@ const predefinedOptions = {
     series: []
 };
 
+function xaxis_text(x, isXAxisRelative) {
+    if (isXAxisRelative) {
+        return `Day ${x}`;
+    } else {
+        return new Date(x).toLocaleDateString();
+    }
+}
+
 class Graph extends Component {
 
     static defaultProps = {
@@ -70,7 +78,7 @@ class Graph extends Component {
 
         const {
             axesType,
-            xAxisRelative,
+            isXAxisRelative,
         } = options.options;
 
         const finalOptions = {
@@ -94,7 +102,7 @@ class Graph extends Component {
             let dashStyle = 'line';
 
             if (data.type === 'prediction') {
-                if (xAxisRelative) {
+                if (isXAxisRelative) {
                     maxXValue = data.date_list.indexOf(data.max_value_date) + 1;
                     predictionXValue = data.date_list.indexOf(data.prediction_date) + 1;
                 } else {
@@ -118,7 +126,7 @@ class Graph extends Component {
                 const y = data.values[index];
 
                 let x = null;
-                if (xAxisRelative) {
+                if (isXAxisRelative) {
                     x = index + 1;
                 } else {
                     x = Date.parse(date);
@@ -186,22 +194,8 @@ class Graph extends Component {
                 break;
         }
 
-        if (xAxisRelative) {
+        if (isXAxisRelative) {
             finalOptions.xAxis.title.text = 'Day since relevant number of cases';
-
-            finalOptions.tooltip.formatter = function() {
-                //https://api.highcharts.com/highcharts/tooltip.formatter
-                if (this.points) {
-                    //shared tooltip, we need extract data from every serie
-                    return this.points.reduce((s, point) => {
-                        const name = point.series.name;
-                        return `${s}<br/><strong>${name}:</strong> ${Math.round(point.y)}`;
-                    }, `<div style="text-align: center"><strong>Day ${this.x}</strong></div>`);
-                } else {
-                    const name = this.point.series.name;
-                    return `<div style="text-align: center"><strong>Day ${this.x}</strong></div><br/><strong>${name}:</strong> ${Math.round(this.point.y)}`;
-                }
-            };
 
             finalOptions.xAxis.labels.formatter = function() {
                 return this.value;
@@ -209,26 +203,24 @@ class Graph extends Component {
         } else {
             finalOptions.xAxis.title.text = 'Date';
 
-            finalOptions.tooltip.formatter = function() {
-                //https://api.highcharts.com/highcharts/tooltip.formatter
-                if (this.points) {
-                    //shared tooltip, we need extract data from every serie
-                    const date = new Date(this.x);
-                    return this.points.reduce((s, point) => {
-                        const name = point.series.name;
-                        return `${s}<br/><strong>${name}:</strong> ${Math.round(point.y)}`;
-                    }, `<div style="text-align: center"><strong>${date.toLocaleDateString()}</strong></div>`);
-                } else {
-                    const date = new Date(this.x);
-                    const name = this.point.series.name;
-                    return `<div style="text-align: center"><strong>${date.toLocaleDateString()}</strong></div><strong>${name}:</strong> ${Math.round(this.point.y)}`;
-                }
-            };
-
             finalOptions.xAxis.labels.formatter = function() {
                 return Highcharts.dateFormat('%e %b', this.value);
             };
         }
+
+        finalOptions.tooltip.formatter = function() {
+            //https://api.highcharts.com/highcharts/tooltip.formatter
+            if (this.points) {
+                //shared tooltip, we need extract data from every series
+                return this.points.reduce((s, point) => {
+                    const name = point.series.name;
+                    return `${s}<br/><strong>${name}:</strong> ${Math.round(point.y)}`;
+                }, `<div style="text-align: center"><strong>${xaxis_text(this.x, isXAxisRelative)}</strong></div>`);
+            } else {
+                const name = this.point.series.name;
+                return `<div style="text-align: center"><strong>${xaxis_text(this.x, isXAxisRelative)}</strong></div><strong>${name}:</strong> ${Math.round(this.point.y)}`;
+            }
+        };
 
         return <HighchartsReact
             highcharts={Highcharts}

@@ -15,6 +15,6 @@ export const AXES_LOG_LOG = 3;
 
 export const graphDetailsInit = { //options for graph
     axesType: AXES_LINEAR,
-    xAxisRelative: false
+    isXAxisRelative: false
 };
 export const GraphDetailContext = React.createContext(graphDetailsInit);

@@ -12,8 +12,8 @@ from plotly.graph_objs import Figure, Layout, Scatter
 from .country_report import CountryReport, create_report
 from .formula import TraceGenerator, create_formula_from_proto
 from .pb.atg_prediction_pb2 import CountryAtgParameters
-from .predictions import BK_20200329, BK_20200411, CountryPrediction, PredictionEvent
 from .prediction_generator import get_fitted_predictions
+from .predictions import BK_20200329, BK_20200411, CountryPrediction, PredictionEvent
 
 EXTENSION_PERIOD = datetime.timedelta(days=7)
 
@@ -325,12 +325,12 @@ def show_country_plot(country_data_file: Path, prediction_file: Path):
             for formula in fitted_formulas
         ]
     else:
-        print('Since you didn\'t specify prediction_file, we will now compute predictions.')
-        print('This might take a while ...')
+        print("Since you didn't specify prediction_file, we will now compute predictions.")
+        print("This might take a while ...")
         fitted_predictions = get_fitted_predictions(
             report=country_report, dates=country_report.dates[-14:]
         )
-        print('Done.')
+        print("Done.")
 
     country_graph = CountryGraph(report=country_report, country_predictions=fitted_predictions)
     country_graph.create_country_figure(graph_type=GraphType.Slider).show()

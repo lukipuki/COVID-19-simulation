@@ -7,8 +7,8 @@ import click_pathlib
 from google.protobuf import text_format  # type: ignore
 
 from .country_report import CountryReport, create_report
-from .formula import FittedFormula
-from .pb.atg_prediction_pb2 import AtgParameters, CountryAtgParameters
+from .formula import fit_country_data
+from .pb.atg_prediction_pb2 import CountryAtgParameters
 from .predictions import CountryPrediction, PredictionEvent
 
 PREDICTION_DAYS = 21
@@ -25,7 +25,7 @@ def get_fitted_predictions(
                 prediction_date=last_data_date,
             ),
             country=report.short_name,
-            formula=FittedFormula(last_data_date=last_data_date, country_report=report),
+            formula=fit_country_data(last_data_date=last_data_date, country_report=report),
         )
         for last_data_date in dates
         if last_data_date in report.dates
@@ -44,7 +44,9 @@ def generate_predictions(filename: Path, output_dir: Path) -> None:
     country_report = create_report(filename)
     last_date_dates = country_report.dates[-PREDICTION_DAYS:]
     fitted_formulas = {
-        last_data_date: FittedFormula(last_data_date=last_data_date, country_report=country_report)
+        last_data_date: fit_country_data(
+            last_data_date=last_data_date, country_report=country_report
+        )
         for last_data_date in last_date_dates
     }
 

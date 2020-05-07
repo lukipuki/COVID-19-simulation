@@ -114,6 +114,7 @@ def set_proto_date(proto_date, date: datetime.date) -> None:
     proto_date.day = date.day
 
 
+@dataclass
 class FittedFormula(Formula):
     fit: AtgModelFit
     start_date: datetime.date
@@ -124,38 +125,6 @@ class FittedFormula(Formula):
     The trace created by this model starts at 'start_date' shifted by 'fit.t0' days ('fit.t0' is
     less than 1).
     """
-
-    def __init__(self, last_data_date: datetime.date, country_report: CountryReport):
-        """
-        last_data_date: Date until which to consider data. Inclusive.
-        country_report: CountryReport containing epidemiological data for the country.
-        """
-        self.last_data_date = last_data_date
-        until_idx = country_report.dates.index(last_data_date)
-
-        # The choice of date zero is in theory arbitrary.
-        date_zero = country_report.dates[0]
-        xs = [(date - date_zero).days for date in country_report.dates[: until_idx + 1]]
-        fit = fit_atg_model.fit_atg_model(
-            xs=xs, ys=country_report.cumulative_active[: until_idx + 1],
-        )
-        whole_day_offset = np.floor(fit.t0)
-
-        # Move the fitted model by 'whole_day_offset', so that '0 <= fit.t0 < 1'.
-        self.fit = AtgModelFit(exp=fit.exp, tg=fit.tg, t0=fit.t0 - whole_day_offset, a=fit.a)
-
-        # Counterintuitively, `date` + `timedelta` results in `date`.
-        self.start_date = date_zero + datetime.timedelta(days=whole_day_offset)
-        display_at_least_until = _get_display_at_least_until(
-            tg=self.fit.tg, exp=self.fit.exp, start_date=self.start_date,
-        )
-        label = _create_atg_label("Daily prediction", tg=self.fit.tg, alpha=self.fit.exp)
-        self.trace_generator = TraceGenerator(
-            func=self.fit.predict,
-            start_date=self.start_date,
-            display_at_least_until=display_at_least_until,
-            label=label,
-        )
 
     def serialize(self):
         atg_parameters = AtgParameters()
@@ -171,7 +140,50 @@ class FittedFormula(Formula):
         return atg_parameters
 
     def get_trace_generator(self, country_report: CountryReport) -> TraceGenerator:
-        return self.trace_generator
+        display_at_least_until = _get_display_at_least_until(
+            tg=self.fit.tg, exp=self.fit.exp, start_date=self.start_date,
+        )
+        label = _create_atg_label("Daily prediction", tg=self.fit.tg, alpha=self.fit.exp)
+        return TraceGenerator(
+            func=self.fit.predict,
+            start_date=self.start_date,
+            display_at_least_until=display_at_least_until,
+            label=label,
+        )
+
+
+def fit_country_data(last_data_date: datetime.date, country_report: CountryReport) -> FittedFormula:
+    """
+    last_data_date: Date until which to consider data. Inclusive.
+    country_report: CountryReport containing epidemiological data for the country.
+    """
+    until_idx = country_report.dates.index(last_data_date)
+
+    # The choice of date zero is in theory arbitrary.
+    date_zero = country_report.dates[0]
+    xs = [(date - date_zero).days for date in country_report.dates[: until_idx + 1]]
+    fit = fit_atg_model.fit_atg_model(xs=xs, ys=country_report.cumulative_active[: until_idx + 1],)
+    whole_day_offset = np.floor(fit.t0)
+
+    # Move the fitted model by 'whole_day_offset', so that '0 <= fit.t0 < 1'.
+    shifted_fit = AtgModelFit(exp=fit.exp, tg=fit.tg, t0=fit.t0 - whole_day_offset, a=fit.a)
+
+    # Counterintuitively, `date` + `timedelta` results in `date`.
+    start_date = date_zero + datetime.timedelta(days=whole_day_offset)
+    return FittedFormula(fit=shifted_fit, start_date=start_date, last_data_date=last_data_date)
+
+
+def date_from_proto(proto_date) -> datetime.date:
+    return datetime.date(year=proto_date.year, month=proto_date.month, day=proto_date.day)
+
+
+def create_formula_from_proto(atg_parameters) -> FittedFormula:
+    fit = AtgModelFit(
+        exp=atg_parameters.alpha, tg=atg_parameters.tg, t0=atg_parameters.offset, a=atg_parameters.a
+    )
+    start_date = date_from_proto(atg_parameters.start_date)
+    last_data_date = date_from_proto(atg_parameters.last_data_date)
+    return FittedFormula(fit, start_date, last_data_date)
 
 
 def _get_display_at_least_until(tg: float, exp: float, start_date: datetime.date) -> datetime.date:

@@ -9,6 +9,7 @@ import numpy as np
 from . import fit_atg_model
 from .country_report import CountryReport
 from .fit_atg_model import AtgModelFit
+from .pb.atg_prediction_pb2 import AtgParameters
 
 
 @dataclass
@@ -107,37 +108,67 @@ class AtgFormula(Formula):
         )
 
 
+def set_proto_date(proto_date, date: datetime.date) -> None:
+    proto_date.year = date.year
+    proto_date.month = date.month
+    proto_date.day = date.day
+
+
 class FittedFormula(Formula):
     fit: AtgModelFit
+    start_date: datetime.date
+    last_data_date: datetime.date
 
-    def __init__(self, until_date: datetime.date, country_report: CountryReport):
+    """
+    The model ('fit') was fitted using data until 'last_data_date'.
+    The trace created by this model starts at 'start_date' shifted by 'fit.t0' days ('fit.t0' is
+    less than 1).
+    """
+
+    def __init__(self, last_data_date: datetime.date, country_report: CountryReport):
         """
-        until_date: Date until which to consider data. Inclusive.
+        last_data_date: Date until which to consider data. Inclusive.
         country_report: CountryReport containing epidemiological data for the country.
         """
-        until_idx = country_report.dates.index(until_date)
+        self.last_data_date = last_data_date
+        until_idx = country_report.dates.index(last_data_date)
 
         # The choice of date zero is in theory arbitrary.
         date_zero = country_report.dates[0]
         xs = [(date - date_zero).days for date in country_report.dates[: until_idx + 1]]
-        self.fit = fit_atg_model.fit_atg_model(
+        fit = fit_atg_model.fit_atg_model(
             xs=xs, ys=country_report.cumulative_active[: until_idx + 1],
         )
-        # Counterintuitively, `date` + `timedelta` results in `date`.
-        whole_day_offset = np.floor(self.fit.t0)
-        self.fit.shift_forward(whole_day_offset)
+        whole_day_offset = np.floor(fit.t0)
 
-        start_date = date_zero + datetime.timedelta(days=whole_day_offset)
+        # Move the fitted model by 'whole_day_offset', so that '0 <= fit.t0 < 1'.
+        self.fit = AtgModelFit(exp=fit.exp, tg=fit.tg, t0=fit.t0 - whole_day_offset, a=fit.a)
+
+        # Counterintuitively, `date` + `timedelta` results in `date`.
+        self.start_date = date_zero + datetime.timedelta(days=whole_day_offset)
         display_at_least_until = _get_display_at_least_until(
-            tg=self.fit.tg, exp=self.fit.exp, start_date=start_date,
+            tg=self.fit.tg, exp=self.fit.exp, start_date=self.start_date,
         )
         label = _create_atg_label("Daily prediction", tg=self.fit.tg, alpha=self.fit.exp)
         self.trace_generator = TraceGenerator(
             func=self.fit.predict,
-            start_date=start_date,
+            start_date=self.start_date,
             display_at_least_until=display_at_least_until,
             label=label,
         )
+
+    def serialize(self):
+        atg_parameters = AtgParameters()
+
+        atg_parameters.alpha = self.fit.exp
+        atg_parameters.tg = self.fit.tg
+        atg_parameters.offset = self.fit.t0
+        atg_parameters.a = self.fit.a
+
+        set_proto_date(atg_parameters.last_data_date, self.last_data_date)
+        set_proto_date(atg_parameters.start_date, self.start_date)
+
+        return atg_parameters
 
     def get_trace_generator(self, country_report: CountryReport) -> TraceGenerator:
         return self.trace_generator

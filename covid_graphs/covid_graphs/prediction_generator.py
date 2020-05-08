@@ -6,8 +6,8 @@ import click
 import click_pathlib
 from google.protobuf import text_format  # type: ignore
 
+from . import formula
 from .country_report import CountryReport, create_report
-from .formula import fit_country_data
 from .pb.atg_prediction_pb2 import CountryAtgParameters
 from .predictions import CountryPrediction, PredictionEvent
 
@@ -25,7 +25,7 @@ def get_fitted_predictions(
                 prediction_date=last_data_date,
             ),
             country=report.short_name,
-            formula=fit_country_data(last_data_date=last_data_date, country_report=report),
+            formula=formula.fit_country_data(last_data_date=last_data_date, country_report=report),
         )
         for last_data_date in dates
         if last_data_date in report.dates
@@ -44,7 +44,7 @@ def generate_predictions(filename: Path, output_dir: Path) -> None:
     country_report = create_report(filename)
     last_date_dates = country_report.dates[-PREDICTION_DAYS:]
     fitted_formulas = [
-        fit_country_data(last_data_date=last_data_date, country_report=country_report)
+        formula.fit_country_data(last_data_date=last_data_date, country_report=country_report)
         for last_data_date in last_date_dates
     ]
 
@@ -52,8 +52,8 @@ def generate_predictions(filename: Path, output_dir: Path) -> None:
     country_atg_parameters = CountryAtgParameters()
     country_atg_parameters.long_country_name = country_report.long_name
     country_atg_parameters.short_country_name = short_country_name
-    for formula in fitted_formulas:
-        country_atg_parameters.parameters.append(formula.serialize())
+    for fitted_formula in fitted_formulas:
+        country_atg_parameters.parameters.append(fitted_formula.serialize())
 
     with open(output_dir / f"{short_country_name}.atg", "w") as output:
         output.write(text_format.MessageToString(country_atg_parameters))

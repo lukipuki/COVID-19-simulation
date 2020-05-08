@@ -25,15 +25,15 @@ class Trace:
 
 @dataclass
 class TraceGenerator:
-    func: Callable
-    start_date: datetime.date
-    display_at_least_until: datetime.date
-    label: str
-
     """
     Trace is created from a function `func(x)`, which has x=0 at `start_date`. It's only defined for
     x >= 0.
     """
+
+    func: Callable
+    start_date: datetime.date
+    display_at_least_until: datetime.date
+    label: str
 
     def generate_trace(self, display_until: datetime.date) -> Trace:
         """Generates trace corresponding to the closed interval [self.start_date, end_date]"""
@@ -108,7 +108,7 @@ class AtgFormula(Formula):
         )
 
 
-def set_proto_date(proto_date, date: datetime.date) -> None:
+def _set_proto_date(proto_date, date: datetime.date) -> None:
     proto_date.year = date.year
     proto_date.month = date.month
     proto_date.day = date.day
@@ -116,15 +116,15 @@ def set_proto_date(proto_date, date: datetime.date) -> None:
 
 @dataclass
 class FittedFormula(Formula):
-    fit: AtgModelFit
-    start_date: datetime.date
-    last_data_date: datetime.date
-
     """
     The model ('fit') was fitted using data until 'last_data_date'.
     The trace created by this model starts at 'start_date' shifted by 'fit.t0' days ('fit.t0' is
     less than 1).
     """
+
+    fit: AtgModelFit
+    start_date: datetime.date
+    last_data_date: datetime.date
 
     def serialize(self):
         atg_parameters = AtgParameters()
@@ -134,8 +134,8 @@ class FittedFormula(Formula):
         atg_parameters.offset = self.fit.t0
         atg_parameters.a = self.fit.a
 
-        set_proto_date(atg_parameters.last_data_date, self.last_data_date)
-        set_proto_date(atg_parameters.start_date, self.start_date)
+        _set_proto_date(atg_parameters.last_data_date, self.last_data_date)
+        _set_proto_date(atg_parameters.start_date, self.start_date)
 
         return atg_parameters
 
@@ -173,7 +173,7 @@ def fit_country_data(last_data_date: datetime.date, country_report: CountryRepor
     return FittedFormula(fit=shifted_fit, start_date=start_date, last_data_date=last_data_date)
 
 
-def date_from_proto(proto_date) -> datetime.date:
+def _date_from_proto(proto_date) -> datetime.date:
     return datetime.date(year=proto_date.year, month=proto_date.month, day=proto_date.day)
 
 
@@ -181,8 +181,8 @@ def create_formula_from_proto(atg_parameters) -> FittedFormula:
     fit = AtgModelFit(
         exp=atg_parameters.alpha, tg=atg_parameters.tg, t0=atg_parameters.offset, a=atg_parameters.a
     )
-    start_date = date_from_proto(atg_parameters.start_date)
-    last_data_date = date_from_proto(atg_parameters.last_data_date)
+    start_date = _date_from_proto(atg_parameters.start_date)
+    last_data_date = _date_from_proto(atg_parameters.last_data_date)
     return FittedFormula(fit, start_date, last_data_date)
 
 

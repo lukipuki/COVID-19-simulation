@@ -6,10 +6,12 @@ from typing import List, Tuple
 
 import click
 import click_pathlib
+from google.protobuf import text_format  # type: ignore
 from plotly.graph_objs import Figure, Layout, Scatter
 
 from .country_report import CountryReport, create_report
-from .formula import TraceGenerator
+from .formula import TraceGenerator, create_formula_from_proto
+from .pb.atg_prediction_pb2 import CountryAtgParameters
 from .prediction_generator import get_fitted_predictions
 from .predictions import BK_20200329, BK_20200411, CountryPrediction, PredictionEvent
 
@@ -290,15 +292,45 @@ class CountryGraph:
 
 @click.command(help="COVID-19 visualization of active cases")
 @click.argument(
-    "filename", required=True, type=click_pathlib.Path(exists=True),
+    "country_data_file", required=True, type=click_pathlib.Path(exists=True),
 )
-def show_country_plot(filename: Path):
+@click.argument(
+    "prediction_file", required=False, type=click_pathlib.Path(),
+)
+def show_country_plot(country_data_file: Path, prediction_file: Path):
     # Use country_predictions for non-slider graphs
     # country_predictions = prediction_db.predictions_for_country(country=country_name)
-    country_report = create_report(filename)
+    country_report = create_report(country_data_file)
 
-    fitted_predictions = get_fitted_predictions(
-        report=country_report, dates=country_report.dates[-14:]
-    )
+    if prediction_file is not None and prediction_file.is_file():
+        country_atg_parameters = CountryAtgParameters()
+        text_format.Parse(prediction_file.read_text(), country_atg_parameters)
+
+        fitted_formulas = [
+            create_formula_from_proto(atg_parameters)
+            for atg_parameters in country_atg_parameters.parameters
+        ]
+
+        fitted_predictions = [
+            # TODO: move this into a function, similar to get_fitted_predictions
+            CountryPrediction(
+                prediction_event=PredictionEvent(
+                    name=f"daily_fit_{formula.last_data_date.strftime('%Y_%m_%d')}",
+                    last_data_date=formula.last_data_date,
+                    prediction_date=formula.last_data_date,
+                ),
+                country=country_report.short_name,
+                formula=formula,
+            )
+            for formula in fitted_formulas
+        ]
+    else:
+        print("Since you didn't specify prediction_file, we will now compute predictions.")
+        print("This might take a while ...")
+        fitted_predictions = get_fitted_predictions(
+            report=country_report, dates=country_report.dates[-14:]
+        )
+        print("Done.")
+
     country_graph = CountryGraph(report=country_report, country_predictions=fitted_predictions)
     country_graph.create_country_figure(graph_type=GraphType.Slider).show()

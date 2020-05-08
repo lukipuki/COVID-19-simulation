@@ -1,3 +1,129 @@
 .App {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+}
+
+.App .side_switch {
+  position: fixed;
+  right: 10px;
+  top: 10px;
+  display: none;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.App .sidebar {
+  flex: 1;
+  max-width: 30%;
+  min-width: 300px;
+  overflow: auto;
+  padding: 0 10px;
+  background-color: linen;
+  -webkit-box-shadow: 0 0 20px 5px rgba(0,0,0,0.2);
+  -moz-box-shadow: 0 0 20px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 0 20px 5px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.App .content {
+  flex: 1;
+  height: 100%;
+}
+
+.App button {
+  background-color: transparent;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid lightgrey;
   text-align: center;
+  transition: all 0.2s;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.App button:hover {
+  background-color: lightgrey;
+}
+
+.App button:disabled,
+.App button:disabled:hover {
+  background-color: lightgrey;
+  color: darkgrey;
+}
+
+.App button.active {
+  background-color: orange;
+}
+
+.App .buttons {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.App fieldset {
+  border-radius: 10px;
+  border: 1px solid lightgrey;
+  margin-top: 10px;
+  overflow: auto;
+}
+
+.App fieldset table {
+  text-align: center;
+  width: 100%;
+}
+
+.App fieldset table button {
+  margin: 5px 0;
+  width: 100%;
+}
+
+.App fieldset table td:first-child {
+  text-align: left;
+}
+
+.App fieldset table tbody tr:nth-child(even) {
+  background-color: rgba(160, 160, 160, 0.1);
+}
+
+@media screen
+and (max-width: 599px) {
+  .App {
+    display: block;
+    overflow: auto;
+  }
+
+  .App.side-hidden .side_switch {
+    transform: rotate(90deg);
+  }
+
+  .App.side-hidden .sidebar {
+    display: none;
+  }
+
+  .App button {
+    padding: 10px;
+  }
+
+  .App .side_switch {
+    display: block;
+    opacity: 0.2;
+    transition: all 0.2s;
+  }
+
+  .App .side_switch:hover {
+    opacity: 1;
+  }
+
+  .App .sidebar {
+    max-width: initial;
+    min-width: initial;
+    position: absolute;
+    min-height: 100%;
+    overflow: initial;
+  }
 }

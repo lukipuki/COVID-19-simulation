@@ -9,19 +9,22 @@ import click_pathlib
 from google.protobuf import text_format  # type: ignore
 from plotly.graph_objs import Figure, Layout, Scatter
 
+from . import formula
 from .country_report import CountryReport, create_report
-from .formula import TraceGenerator, create_formula_from_proto
+from .formula import TraceGenerator
 from .pb.atg_prediction_pb2 import CountryAtgParameters
 from .prediction_generator import get_fitted_predictions
-from .predictions import BK_20200329, BK_20200411, CountryPrediction, PredictionEvent
+from .predictions import BK_20200329, BK_20200411, CountryPrediction, PredictionEvent, prediction_db
 
-EXTENSION_PERIOD = datetime.timedelta(days=7)
+# Extend the predictions at least by 1/5th of the length of active cases.
+EXTENSION_RATIO = 0.2
 
 
 class GraphType(Enum):
     Slider = "slider"
     SinglePrediction = "single"
     MultiPredictions = "multi"
+    BayesPredictions = "bayes"
 
     def __str__(self):
         return self.value
@@ -41,10 +44,15 @@ def _get_display_range(
 ) -> Tuple[datetime.date, datetime.date]:
     start_date = min(trace_generator.start_date for trace_generator in trace_generators)
 
+    last_report_date = report.dates[-1]
+    report_length = last_report_date - start_date + datetime.timedelta(days=1)
+    report_extension = report_length * EXTENSION_RATIO
+
     display_until = max(
         max(trace_generator.display_at_least_until for trace_generator in trace_generators),
-        report.dates[-1] + EXTENSION_PERIOD,
+        last_report_date + report_extension,
     )
+
     return start_date, display_until
 
 
@@ -139,28 +147,31 @@ class CountryGraph:
             else:
                 return (date - self.log_xaxis_date_since).days
 
-        # Matplotlib colors.
-        color_by_event = {
-            BK_20200329: "rgb(255, 123, 37)",
-            BK_20200411: "rgb(0, 121, 177)",
-        }
-        extra_colors = [
-            "rgba(43, 161, 59, 0.4)",
-            "rgba(43, 161, 59, 0.7)",
-            "rgba(43, 161, 59, 1.0)",
-        ]
-        for event in self.trace_by_event:
-            if graph_type == GraphType.Slider:
-                color_by_event[event] = extra_colors[-1]
+        def color_and_opacity_by_event(event: PredictionEvent, count: int):
+            # Matplotlib colors.
+            if event == BK_20200329:
+                return "rgb(255, 123, 37)", 1.0
+            if event == BK_20200411:
+                return "rgb(0, 121, 177)", 1.0
+
+            if graph_type == GraphType.MultiPredictions:
+                opacity = count / len(self.trace_by_event)
+            elif graph_type == GraphType.BayesPredictions:
+                opacity = min(1.0, 10.0 / len(self.trace_by_event))
             else:
-                if event not in color_by_event:
-                    color_by_event[event] = extra_colors.pop()
+                opacity = 1.0
+            return "rgb(43, 161, 59)", opacity
 
         traces = []
         visibility = graph_type != GraphType.Slider
+        count = 0
         for event, trace in self.trace_by_event.items():
             prediction_date_str = event.prediction_date.strftime("%b %d")
             data_until_idx = trace.xs.index(event.last_data_date)
+
+            count += 1
+            color, opacity = color_and_opacity_by_event(event, count)
+
             if graph_type == GraphType.MultiPredictions:
                 # Last data date mark.
                 data_until_y = trace.ys[data_until_idx]
@@ -173,10 +184,12 @@ class CountryGraph:
                         y=[1.0, data_until_y],
                         mode="markers",
                         name=f"Data cutoff",
-                        marker=dict(size=15, symbol="circle", color=color_by_event[event]),
-                        line=dict(width=3, color=color_by_event[event]),
+                        marker=dict(size=15, symbol="circle", color=color),
+                        line=dict(width=3, color=color),
+                        opacity=opacity,
                         legendgroup=event.name,
                         showlegend=False,
+                        hoverinfo="skip",
                         visible=True,
                     )
                 )
@@ -193,10 +206,11 @@ class CountryGraph:
                         mode="none",
                         fill="tozerox",
                         fillcolor="rgba(144, 238, 144, 0.4)",
-                        opacity=0.4,
                         line=dict(color="rgba(255,255,255,0)"),
-                        showlegend=False,
+                        opacity=0.4,
                         legendgroup=event.name,
+                        showlegend=False,
+                        hoverinfo="skip",
                         visible=visibility,
                     )
                 )
@@ -209,7 +223,8 @@ class CountryGraph:
                     mode="lines",
                     # TODO(lukas): we should have a better API then '.replace'
                     name=trace.label.replace("%PREDICTION_DATE%", prediction_date_str),
-                    line=dict(width=2, color=color_by_event[event]),
+                    line=dict(width=2, color=color),
+                    opacity=opacity,
                     legendgroup=event.name,
                     visible=visibility,
                 )
@@ -221,27 +236,34 @@ class CountryGraph:
                     text=trace.xs[data_until_idx:],
                     mode="lines",
                     name=trace.label.replace("%PREDICTION_DATE%", prediction_date_str),
-                    line=dict(width=2, dash="dash", color=color_by_event[event]),
+                    line=dict(width=2, dash="dot", color=color),
+                    opacity=opacity,
                     legendgroup=event.name,
                     showlegend=False,
                     visible=visibility,
                 )
             )
 
-            # Maximum mark.
-            traces.append(
-                Scatter(
-                    mode="markers",
-                    x=[adjust_xlabel(trace.max_value_date), adjust_xlabel(trace.max_value_date)],
-                    y=[1.0, trace.max_value],
-                    name="Peak",
-                    line=dict(color=color_by_event[event]),
-                    marker=dict(size=15, symbol="star"),
-                    legendgroup=event.name,
-                    showlegend=False,
-                    visible=visibility,
+            if graph_type != GraphType.BayesPredictions:
+                # Maximum mark.
+                traces.append(
+                    Scatter(
+                        mode="markers",
+                        x=[
+                            adjust_xlabel(trace.max_value_date),
+                            adjust_xlabel(trace.max_value_date),
+                        ],
+                        y=[1.0, trace.max_value],
+                        name="Peak",
+                        line=dict(color=color),
+                        opacity=opacity,
+                        marker=dict(size=15, symbol="star"),
+                        legendgroup=event.name,
+                        showlegend=False,
+                        hoverinfo="skip",
+                        visible=visibility,
+                    )
                 )
-            )
 
         # Add cumulated active cases trace.
         traces.append(
@@ -267,7 +289,7 @@ class CountryGraph:
             ),
             height=700,
             margin=dict(r=40),
-            hovermode="x",
+            hovermode="x" if graph_type != GraphType.MultiPredictions else "closest",
             font=dict(size=18),
             legend=dict(x=0.01, y=0.99, borderwidth=1),
             plot_bgcolor="White",
@@ -298,8 +320,6 @@ class CountryGraph:
     "prediction_file", required=False, type=click_pathlib.Path(),
 )
 def show_country_plot(country_data_file: Path, prediction_file: Path):
-    # Use country_predictions for non-slider graphs
-    # country_predictions = prediction_db.predictions_for_country(country=country_name)
     country_report = create_report(country_data_file)
 
     if prediction_file is not None and prediction_file.is_file():
@@ -307,7 +327,7 @@ def show_country_plot(country_data_file: Path, prediction_file: Path):
         text_format.Parse(prediction_file.read_text(), country_atg_parameters)
 
         fitted_formulas = [
-            create_formula_from_proto(atg_parameters)
+            formula.create_formula_from_proto(atg_parameters)
             for atg_parameters in country_atg_parameters.parameters
         ]
 
@@ -331,6 +351,11 @@ def show_country_plot(country_data_file: Path, prediction_file: Path):
             report=country_report, dates=country_report.dates[-14:]
         )
         print("Done.")
+    # country_graph = CountryGraph(report=country_report, country_predictions=fitted_predictions)
+    # country_graph.create_country_figure(graph_type=GraphType.Slider).show()
 
-    country_graph = CountryGraph(report=country_report, country_predictions=fitted_predictions)
-    country_graph.create_country_figure(graph_type=GraphType.Slider).show()
+    # Uncomment for MultiPredictions graph
+    country_predictions = prediction_db.predictions_for_country(country=country_report.short_name)
+    country_predictions.extend(fitted_predictions[-1:])
+    country_graph = CountryGraph(report=country_report, country_predictions=country_predictions)
+    country_graph.create_country_figure(graph_type=GraphType.MultiPredictions).show()

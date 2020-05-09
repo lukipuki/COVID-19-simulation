@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Dict, List, Tuple
 
-from flask import Flask, abort, jsonify, url_for
+import flask
 
 from covid_graphs.country_graph import CountryGraph
 from covid_graphs.country_report import CountryReport, create_report
@@ -21,24 +21,25 @@ class Rest:
 
     @staticmethod
     def _create_available_predictions() -> List[Dict]:
-        result = []
-        for x in prediction_db.get_prediction_events():
-            for p in prediction_db.predictions_for_event(x):
-                result.append({
-                    "prediction": x.name,
-                    "prediction_date": x.prediction_date,
-                    "country": p.country
-                })
+        result = [
+            {
+                "prediction": x.name,
+                "prediction_date": x.prediction_date,
+                "country": p.country
+            }
+            for x in prediction_db.get_prediction_events()
+            for p in prediction_db.predictions_for_event(x)
+        ]
 
         return result
 
     @staticmethod
     def _create_country_reports(data_dir: Path) -> Dict[str, CountryReport]:
-        country_reports = {}
-        for country_short_name in prediction_db.get_countries():
-            if (data_dir / f"{country_short_name}.data").is_file():
-                country_report = create_report(data_dir / f"{country_short_name}.data")
-                country_reports[country_report.short_name] = country_report
+        country_reports = {
+            country_short_name: create_report(data_dir / f"{country_short_name}.data")
+            for country_short_name in prediction_db.get_countries()
+            if (data_dir / f"{country_short_name}.data").is_file()
+        }
 
         return country_reports
 
@@ -82,45 +83,51 @@ class Rest:
         return self
 
     def get_available_predictions(self):
-        result = []
-        for prediction in self.available_predictions:
-            prediction['link'] = url_for("covid19_get_specific_prediction", country=prediction['country'], prediction=prediction['prediction'])
-            result.append(prediction)
+        # lazy link initialization
+        if 'link' not in self.available_predictions[0]:
+            for prediction in self.available_predictions:
+                prediction['link'] = flask.url_for(
+                            "covid19_get_specific_prediction",
+                            country=prediction['country'],
+                            prediction=prediction['prediction']
+                        )
 
-        return jsonify(result)
+        return flask.jsonify(self.available_predictions)
 
     def get_predictions_by_country(self, country: str):
-        result = []
-        for prediction in self.predictions:
-            if prediction["short_name"] == country:
-                result.append(prediction)
+        result = [
+            prediction
+            for prediction in self.predictions
+            if prediction["short_name"] == country
+        ]
 
         if len(result) == 0:
-            abort(404)
+            flask.abort(404)
 
-        return jsonify(result)
+        return flask.jsonify(result)
 
     def get_predictions_by_name(self, date: str):
-        result = []
-        for prediction in self.predictions:
-            if prediction["date_name"] == date:
-                result.append(prediction)
+        result = [
+            prediction
+            for prediction in self.predictions
+            if prediction["date_name"] == date
+        ]
 
         if len(result) == 0:
-            abort(404)
+            flask.abort(404)
 
-        return jsonify(result)
+        return flask.jsonify(result)
 
     def get_specific_prediction(self, date: str, country: str):
         for prediction in self.predictions:
             if prediction["short_name"] == country and prediction["date_name"] == date:
-                return jsonify(prediction)
+                return flask.jsonify(prediction)
 
-        abort(404)
+        flask.abort(404)
         return ""
 
     def get_country_data(self, country: str):
         if country not in self.country_reports_active:
-            abort(404)
+            flask.abort(404)
 
-        return jsonify(self.country_reports_active[country])
+        return flask.jsonify(self.country_reports_active[country])

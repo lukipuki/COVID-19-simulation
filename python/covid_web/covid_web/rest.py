@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Dict, List, Tuple
 
-from flask import Flask, abort, jsonify
+from flask import Flask, abort, jsonify, url_for
 
 from covid_graphs.country_graph import CountryGraph
 from covid_graphs.country_report import CountryReport, create_report
@@ -13,20 +13,23 @@ CountryGraphsByReportName = Dict[str, List[CountryGraph]]
 
 class Rest:
     def __init__(self, data_dir: Path):
-        self.available_predictions = Rest._create_available_predictions_by_date()
+        self.available_predictions = Rest._create_available_predictions()
         self.country_reports = Rest._create_country_reports(data_dir)
         predictions, country_reports_active = Rest._create_predictions(self.country_reports)
         self.predictions = predictions
         self.country_reports_active = country_reports_active
 
     @staticmethod
-    def _create_available_predictions_by_date() -> Dict[str, Dict]:
-        result = {}
+    def _create_available_predictions() -> List[Dict]:
+        result = []
         for x in prediction_db.get_prediction_events():
-            result[x.name] = {
-                "label": x.last_data_date,
-                "countries": [p.country for p in prediction_db.predictions_for_event(x)],
-            }
+            for p in prediction_db.predictions_for_event(x):
+                result.append({
+                    "prediction": x.name,
+                    "prediction_date": x.prediction_date,
+                    "country": p.country
+                })
+
         return result
 
     @staticmethod
@@ -79,7 +82,34 @@ class Rest:
         return self
 
     def get_available_predictions(self):
-        return jsonify(self.available_predictions)
+        result = []
+        for prediction in self.available_predictions:
+            prediction['link'] = url_for("covid19_get_specific_prediction", country=prediction['country'], prediction=prediction['prediction'])
+            result.append(prediction)
+
+        return jsonify(result)
+
+    def get_predictions_by_country(self, country: str):
+        result = []
+        for prediction in self.predictions:
+            if prediction["short_name"] == country:
+                result.append(prediction)
+
+        if len(result) == 0:
+            abort(404)
+
+        return jsonify(result)
+
+    def get_predictions_by_name(self, date: str):
+        result = []
+        for prediction in self.predictions:
+            if prediction["date_name"] == date:
+                result.append(prediction)
+
+        if len(result) == 0:
+            abort(404)
+
+        return jsonify(result)
 
     def get_specific_prediction(self, date: str, country: str):
         for prediction in self.predictions:
@@ -94,9 +124,3 @@ class Rest:
             abort(404)
 
         return jsonify(self.country_reports_active[country])
-
-
-def create_rest(data_dir: Path, server: Flask):
-    # TODO(rejdi): Don't use print.
-    print("Creating dashboard for REST calls.")
-    return Rest(data_dir)

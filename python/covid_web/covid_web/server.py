@@ -55,13 +55,22 @@ def _create_rest(data_dir: Path, server: Flask):
     def covid19_country_data(country):
         return rest.get_country_data(country)
 
-    @server.route("/covid19/rest/predictions/list/")
+    @server.route("/covid19/rest/predictions/list")
     def covid19_available_predictions():
         return rest.get_available_predictions()
 
-    @server.route("/covid19/rest/predictions/data/<date>/<country>")
-    def covid19_get_specific_prediction(date, country):
-        return rest.get_specific_prediction(date, country)
+    @server.route("/covid19/rest/predictions/by_prediction/<prediction>")
+    def covid19_get_predictions_by_date(prediction):
+        return rest.get_predictions_by_name(prediction)
+
+    @server.route("/covid19/rest/predictions/by_country/<country>")
+    def covid19_get_predictions_by_country(country):
+        return rest.get_predictions_by_country(country)
+
+    @server.route("/covid19/rest/predictions/by_prediction/<prediction>/<country>")
+    @server.route("/covid19/rest/predictions/by_country/<country>/<prediction>")
+    def covid19_get_specific_prediction(prediction, country):
+        return rest.get_specific_prediction(prediction, country)
 
 
 def _create_prediction_apps(data_dir: Path, server: Flask):

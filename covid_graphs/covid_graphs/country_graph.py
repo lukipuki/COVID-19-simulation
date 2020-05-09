@@ -57,23 +57,27 @@ def _get_display_range(
 
 
 # TODO: move this to another file
-def _get_earliest_displayable_idx(
+def _calculate_earliest_displayable_idx(
     fitted_formulas: Iterable[FittedFormula], max_peak_distance: datetime.timedelta
 ) -> int:
+    """
+    Calculates the earliest index in fitted_formulas, after which the peaks of formulas are within
+    'max_peak_distance'.
+    """
     peak_days = [
         formula.get_peak(country_report=None) for formula in reversed(list(fitted_formulas))
     ]
 
     min_peak, max_peak = peak_days[0], peak_days[0]
-    take = 1
+    take_count = 1
     for peak in peak_days[1:]:
         min_peak = min(min_peak, peak)
         max_peak = max(max_peak, peak)
-        if max_peak - min_peak <= MAX_PEAK_DISTANCE:
-            take += 1
+        if max_peak - min_peak <= max_peak_distance:
+            take_count += 1
         else:
-            return len(peak_days) - take
-    return len(peak_days) - take
+            break
+    return len(peak_days) - take_count
 
 
 class CountryGraph:
@@ -348,7 +352,7 @@ def show_country_plot(country_data_file: Path, prediction_file: Path):
             formula.create_formula_from_proto(atg_parameters)
             for atg_parameters in country_atg_parameters.parameters
         ]
-        start_idx = _get_earliest_displayable_idx(fitted_formulas, MAX_PEAK_DISTANCE)
+        start_idx = _calculate_earliest_displayable_idx(fitted_formulas, MAX_PEAK_DISTANCE)
 
         fitted_predictions = prediction_generator.create_predictions_from_formulas(
             fitted_formulas[start_idx:], country_report.short_name
@@ -359,7 +363,7 @@ def show_country_plot(country_data_file: Path, prediction_file: Path):
         fitted_formulas = prediction_generator.create_fitted_formulas(
             country_report, last_data_dates=country_report.dates[-28:]
         )
-        start_idx = _get_earliest_displayable_idx(fitted_formulas, MAX_PEAK_DISTANCE)
+        start_idx = _calculate_earliest_displayable_idx(fitted_formulas, MAX_PEAK_DISTANCE)
         fitted_predictions = prediction_generator.create_predictions_from_formulas(
             fitted_formulas[start_idx:], country_report.short_name
         )

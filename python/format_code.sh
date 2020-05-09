@@ -6,8 +6,10 @@ then
     echo "⚠️  Running outside of a virtual environment."
 fi
 
+PYTHON_PACKAGES=(covid_graphs covid_web)
+
 echo "Formatting imports (isort)"
-isort covid_graphs/ --apply --recursive
+isort --apply --recursive $PYTHON_PACKAGES
 
 echo "Formatting code (black)"
-black covid_graphs/
+black $PYTHON_PACKAGES

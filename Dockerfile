@@ -6,9 +6,6 @@ RUN apt update \
     && apt install -y python3-pip python3-numpy python3-pandas \
     && rm -rf /tmp/* /var/lib/apt/lists/* /root/.cache/*
 
-COPY covid_graphs /covid19_graphs
-RUN pip3 install /covid19_graphs && rm -rf /covid19_graphs
-
-COPY web /covid19_web
-RUN pip3 install /covid19_web && rm -rf /covid19_web
+COPY python /python
+RUN pip3 install /python/covid_graphs /python/covid_web && rm -rf /python
 RUN pip3 install uwsgi

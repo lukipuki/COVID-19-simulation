@@ -28,7 +28,7 @@ covid_web.run_server --data-dir ../data
 For quick development or data examination, running standalone graphs can be useful.
 ```sh
 covid_graphs.show_country_plot ../data/Spain.data
-covid_graphs.show_scatter_plot ../data/Slovakia.data polynomial.sim
+covid_graphs.show_scatter_plot ../simulation/Slovakia.data polynomial.sim
 covid_graphs.show_heat_map exponential.sim
 ```
 

@@ -315,7 +315,7 @@ class CountryGraph:
     "country_data_file", required=True, type=click_pathlib.Path(exists=True),
 )
 @click.argument(
-    "prediction_dir", required=False, type=click_pathlib.Path(exists=True),
+    "prediction_dir", required=True, type=click_pathlib.Path(exists=True),
 )
 def show_country_plot(country_data_file: Path, prediction_dir: Path):
     country_report = create_report(country_data_file)

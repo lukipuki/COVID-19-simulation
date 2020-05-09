@@ -13,8 +13,9 @@ setup(
         "Flask",
         "numpy",
         "pandas",
-        "protobuf",
         "plotly",
+        "protobuf",
+        "pymc3",
         "pytest",
         "scipy",
     ],
@@ -28,6 +29,7 @@ setup(
             "covid_graphs.show_heat_map = covid_graphs.heat_map:show_heat_map",
             "covid_graphs.show_scatter_plot = covid_graphs.scatter_plot:show_scatter_plot",
             "covid_graphs.generate_predictions = covid_graphs.prediction_generator:generate_predictions",
+            "covid_graphs.calculate_posterior = covid_graphs.bayesian:calculate_posterior",
         ]
     },
 )

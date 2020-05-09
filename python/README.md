@@ -2,7 +2,7 @@
 
 ## Usage
 
-To run a web server, in the root directory of the repository, run `docker-compose`.
+To run a web server, run `docker-compose` in the root directory of the repository.
 ```sh
 docker-compose up --build # Optionally add -d for daemon
 ```

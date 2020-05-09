@@ -7,9 +7,6 @@ from covid_graphs.country_graph import CountryGraph
 from covid_graphs.country_report import CountryReport, create_report
 from covid_graphs.predictions import prediction_db
 
-TITLE = "COVID-19 predictions of Boďová and Kollár"
-CountryGraphsByReportName = Dict[str, List[CountryGraph]]
-
 
 class Rest:
     def __init__(self, data_dir: Path):

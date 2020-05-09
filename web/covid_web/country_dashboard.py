@@ -176,7 +176,7 @@ class DashboardFactory:
                 self.report_by_short_name[country_short_name],
                 get_fitted_predictions(
                     self.report_by_short_name[country_short_name],
-                    dates=self.report_by_short_name[country_short_name].dates[-14:],
+                    last_data_dates=self.report_by_short_name[country_short_name].dates[-1:],
                 ),
             )
             for country_short_name in prediction_db.get_countries()
@@ -199,7 +199,9 @@ class DashboardFactory:
             report = self.report_by_short_name[country_short_name]
             country_predictions = prediction_db.predictions_for_country(country=country_short_name)
             country_predictions.extend(
-                get_fitted_predictions(report=report, dates=[report.dates[-1], report.dates[-8]])
+                get_fitted_predictions(
+                    country_report=report, last_data_dates=[report.dates[-1], report.dates[-8]]
+                )
             )
             graph_by_short_name[country_short_name] = CountryGraph(
                 report=report, country_predictions=country_predictions

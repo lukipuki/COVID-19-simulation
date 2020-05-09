@@ -13,10 +13,11 @@ matrix:
         - conan create .
     - name: "Python tests"
       install:
-        - pip install -r covid_graphs/dev_requirements.txt
-        - pip install covid_graphs/
+        - pip install -r python/dev_requirements.txt
+        - pip install python/covid_graphs/
+        - pip install python/covid_web/
       script:
-        - pushd covid_graphs/
+        - pushd python/
         - ./run_tests.sh
         - popd
     - name: "Graphs web app"

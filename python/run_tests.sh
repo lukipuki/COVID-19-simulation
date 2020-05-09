@@ -6,17 +6,19 @@ then
     echo "⚠️  Running outside of a virtual environment."
 fi
 
+PYTHON_PACKAGES=(covid_graphs covid_web)
+
 echo "📝 Checking order of imports..."
-isort covid_graphs/ --check-only --recursive --diff
+isort --check-only --recursive --diff $PYTHON_PACKAGES
 
 echo "⚫ Checking code format..."
-black covid_graphs/ --diff --check
+black --diff --check $PYTHON_PACKAGES
 
 echo "👮 Type checking..."
-mypy covid_graphs/
+mypy $PYTHON_PACKAGES
 
 echo "🧶 Linting..."
-flake8 --config setup.cfg --jobs auto covid_graphs/
+flake8 --config setup.cfg --jobs auto $PYTHON_PACKAGES
 
 echo "🏃 Running tests..."
 pytest

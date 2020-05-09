@@ -6,7 +6,8 @@ python3.7 -m venv .venv
 
 source .venv/bin/activate
 pip install -r dev_requirements.txt
-pip install -e .
+pip install -e covid_graphs
+pip install -e covid_web
 
 set +o nounset
 deactivate

@@ -928,4 +928,71 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 2
+  positive: 8
+  recovered: 34
+  date {
+    day: 3
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 3
+  recovered: 66
+  date {
+    day: 4
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 2
+  recovered: 50
+  date {
+    day: 5
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 4
+  recovered: 86
+  date {
+    day: 6
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 12
+  recovered: 65
+  date {
+    day: 7
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 18
+  recovered: 84
+  date {
+    day: 8
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 34
+  recovered: 42
+  date {
+    day: 9
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Korea"

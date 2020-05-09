@@ -1,0 +1,922 @@
+name: "Hungary"
+stats {
+  date {
+    day: 22
+    month: 1
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 23
+    month: 1
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 24
+    month: 1
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 25
+    month: 1
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 26
+    month: 1
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 27
+    month: 1
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 28
+    month: 1
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 29
+    month: 1
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 30
+    month: 1
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 31
+    month: 1
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 1
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 2
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 3
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 4
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 5
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 6
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 7
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 8
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 9
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 10
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 11
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 12
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 13
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 14
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 15
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 16
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 17
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 18
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 19
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 20
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 21
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 22
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 23
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 24
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 25
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 26
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 27
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 28
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 29
+    month: 2
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 1
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 2
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 3
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  positive: 2
+  date {
+    day: 4
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 5
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 6
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  positive: 2
+  date {
+    day: 7
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  positive: 3
+  date {
+    day: 8
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  positive: 2
+  date {
+    day: 9
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 10
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  positive: 4
+  date {
+    day: 11
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 12
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  positive: 6
+  date {
+    day: 13
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  positive: 11
+  recovered: 1
+  date {
+    day: 14
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 2
+  date {
+    day: 15
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  positive: 7
+  date {
+    day: 16
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  positive: 11
+  recovered: 1
+  date {
+    day: 17
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  positive: 8
+  date {
+    day: 18
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  positive: 15
+  date {
+    day: 19
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 12
+  date {
+    day: 20
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 18
+  recovered: 5
+  date {
+    day: 21
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 28
+  recovered: 9
+  date {
+    day: 22
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 36
+  date {
+    day: 23
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 20
+  recovered: 5
+  date {
+    day: 24
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 39
+  date {
+    day: 25
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  positive: 35
+  recovered: 7
+  date {
+    day: 26
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  positive: 39
+  recovered: 6
+  date {
+    day: 27
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 43
+  date {
+    day: 28
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 65
+  date {
+    day: 29
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 39
+  date {
+    day: 30
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 45
+  recovered: 3
+  date {
+    day: 31
+    month: 3
+    year: 2020
+  }
+}
+stats {
+  dead: 4
+  positive: 33
+  recovered: 3
+  date {
+    day: 1
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 60
+  recovered: 2
+  date {
+    day: 2
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 5
+  positive: 38
+  recovered: 1
+  date {
+    day: 3
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 6
+  positive: 55
+  recovered: 15
+  date {
+    day: 4
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 55
+  recovered: 8
+  date {
+    day: 5
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 4
+  positive: 11
+  recovered: 1
+  date {
+    day: 6
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 9
+  positive: 73
+  recovered: 4
+  date {
+    day: 7
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 11
+  positive: 78
+  recovered: 23
+  date {
+    day: 8
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 8
+  positive: 85
+  recovered: 2
+  date {
+    day: 9
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 11
+  positive: 210
+  recovered: 16
+  date {
+    day: 10
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 8
+  positive: 120
+  recovered: 3
+  date {
+    day: 11
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 14
+  positive: 100
+  recovered: 3
+  date {
+    day: 12
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 10
+  positive: 48
+  recovered: 2
+  date {
+    day: 13
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 13
+  positive: 54
+  recovered: 2
+  date {
+    day: 14
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 12
+  positive: 67
+  recovered: 70
+  date {
+    day: 15
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 8
+  positive: 73
+  recovered: 7
+  date {
+    day: 16
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 14
+  positive: 111
+  recovered: 8
+  date {
+    day: 17
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 16
+  positive: 71
+  recovered: 24
+  date {
+    day: 18
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 17
+  positive: 82
+  recovered: 19
+  date {
+    day: 19
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 10
+  positive: 68
+  recovered: 17
+  date {
+    day: 20
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 14
+  positive: 114
+  recovered: 20
+  date {
+    day: 21
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 12
+  positive: 70
+  recovered: 8
+  date {
+    day: 22
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 14
+  positive: 116
+  recovered: 95
+  date {
+    day: 23
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 23
+  positive: 159
+  recovered: 68
+  date {
+    day: 24
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 25
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 10
+  positive: 57
+  recovered: 27
+  date {
+    day: 26
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 8
+  positive: 83
+  recovered: 13
+  date {
+    day: 27
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 11
+  positive: 66
+  recovered: 18
+  date {
+    day: 28
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 9
+  positive: 78
+  recovered: 20
+  date {
+    day: 29
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 12
+  positive: 48
+  recovered: 45
+  date {
+    day: 30
+    month: 4
+    year: 2020
+  }
+}
+stats {
+  dead: 11
+  positive: 88
+  recovered: 28
+  date {
+    day: 1
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 12
+  positive: 79
+  recovered: 16
+  date {
+    day: 2
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 5
+  positive: 56
+  recovered: 4
+  date {
+    day: 3
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 11
+  positive: 37
+  recovered: 1
+  date {
+    day: 4
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 12
+  positive: 30
+  recovered: 79
+  date {
+    day: 5
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 10
+  positive: 46
+  recovered: 50
+  date {
+    day: 6
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 10
+  positive: 39
+  recovered: 42
+  date {
+    day: 7
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 9
+  positive: 28
+  recovered: 64
+  date {
+    day: 8
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 13
+  positive: 35
+  recovered: 39
+  date {
+    day: 9
+    month: 5
+    year: 2020
+  }
+}
+short_name: "Hungary"

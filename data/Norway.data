@@ -825,4 +825,66 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 38
+  date {
+    day: 3
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 3
+  positive: 57
+  date {
+    day: 4
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 51
+  date {
+    day: 5
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 41
+  date {
+    day: 6
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 38
+  date {
+    day: 7
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 36
+  date {
+    day: 8
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 29
+  date {
+    day: 9
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Norway"

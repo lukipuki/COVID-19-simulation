@@ -884,4 +884,71 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 2
+  positive: 122
+  recovered: 87
+  date {
+    day: 3
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 55
+  recovered: 71
+  date {
+    day: 4
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 30
+  recovered: 83
+  date {
+    day: 5
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 45
+  recovered: 135
+  date {
+    day: 6
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 39
+  recovered: 74
+  date {
+    day: 7
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 68
+  recovered: 88
+  date {
+    day: 8
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 54
+  recovered: 65
+  date {
+    day: 9
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Malaysia"

@@ -9,9 +9,51 @@ short_names["South Korea"]=Korea
 python3 -m venv --system-site-packages venv && source venv/bin/activate
 pip install $1/
 
-countries=("United Kingdom" "South Korea" Austria Iceland Jordan Switzerland Croatia Australia
-  Canada Germany Iran Israel Italy Malaysia "New Zealand" Spain Belgium Chile Czechia Latvia
-  Lithuania Netherlands Norway Portugal France "United States")
+countries=(
+  Australia
+  Austria
+  Belgium
+  Canada
+  Chile
+  Croatia
+  Czechia
+  Cyprus
+  Estonia
+  Finland
+  France
+  Georgia
+  Germany
+  Greece
+  Hungary
+  Iceland
+  Iran
+  Ireland
+  Israel
+  Italy
+  Jordan
+  Latvia
+  Lithuania
+  Malaysia
+  Monaco
+  Morocco
+  Netherlands
+  "New Zealand"
+  Norway
+  Poland
+  Portugal
+  Russia
+  Slovakia
+  "South Korea"
+  Spain
+  Switzerland
+  Sweden
+  Thailand
+  Tunisia
+  Turkey
+  "United Kingdom"
+  "United States"
+)
+
 for country in $countries
 do
   if [[ -z $short_names["${country}"] ]]; then

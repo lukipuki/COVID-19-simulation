@@ -815,4 +815,69 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 4
+  recovered: 3
+  date {
+    day: 3
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 9
+  recovered: 3
+  date {
+    day: 4
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 4
+  recovered: 40
+  date {
+    day: 5
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 5
+  recovered: 40
+  date {
+    day: 6
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 5
+  recovered: 21
+  date {
+    day: 7
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 3
+  recovered: 26
+  date {
+    day: 8
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 8
+  recovered: 63
+  date {
+    day: 9
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Lithuania"

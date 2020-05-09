@@ -789,4 +789,62 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 8
+  date {
+    day: 3
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 17
+  date {
+    day: 4
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  date {
+    day: 5
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 4
+  recovered: 116
+  date {
+    day: 6
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 9
+  date {
+    day: 7
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 19
+  date {
+    day: 8
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 2
+  date {
+    day: 9
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Latvia"

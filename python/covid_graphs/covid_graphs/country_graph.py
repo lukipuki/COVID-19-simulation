@@ -321,4 +321,4 @@ def show_country_plot(country_data_file: Path, prediction_dir: Path):
     prediction_db = predictions.load_prediction_db(prediction_dir=prediction_dir)
     country_predictions = prediction_db.predictions_for_country(country=country_report.short_name)
     country_graph = CountryGraph(report=country_report, country_predictions=country_predictions)
-    country_graph.create_country_figure(graph_type=GraphType.MultiPredictions).show()
+    country_graph.create_country_figure(graph_type=GraphType.Slider).show()

@@ -80,15 +80,6 @@ class Rest:
         return self
 
     def get_available_predictions(self):
-        # lazy link initialization
-        if 'link' not in self.available_predictions[0]:
-            for prediction in self.available_predictions:
-                prediction['link'] = flask.url_for(
-                            "covid19_get_specific_prediction",
-                            country=prediction['country'],
-                            prediction=prediction['prediction']
-                        )
-
         return flask.jsonify(self.available_predictions)
 
     def get_predictions_by_country(self, country: str):

@@ -6,14 +6,12 @@ from typing import Iterable, List, Tuple
 
 import click
 import click_pathlib
-from google.protobuf import text_format  # type: ignore
 from plotly.graph_objs import Figure, Layout, Scatter
 
-from . import formula, prediction_generator
+from . import predictions
 from .country_report import CountryReport, create_report
-from .formula import FittedFormula, TraceGenerator
-from .pb.atg_prediction_pb2 import CountryAtgParameters
-from .predictions import BK_20200329, BK_20200411, CountryPrediction, PredictionEvent, prediction_db
+from .formula import TraceGenerator
+from .predictions import BK_20200329, BK_20200411, CountryPrediction, PredictionEvent
 
 # Extend the predictions at least by 1/5th of the length of active cases.
 EXTENSION_RATIO = 0.2
@@ -54,30 +52,6 @@ def _get_display_range(
     )
 
     return start_date, display_until
-
-
-# TODO: move this to another file
-def _calculate_earliest_displayable_idx(
-    fitted_formulas: Iterable[FittedFormula], max_peak_distance: datetime.timedelta
-) -> int:
-    """
-    Calculates the earliest index in fitted_formulas, after which the peaks of formulas are within
-    'max_peak_distance'.
-    """
-    peak_days = [
-        formula.get_peak(country_report=None) for formula in reversed(list(fitted_formulas))
-    ]
-
-    min_peak, max_peak = peak_days[0], peak_days[0]
-    take_count = 1
-    for peak in peak_days[1:]:
-        min_peak = min(min_peak, peak)
-        max_peak = max(max_peak, peak)
-        if max_peak - min_peak <= max_peak_distance:
-            take_count += 1
-        else:
-            break
-    return len(peak_days) - take_count
 
 
 class CountryGraph:
@@ -341,40 +315,11 @@ class CountryGraph:
     "country_data_file", required=True, type=click_pathlib.Path(exists=True),
 )
 @click.argument(
-    "prediction_file", required=False, type=click_pathlib.Path(),
+    "prediction_dir", required=False, type=click_pathlib.Path(exists=True),
 )
-def show_country_plot(country_data_file: Path, prediction_file: Path):
+def show_country_plot(country_data_file: Path, prediction_dir: Path):
     country_report = create_report(country_data_file)
-
-    if prediction_file is not None and prediction_file.is_file():
-        country_atg_parameters = CountryAtgParameters()
-        text_format.Parse(prediction_file.read_text(), country_atg_parameters)
-
-        fitted_formulas = [
-            formula.create_formula_from_proto(atg_parameters)
-            for atg_parameters in country_atg_parameters.parameters
-        ]
-        start_idx = _calculate_earliest_displayable_idx(fitted_formulas, MAX_PEAK_DISTANCE)
-
-        fitted_predictions = prediction_generator.create_predictions_from_formulas(
-            fitted_formulas[start_idx:], country_report.short_name
-        )
-    else:
-        print("Since you didn't specify prediction_file, we will now compute predictions.")
-        print("This might take a while ...")
-        fitted_formulas = prediction_generator.create_fitted_formulas(
-            country_report, last_data_dates=country_report.dates[-28:]
-        )
-        start_idx = _calculate_earliest_displayable_idx(fitted_formulas, MAX_PEAK_DISTANCE)
-        fitted_predictions = prediction_generator.create_predictions_from_formulas(
-            fitted_formulas[start_idx:], country_report.short_name
-        )
-        print("Done.")
-    # country_graph = CountryGraph(report=country_report, country_predictions=fitted_predictions)
-    # country_graph.create_country_figure(graph_type=GraphType.Slider).show()
-
-    # Uncomment for MultiPredictions graph
+    prediction_db = predictions.load_prediction_db(prediction_dir=prediction_dir)
     country_predictions = prediction_db.predictions_for_country(country=country_report.short_name)
-    country_predictions.extend(fitted_predictions[-1:])
     country_graph = CountryGraph(report=country_report, country_predictions=country_predictions)
     country_graph.create_country_figure(graph_type=GraphType.MultiPredictions).show()

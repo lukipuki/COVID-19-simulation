@@ -22,7 +22,7 @@ source .venv/bin/activate # Don't forget to activate the environment
 
 To run a web server:
 ```sh
-covid_web.run_server --data-dir ../data
+covid_web.run_server -d ../data/ -p ../data/predictions/
 ```
 
 For quick development or data examination, running standalone graphs can be useful.

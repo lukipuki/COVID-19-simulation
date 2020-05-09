@@ -10,7 +10,6 @@ from . import formula
 from .country_report import CountryReport, create_report
 from .formula import FittedFormula
 from .pb.atg_prediction_pb2 import CountryAtgParameters
-from .predictions import CountryPrediction, PredictionEvent
 
 # Five weeks
 PREDICTION_DAYS = 7 * 5
@@ -23,32 +22,6 @@ def create_fitted_formulas(
         formula.fit_country_data(last_data_date=last_data_date, country_report=country_report)
         for last_data_date in last_data_dates
     ]
-
-
-def create_predictions_from_formulas(
-    fitted_formulas: Iterable[FittedFormula], country_short_name: str
-) -> List[CountryPrediction]:
-    return [
-        CountryPrediction(
-            prediction_event=PredictionEvent(
-                name=f"daily_fit_{fitted_formula.last_data_date.strftime('%Y_%m_%d')}",
-                last_data_date=fitted_formula.last_data_date,
-                prediction_date=fitted_formula.last_data_date,
-            ),
-            country=country_short_name,
-            formula=fitted_formula,
-        )
-        for fitted_formula in fitted_formulas
-    ]
-
-
-def get_fitted_predictions(
-    country_report: CountryReport, last_data_dates: List[datetime.date]
-) -> List[CountryPrediction]:
-    # Only use last_data_dates that appear in country_report.dates
-    filtered_dates = list(set(last_data_dates) & set(country_report.dates))
-    fitted_formulas = create_fitted_formulas(country_report, last_data_dates=filtered_dates)
-    return create_predictions_from_formulas(fitted_formulas, country_report.short_name)
 
 
 @click.command(help="COVID-19 country predictions calculation")

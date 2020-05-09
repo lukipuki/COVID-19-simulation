@@ -9,11 +9,11 @@ from dash.dependencies import Input, Output
 from dash.development.base_component import Component
 from flask import Flask
 
+from covid_graphs import predictions
 import covid_graphs.country_report as country_report
 from covid_graphs.country_graph import CountryGraph, GraphAxisType, GraphType
 from covid_graphs.country_report import CountryReport
-from covid_graphs.predictions import BK_20200329, BK_20200411, PredictionEvent, prediction_db
-from covid_graphs.prediction_generator import get_fitted_predictions
+from covid_graphs.predictions import BK_20200329, BK_20200411, PredictionEvent, PredictionDb
 
 
 class DashboardType(Enum):
@@ -30,8 +30,9 @@ CountryGraphsByReportName = Dict[str, List[CountryGraph]]
 
 
 class DashboardFactory:
-    def __init__(self, data_dir: Path):
-        prediction_events = prediction_db.get_prediction_events()
+    def __init__(self, data_dir: Path, prediction_dir: Path):
+        self.prediction_db = predictions.load_prediction_db(prediction_dir=prediction_dir)
+        prediction_events = self.prediction_db.get_prediction_events()
         prediction_events.sort(key=lambda event: event.last_data_date, reverse=True)
         self.prediction_event_by_name = {
             prediction_event.name: prediction_event for prediction_event in prediction_events
@@ -39,16 +40,16 @@ class DashboardFactory:
 
         reports = [
             country_report.create_report(data_dir / f"{country_short_name}.data")
-            for country_short_name in prediction_db.get_countries()
+            for country_short_name in self.prediction_db.get_countries()
             if (data_dir / f"{country_short_name}.data").is_file()
         ]
         self.report_by_short_name = {report.short_name: report for report in reports}
 
         self.graphs_by_event = {
             prediction_event.name: DashboardFactory._create_graphs(
-                self.report_by_short_name, prediction_event
+                self.prediction_db, self.report_by_short_name, prediction_event
             )
-            for prediction_event in prediction_db.get_prediction_events()
+            for prediction_event in self.prediction_db.get_prediction_events()
         }
 
     def create_dashboard(self, dashboard_type: DashboardType, server: Flask) -> dash.Dash:
@@ -110,7 +111,7 @@ class DashboardFactory:
 
     @staticmethod
     def _create_graphs(
-        report_by_short_name: Dict[str, CountryReport], prediction_event: PredictionEvent,
+        prediction_db: PredictionDb, report_by_short_name: Dict[str, CountryReport], prediction_event: PredictionEvent,
     ) -> List[CountryGraph]:
         # Note: We silently assume there is only one prediction per country.
         country_graphs = [
@@ -170,16 +171,16 @@ class DashboardFactory:
         return buttons
 
     def _create_single_country_callbacks(self, app: dash.Dash) -> None:
-        # TODO: Predictions will be generated statically in the future.
         graphs_by_country = {
             country_short_name: CountryGraph(
                 self.report_by_short_name[country_short_name],
-                get_fitted_predictions(
-                    self.report_by_short_name[country_short_name],
+                # TODO(mszabados): Make it possible to select only automatic predictions.
+                self.prediction_db.select_predictions(
+                    country=country_short_name,
                     last_data_dates=self.report_by_short_name[country_short_name].dates[-1:],
                 ),
             )
-            for country_short_name in prediction_db.get_countries()
+            for country_short_name in self.prediction_db.get_countries()
         }
 
         @app.callback(
@@ -193,15 +194,12 @@ class DashboardFactory:
             )
 
     def _create_single_country_all_predictions_callbacks(self, app: dash.Dash) -> None:
-        # TODO: Predictions will be generated statically in the future.
         graph_by_short_name = {}
-        for country_short_name in prediction_db.get_countries():
+        for country_short_name in self.prediction_db.get_countries():
             report = self.report_by_short_name[country_short_name]
-            country_predictions = prediction_db.predictions_for_country(country=country_short_name)
-            country_predictions.extend(
-                get_fitted_predictions(
-                    country_report=report, last_data_dates=[report.dates[-1], report.dates[-8]]
-                )
+            country_predictions = self.prediction_db.select_predictions(
+                country=country_short_name,
+                last_data_dates=[report.dates[-1], report.dates[-8]],
             )
             graph_by_short_name[country_short_name] = CountryGraph(
                 report=report, country_predictions=country_predictions

@@ -3,4 +3,4 @@ flake8
 isort
 mypy
 pytest
-setuptools
+setuptools>=41.2

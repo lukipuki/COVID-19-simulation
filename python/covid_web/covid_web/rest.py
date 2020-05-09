@@ -3,24 +3,26 @@ from typing import Dict, List, Tuple
 
 from flask import Flask, abort, jsonify
 
+from covid_graphs import predictions
 from covid_graphs.country_graph import CountryGraph
 from covid_graphs.country_report import CountryReport, create_report
-from covid_graphs.predictions import prediction_db
+from covid_graphs.predictions import PredictionDb
 
 TITLE = "COVID-19 predictions of Boďová and Kollár"
 CountryGraphsByReportName = Dict[str, List[CountryGraph]]
 
 
 class Rest:
-    def __init__(self, data_dir: Path):
-        self.available_predictions = Rest._create_available_predictions_by_date()
-        self.country_reports = Rest._create_country_reports(data_dir)
-        predictions, country_reports_active = Rest._create_predictions(self.country_reports)
-        self.predictions = predictions
+    def __init__(self, data_dir: Path, prediction_dir: Path):
+        prediction_db = predictions.load_prediction_db(prediction_dir=prediction_dir)
+        self.available_predictions = Rest._create_available_predictions_by_date(prediction_db)
+        self.country_reports = Rest._create_country_reports(prediction_db, data_dir)
+        country_predictions, country_reports_active = Rest._create_predictions(prediction_db, self.country_reports)
+        self.country_predictions = country_predictions
         self.country_reports_active = country_reports_active
 
     @staticmethod
-    def _create_available_predictions_by_date() -> Dict[str, Dict]:
+    def _create_available_predictions_by_date(prediction_db: PredictionDb) -> Dict[str, Dict]:
         result = {}
         for x in prediction_db.get_prediction_events():
             result[x.name] = {
@@ -30,7 +32,7 @@ class Rest:
         return result
 
     @staticmethod
-    def _create_country_reports(data_dir: Path) -> Dict[str, CountryReport]:
+    def _create_country_reports(prediction_db: PredictionDb, data_dir: Path) -> Dict[str, CountryReport]:
         country_reports = {}
         for country_short_name in prediction_db.get_countries():
             if (data_dir / f"{country_short_name}.data").is_file():
@@ -41,7 +43,7 @@ class Rest:
 
     @staticmethod
     def _create_predictions(
-        country_reports: Dict[str, CountryReport]
+        prediction_db: PredictionDb, country_reports: Dict[str, CountryReport]
     ) -> Tuple[List[Dict], Dict[str, Dict]]:
         predictions = []
         country_reports_active = {}
@@ -82,7 +84,7 @@ class Rest:
         return jsonify(self.available_predictions)
 
     def get_specific_prediction(self, date: str, country: str):
-        for prediction in self.predictions:
+        for prediction in self.country_predictions:
             if prediction["short_name"] == country and prediction["date_name"] == date:
                 return jsonify(prediction)
 
@@ -96,7 +98,7 @@ class Rest:
         return jsonify(self.country_reports_active[country])
 
 
-def create_rest(data_dir: Path, server: Flask):
+def create_rest(server: Flask, data_dir: Path, prediction_dir: Path) -> Rest:
     # TODO(rejdi): Don't use print.
     print("Creating dashboard for REST calls.")
-    return Rest(data_dir)
+    return Rest(data_dir, prediction_dir)

@@ -1,7 +1,8 @@
-# Code inspired by Vladimír Boža
+# Code inspired by a program from Vladimír Boža
 
 import random
 from pathlib import Path
+from typing import List
 
 import click
 import click_pathlib
@@ -16,7 +17,7 @@ from .formula import FittedFormula
 from .predictions import CountryPrediction, PredictionEvent
 
 
-def fit_bayesian_model(cases: np.ndarray):
+def fit_bayesian_model(cases: np.ndarray) -> List[AtgModelFit]:
     base_length = 800
     with pm.Model() as model:  # noqa: F841
         days = np.arange(len(cases))
@@ -62,16 +63,20 @@ def fit_bayesian_model(cases: np.ndarray):
 
 @click.command(help="COVID-19 country growth visualization")
 @click.argument("filename", required=True, type=click_pathlib.Path(exists=True))
-def calculate_posterior(filename: Path):
+@click.argument("cutoff", required=False, type=int, default=0)
+def calculate_posterior(filename: Path, cutoff: int):
     report = country_report.create_report(filename)
 
-    cutoff = 1
-    cases = np.diff(report.cumulative_active[:-cutoff])
+    used_length = len(report.dates) - cutoff
+    print(used_length)
+    cases = np.diff(report.cumulative_active[:used_length])
 
     fits = random.sample(fit_bayesian_model(cases), 100)
-    print(fits[:5])
+    print("Five random fits:")
+    for fit in fits[:5]:
+        print(fit)
 
-    last_data_date = report.dates[-cutoff]
+    last_data_date = report.dates[used_length - 1]
     predictions = [
         CountryPrediction(
             prediction_event=PredictionEvent(

@@ -70,6 +70,25 @@ class Graph extends Component {
         series: []
     };
 
+    getRelativeShift = (date, country) => {
+        const {
+            series
+        } = this.props;
+        for (let i = 0; i < series.length; i++) {
+            const one = series[i];
+            if (
+                one.type !== 'prediction' &&
+                one.short_name === country
+            ) {
+                const index = one.date_list.indexOf(date);
+                console.log('shift found', index);
+                return Math.max(0, index);
+            }
+        }
+        console.log('shift', 0);
+        return 0;
+    };
+
     render() {
         const {
             series,
@@ -100,11 +119,15 @@ class Graph extends Component {
             let name = '';
             const zones = [];
             let dashStyle = 'line';
+            //used for predictions and relative view, because predictions used to start later than the first data.
+            let relativeShift = 0;
 
             if (one.type === 'prediction') {
+                // calc solid and dashed part of prediction line
                 if (isXAxisRelative) {
-                    maxXValue = one.date_list.indexOf(one.max_value_date) + 1;
-                    predictionXValue = one.date_list.indexOf(one.prediction_date) + 1;
+                    relativeShift = this.getRelativeShift(one.date_list[0], one.short_name);
+                    maxXValue = one.date_list.indexOf(one.max_value_date) + 1 + relativeShift;
+                    predictionXValue = one.date_list.indexOf(one.prediction_date) + 1 + relativeShift;
                 } else {
                     maxXValue = Date.parse(one.max_value_date);
                     predictionXValue = Date.parse(one.prediction_date);
@@ -127,7 +150,8 @@ class Graph extends Component {
 
                 let x = null;
                 if (isXAxisRelative) {
-                    x = index + 1;
+                    // relativeShift is 0 for non-predictions
+                    x = index + 1 + relativeShift;
                 } else {
                     x = Date.parse(date);
                 }

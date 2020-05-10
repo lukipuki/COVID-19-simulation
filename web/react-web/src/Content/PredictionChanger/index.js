@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {GraphDetailContext, SeriesContext, AvailablePredictionsContext} from "../../Commons/sharedObjects";
+import {AvailablePredictionsContext, SeriesContext} from "../../Commons/sharedObjects";
 import PredictionChanger from "./PredictionChanger";
 
 

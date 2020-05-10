@@ -52,8 +52,7 @@ class Countries extends Component {
 
     render() {
         const {
-            predictions,
-            series
+            predictions
         } = this.props;
 
         let countries = new Set();

@@ -207,10 +207,14 @@ class PredictionDb:
     def select_predictions(
         self, country: str, last_data_dates: List[datetime.date]
     ) -> List[CountryPrediction]:
+        # TODO(miskosz): Temporary hack, return only automated predictions. Add a flag whether
+        # a prediction is automated let this function select based on it.
         return [
             p
             for p in self._prediction_database
-            if p.country == country and p.prediction_event.last_data_date in last_data_dates
+            if p.country == country
+            and p.prediction_event.last_data_date in last_data_dates
+            and p.prediction_event not in [BK_20200329, BK_20200411]
         ]
 
 

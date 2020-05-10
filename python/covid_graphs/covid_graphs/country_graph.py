@@ -10,7 +10,7 @@ from plotly.graph_objs import Figure, Layout, Scatter
 
 from . import predictions
 from .country_report import CountryReport, create_report
-from .formula import TraceGenerator
+from .formula import FittedFormula, TraceGenerator
 from .predictions import BK_20200329, BK_20200411, CountryPrediction, PredictionEvent
 
 # Extend the predictions at least by 1/5th of the length of active cases.
@@ -92,7 +92,7 @@ class CountryGraph:
         self.cropped_cumulative_active = report.cumulative_active[start_date_idx:]
         self.log_xaxis_date_since = self.cropped_dates[0] - datetime.timedelta(days=1)
         self.log_title = f"Days [since {self.log_xaxis_date_since.strftime('%b %d, %Y')}]"
-        self.date_title = "Date"
+        self.date_title = None
 
         self.max_value = max(
             max(self.cropped_cumulative_active),
@@ -125,8 +125,10 @@ class CountryGraph:
         return dict(
             active=len(steps) - 1,
             currentvalue={"prefix": "Prediction date: "},
-            pad={"t": 60},
+            pad={"b": 20},
             steps=steps,
+            y=1,
+            yanchor="bottom",
         )
 
     def create_country_figure(
@@ -143,19 +145,22 @@ class CountryGraph:
                 return (date - self.log_xaxis_date_since).days
 
         def color_and_opacity_by_event(event: PredictionEvent, count: int):
+            orange = "rgb(255, 123, 37)"
+            blue = "rgb(0, 121, 177)"
+            green = "rgb(43, 161, 59)"
             # Matplotlib colors.
             if event == BK_20200329:
-                return "rgb(255, 123, 37)", 1.0
+                return orange, 1.0
             if event == BK_20200411:
-                return "rgb(0, 121, 177)", 1.0
+                return green, 1.0
 
             if graph_type == GraphType.MultiPredictions:
-                opacity = count / len(self.trace_by_event)
+                # GraphType.MultiPredictions doesn't contain green BK_20200411, so it can have green
+                return green, count / len(self.trace_by_event)
             elif graph_type == GraphType.BayesPredictions:
-                opacity = min(1.0, 10.0 / len(self.trace_by_event))
+                return blue, min(1.0, 10.0 / len(self.trace_by_event))
             else:
-                opacity = 1.0
-            return "rgb(43, 161, 59)", opacity
+                return blue, 1.0
 
         traces = []
         visibility = graph_type != GraphType.Slider
@@ -278,7 +283,7 @@ class CountryGraph:
             sliders.append(self._create_slider(traces, list(self.trace_by_event.keys())))
 
         layout = Layout(
-            title=f"Active cases in {self.long_name}",
+            title=dict(text=f"Active cases in {self.long_name}", x=0.5, xanchor="center", y=1),
             xaxis=dict(autorange=True, fixedrange=True, showgrid=False,),
             yaxis=dict(
                 tickformat=",.0f", gridcolor="LightGray", fixedrange=True, zerolinecolor="Gray",
@@ -319,6 +324,14 @@ class CountryGraph:
 def show_country_plot(country_data_file: Path, prediction_dir: Path):
     country_report = create_report(country_data_file)
     prediction_db = predictions.load_prediction_db(prediction_dir=prediction_dir)
-    country_predictions = prediction_db.predictions_for_country(country=country_report.short_name)
+    country_predictions = [
+        prediction
+        for prediction in prediction_db.select_predictions(
+            country=country_report.short_name, last_data_dates=country_report.dates[-28:]
+        )
+        # We do not want to show BK predictions on the slider
+        if type(prediction.formula) == FittedFormula
+    ]
+
     country_graph = CountryGraph(report=country_report, country_predictions=country_predictions)
     country_graph.create_country_figure(graph_type=GraphType.Slider).show()

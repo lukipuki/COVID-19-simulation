@@ -175,6 +175,8 @@ class DashboardFactory:
             country_short_name: CountryGraph(
                 self.report_by_short_name[country_short_name],
                 # TODO(mszabados): Make it possible to select only automatic predictions.
+                # Right now this shows BK predictions as well, which makes for a strange experience
+                # (the curve changes color, etc).
                 self.prediction_db.select_predictions(
                     country=country_short_name,
                     last_data_dates=self.report_by_short_name[country_short_name].dates,
@@ -297,6 +299,8 @@ def _get_header_content(title: str) -> List[Component]:
             countries), each based on data available until the day before. The first prediction
             assumed a common growth parameter *α* = 6.23.
 
+            We've replicated their method and now publish automatic predictions every day.
+
             ### References
             * [Polynomial growth in age-dependent branching processes with diverging
               reproductive number](https://arxiv.org/abs/cond-mat/0505116) by Alexei Vazquez
@@ -313,8 +317,8 @@ def _get_header_content(title: str) -> List[Component]:
         ),
         html.Ul(
             children=[
-                html.Li("Solid line is prediction"),
-                html.Li("Dashed line marks the culmination of the prediction"),
+                html.Li("Solid/dashed line is prediction"),
+                html.Li("The star marks the culmination of the prediction"),
                 html.Li("Red line is observed number of active cases"),
                 html.Li(
                     children=[

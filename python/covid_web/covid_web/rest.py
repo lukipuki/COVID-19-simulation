@@ -24,7 +24,9 @@ class Rest:
         self.prediction_db = predictions.load_prediction_db(prediction_dir=prediction_dir)
         self.available_predictions = Rest._create_available_predictions(self.prediction_db)
         self.country_reports = Rest._create_country_reports(self.prediction_db, data_dir)
-        country_predictions, country_reports_active = Rest._create_predictions(self.prediction_db, self.country_reports)
+        country_predictions, country_reports_active = Rest._create_predictions(
+            self.prediction_db, self.country_reports
+        )
         self.country_predictions = country_predictions
         self.country_reports_active = country_reports_active
 
@@ -37,7 +39,9 @@ class Rest:
         ]
 
     @staticmethod
-    def _create_country_reports(prediction_db: PredictionDb, data_dir: Path) -> Dict[str, CountryReport]:
+    def _create_country_reports(
+        prediction_db: PredictionDb, data_dir: Path
+    ) -> Dict[str, CountryReport]:
         return {
             country_short_name: create_report(data_dir / f"{country_short_name}.data")
             for country_short_name in prediction_db.get_countries()
@@ -88,7 +92,9 @@ class Rest:
 
     def _get_predictions_by_country(self, country: str):
         return [
-            prediction for prediction in self.country_predictions if prediction["short_name"] == country
+            prediction
+            for prediction in self.country_predictions
+            if prediction["short_name"] == country
         ]
 
     def get_predictions_by_country(self, country: str):

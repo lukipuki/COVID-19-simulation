@@ -22,6 +22,7 @@ setup(
     dependency_links=[],
     python_requires=">=3.7",
     packages=find_packages(),
+    package_data={"covid_graphs": ["py.typed"]},
     entry_points={
         "console_scripts": [
             "covid_graphs.prepare_data = covid_graphs.prepare_data:main",

@@ -21,5 +21,5 @@ setup(
             "covid_web.run_server = covid_web.server:run_server",
         ]
     },
-    package_data={"": ["*.html"]},
+    package_data={"": ["*.html"], "covid_web": ["py.typed"]},
 )

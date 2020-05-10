@@ -1,8 +1,16 @@
 import datetime
+import logging
 from dataclasses import dataclass
-from typing import List
+from pathlib import Path
+from typing import Iterable, List
 
-from .formula import AtgFormula, Formula
+from google.protobuf import text_format  # type: ignore
+
+from . import formula
+from .formula import AtgFormula, FittedFormula, Formula
+from .pb.atg_prediction_pb2 import CountryAtgParameters
+
+MAX_PEAK_DISTANCE = datetime.timedelta(days=14)
 
 
 # Make the class hashable.
@@ -196,5 +204,77 @@ class PredictionDb:
     def predictions_for_country(self, country: str) -> List[CountryPrediction]:
         return [p for p in self._prediction_database if p.country == country]
 
+    def select_predictions(
+        self, country: str, last_data_dates: List[datetime.date]
+    ) -> List[CountryPrediction]:
+        return [
+            p
+            for p in self._prediction_database
+            if p.country == country and p.prediction_event.last_data_date in last_data_dates
+        ]
 
-prediction_db = PredictionDb(country_predictions=_prediction_database)
+
+def load_prediction_db(prediction_dir: Path) -> PredictionDb:
+    country_predictions = _prediction_database[:]
+
+    # TODO: Load all predictions from prediction dir. Make the folder existence mandatory.
+    if not prediction_dir.is_dir():
+        logging.warning(f"Could not load predictions from {prediction_dir}.")
+
+    for country_atg_params_path in prediction_dir.glob("*.atg"):
+        country_atg_parameters = CountryAtgParameters()
+        text_format.Parse(country_atg_params_path.read_text(), country_atg_parameters)
+
+        fitted_formulas = [
+            formula.create_formula_from_proto(atg_parameters)
+            for atg_parameters in country_atg_parameters.parameters
+        ]
+        # TODO(miskosz): The decision on which predictions to display should not be a reponsibility
+        # of `predictions` module. All data should be served.
+        start_idx = _calculate_earliest_displayable_idx(fitted_formulas, MAX_PEAK_DISTANCE)
+        fitted_predictions = _create_predictions_from_formulas(
+            fitted_formulas[start_idx:], country_atg_parameters.short_country_name
+        )
+        country_predictions.extend(fitted_predictions)
+
+    return PredictionDb(country_predictions=country_predictions)
+
+
+def _calculate_earliest_displayable_idx(
+    fitted_formulas: Iterable[FittedFormula], max_peak_distance: datetime.timedelta
+) -> int:
+    """
+    Calculates the earliest index in fitted_formulas, after which the peaks of formulas are within
+    'max_peak_distance'.
+    """
+    peak_days = [
+        formula.get_peak(country_report=None) for formula in reversed(list(fitted_formulas))
+    ]
+
+    min_peak, max_peak = peak_days[0], peak_days[0]
+    take_count = 1
+    for peak in peak_days[1:]:
+        min_peak = min(min_peak, peak)
+        max_peak = max(max_peak, peak)
+        if max_peak - min_peak <= max_peak_distance:
+            take_count += 1
+        else:
+            break
+    return len(peak_days) - take_count
+
+
+def _create_predictions_from_formulas(
+    fitted_formulas: Iterable[FittedFormula], country_short_name: str
+) -> List[CountryPrediction]:
+    return [
+        CountryPrediction(
+            prediction_event=PredictionEvent(
+                name=f"daily_fit_{fitted_formula.last_data_date.strftime('%Y_%m_%d')}",
+                last_data_date=fitted_formula.last_data_date,
+                prediction_date=fitted_formula.last_data_date,
+            ),
+            country=country_short_name,
+            formula=fitted_formula,
+        )
+        for fitted_formula in fitted_formulas
+    ]

@@ -15,7 +15,10 @@ echo "⚫ Checking code format..."
 black --diff --check $PYTHON_PACKAGES
 
 echo "👮 Type checking..."
-mypy $PYTHON_PACKAGES
+for package in "${PYTHON_PACKAGES[@]}"
+do
+    mypy $package
+done
 
 echo "🧶 Linting..."
 flake8 --config setup.cfg --jobs auto $PYTHON_PACKAGES

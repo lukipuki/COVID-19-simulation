@@ -1,5 +1,6 @@
 from pathlib import Path
 
+
 import click
 import click_pathlib
 from flask import Flask, redirect, render_template, url_for
@@ -21,12 +22,19 @@ CURRENT_DIR = Path(__file__).parent
     type=click_pathlib.Path(exists=True),
     help="Directory with country and simulation proto files",
 )
-def run_server(data_dir: Path) -> None:
-    server = setup_server(data_dir)
+@click.option(
+    "-p",
+    "--prediction-dir",
+    required=True,
+    type=click_pathlib.Path(exists=True),
+    help="Directory with prediction proto files",
+)
+def run_server(data_dir: Path, prediction_dir: Path) -> None:
+    server = setup_server(data_dir, prediction_dir)
     server.run(host="0.0.0.0", port=8081)
 
 
-def setup_server(data_dir: Path):
+def setup_server(data_dir: Path, prediction_dir: Path) -> Flask:
     server = Flask(__name__, template_folder=str(CURRENT_DIR))
 
     @server.route("/")
@@ -41,15 +49,15 @@ def setup_server(data_dir: Path):
     def covid19_predictions_redirect():
         return redirect(url_for("covid19_single_predictions"))
 
-    _create_prediction_apps(server=server, data_dir=data_dir)
+    _create_prediction_apps(server=server, data_dir=data_dir, prediction_dir=prediction_dir)
     _create_simulation_apps(server=server, data_dir=data_dir)
-    _create_rest(server=server, data_dir=data_dir)
+    _create_rest(server=server, data_dir=data_dir, prediction_dir=prediction_dir)
 
     return server
 
 
-def _create_rest(data_dir: Path, server: Flask):
-    rest = Rest(data_dir=data_dir)
+def _create_rest(server: Flask, data_dir: Path, prediction_dir: Path):
+    rest = Rest(data_dir=data_dir, prediction_dir=prediction_dir)
 
     @server.route("/covid19/rest/data/<country>")
     def covid19_country_data(country):
@@ -64,16 +72,16 @@ def _create_rest(data_dir: Path, server: Flask):
         return rest.get_specific_prediction(date, country)
 
 
-def _create_prediction_apps(data_dir: Path, server: Flask):
-    dashboard_factory = DashboardFactory(data_dir)
+def _create_prediction_apps(server: Flask, data_dir: Path, prediction_dir: Path):
+    dashboard_factory = DashboardFactory(data_dir, prediction_dir)
     single_prediction_app = dashboard_factory.create_dashboard(
-        DashboardType.SingleCountry, server=server
+        dashboard_type=DashboardType.SingleCountry, server=server
     )
     single_country_all_predictions_app = dashboard_factory.create_dashboard(
-        DashboardType.SingleCountryAllPredictions, server=server
+        dashboard_type=DashboardType.SingleCountryAllPredictions, server=server
     )
     all_predictions_app = dashboard_factory.create_dashboard(
-        DashboardType.AllCountries, server=server
+        dashboard_type=DashboardType.AllCountries, server=server
     )
 
     @server.route("/covid19/predictions/single/")

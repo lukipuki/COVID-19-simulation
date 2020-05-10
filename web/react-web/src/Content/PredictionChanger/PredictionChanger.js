@@ -114,7 +114,7 @@ class PredictionChanger extends Component {
                         setSeries(result);
                     })
                     .catch(error => {
-                        //TODO: handle somehow
+                        //TODO: handle this better
                         console.log('error', error);
                     }));
             }
@@ -175,7 +175,6 @@ class PredictionChanger extends Component {
                     const {time} = marks[key];
                     const leftOffset = (time - minMark) / (24 * 3600 * 1000) * markWidth - markWidth / 2;
                     if (leftOffset <= lastRightOffset) {
-                        console.log('skipped', time);
                         marks[time].label = null;
                     } else {
                         lastRightOffset = leftOffset + MIN_MARK_WIDTH;

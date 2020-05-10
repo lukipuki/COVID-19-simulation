@@ -42,8 +42,8 @@ class Countries extends Component {
                     setSeries(result);
                 })
                 .catch(error => {
-                    //TODO: handle somehow
-                    console.log('error', error);
+                    //TODO: handle this better
+                    console.log(error);
                 });
             //prefetch all predictions to cache
             api.getPredictionsByCountry(country);

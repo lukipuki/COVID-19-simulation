@@ -81,11 +81,9 @@ class Graph extends Component {
                 one.short_name === country
             ) {
                 const index = one.date_list.indexOf(date);
-                console.log('shift found', index);
                 return Math.max(0, index);
             }
         }
-        console.log('shift', 0);
         return 0;
     };
 

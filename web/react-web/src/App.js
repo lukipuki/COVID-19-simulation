@@ -4,21 +4,19 @@ import Sidebar from './Sidebar';
 import {
     AvailablePredictionsContext,
     availablePredictionsInit,
-    DataContext,
-    dataInit,
     GraphDetailContext,
     graphDetailsInit,
-    SelectionContext,
-    selectionInit
-} from "./sharedObjects";
-import GraphWrapper from "./Graph";
+    SeriesContext,
+    seriesInit
+} from "./Commons/sharedObjects";
+import Content from "./Content";
+import {api} from "./Commons/api";
 
 class App extends Component {
 
     state = {
-        selectionContext: selectionInit,
+        seriesContext: seriesInit,
         availablePredictionsContext: availablePredictionsInit,
-        dataContext: dataInit,
         graphDetailsContext: graphDetailsInit,
         sideBarHidden: false
     };
@@ -29,30 +27,10 @@ class App extends Component {
         })
     };
 
-    setAvailablePredictions = (data) => {
+    setSeries = (series) => {
         this.setState({
-            availablePredictionsContext: data
+            seriesContext: series
         });
-
-        //TODO consider auto-select when there is nothing selected
-    };
-
-    toggleSelection = (selection) => {
-        const selections = this.state.selectionContext;
-        const result = {...selections};
-        if (result.hasOwnProperty(selection)) {
-            delete result[selection]
-        } else {
-            result[selection] = true;
-        }
-
-        this.setState({
-            selectionContext: result
-        });
-
-        if (!this.state.dataContext.hasOwnProperty(selection)) {
-            this.fetchData(selection);
-        }
     };
 
     setOptions = (options) => {
@@ -61,37 +39,14 @@ class App extends Component {
         })
     };
 
-    fetchData = (what) => {
-        fetch(`/covid19/rest/${what}`, {cache: 'no-cache'})
-            .then((response) => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error(response.statusText);
-                }
-            })
-            .then((data) => {
-                const newData = {...this.state.dataContext};
-                newData[what] = data;
-                this.setState({
-                    dataContext: newData
-                });
-            })
-            .catch((error) => {
-                //TODO: handle this better
-                console.log(error);
-            });
+    setAvailablePredictions = (predictions) => {
+        this.setState({
+            availablePredictionsContext: predictions
+        })
     };
 
     componentDidMount() {
-        fetch('/covid19/rest/predictions/list/', {cache: 'no-cache'})
-            .then((response) => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error(response.statusText);
-                }
-            })
+        api.getList()
             .then(this.setAvailablePredictions)
             .catch((error) => {
                 //TODO: handle this better
@@ -108,21 +63,19 @@ class App extends Component {
 
         return (
             <AvailablePredictionsContext.Provider value={{data: this.state.availablePredictionsContext, setData: this.setAvailablePredictions}}>
-                <SelectionContext.Provider value={{selections: this.state.selectionContext, toggle: this.toggleSelection}}>
-                    <DataContext.Provider value={this.state.dataContext}>
-                        <GraphDetailContext.Provider value={{options: this.state.graphDetailsContext, setOptions: this.setOptions}}>
-                            <div className={appClassName}>
-                                <div className='sidebar'>
-                                    <Sidebar />
-                                </div>
-                                <div className='content'>
-                                    <GraphWrapper />
-                                </div>
-                                <img src={require('./assets/Hamburger_icon.svg')} className='side_switch' onClick={this.toggleSidebar} alt='Show/Hide graph'/>
+                <SeriesContext.Provider value={{data: this.state.seriesContext, setSeries: this.setSeries}}>
+                    <GraphDetailContext.Provider value={{options: this.state.graphDetailsContext, setOptions: this.setOptions}}>
+                        <div className={appClassName}>
+                            <div className='sidebar'>
+                                <Sidebar />
                             </div>
-                        </GraphDetailContext.Provider>
-                    </DataContext.Provider>
-                </SelectionContext.Provider>
+                            <div className='content'>
+                                <Content />
+                            </div>
+                            <img src={require('./assets/Hamburger_icon.svg')} className='side_switch' onClick={this.toggleSidebar} alt='Show/Hide graph'/>
+                        </div>
+                    </GraphDetailContext.Provider>
+                </SeriesContext.Provider>
             </AvailablePredictionsContext.Provider>
         );
     }

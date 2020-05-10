@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
-import {AXES_LINEAR, AXES_LOG, AXES_LOG_LOG} from "../sharedObjects";
+import {AXES_LINEAR, AXES_LOG, AXES_LOG_LOG} from "../../Commons/sharedObjects";
 
 const colors = ["#7cb5ec", "#434348", "#90ed7d", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"];
 
@@ -67,12 +67,12 @@ class Graph extends Component {
 
     static defaultProps = {
         options: {},
-        data: []
+        series: []
     };
 
     render() {
         const {
-            data,
+            series,
             options
         } = this.props;
 
@@ -87,30 +87,30 @@ class Graph extends Component {
 
         let countries = new Set();
 
-        data.forEach(data => {
+        series.forEach(data => {
             countries.add(data.long_name);
         });
         countries = [...countries].sort();
 
-        const series = [];
+        const resultSeries = [];
 
-        data.forEach((data, index)=> {
+        series.forEach((one, index)=> {
             let maxXValue = null;
             let predictionXValue = null;
             let name = '';
             const zones = [];
             let dashStyle = 'line';
 
-            if (data.type === 'prediction') {
+            if (one.type === 'prediction') {
                 if (isXAxisRelative) {
-                    maxXValue = data.date_list.indexOf(data.max_value_date) + 1;
-                    predictionXValue = data.date_list.indexOf(data.prediction_date) + 1;
+                    maxXValue = one.date_list.indexOf(one.max_value_date) + 1;
+                    predictionXValue = one.date_list.indexOf(one.prediction_date) + 1;
                 } else {
-                    maxXValue = Date.parse(data.max_value_date);
-                    predictionXValue = Date.parse(data.prediction_date);
+                    maxXValue = Date.parse(one.max_value_date);
+                    predictionXValue = Date.parse(one.prediction_date);
                 }
 
-                name = data.description.replace('%PREDICTION_DATE%', `<br/>${new Date(data.prediction_date).toLocaleDateString()}`);
+                name = one.description.replace('%PREDICTION_DATE%', `, ${one.short_name}<br/>${new Date(one.prediction_date).toLocaleDateString()}`);
 
                 zones.push({
                     value: predictionXValue,
@@ -118,12 +118,12 @@ class Graph extends Component {
                 });
                 dashStyle = 'dash';
             } else {
-                name = `Active cases for ${data.long_name}`;
+                name = `Active cases for ${one.long_name}`;
             }
 
 
-            const lineData = data.date_list.map((date, index) => {
-                const y = data.values[index];
+            const lineData = one.date_list.map((date, index) => {
+                const y = one.values[index];
 
                 let x = null;
                 if (isXAxisRelative) {
@@ -158,15 +158,15 @@ class Graph extends Component {
                 };
             });
 
-            series.push({
+            resultSeries.push({
                 type: 'line',
                 dashStyle,
                 name,
                 marker: {
-                    enabled: data.type !== 'prediction'
+                    enabled: one.type !== 'prediction'
                 },
                 data: lineData,
-                color: colors[series.length % colors.length],
+                color: colors[resultSeries.length % colors.length],
                 zones,
                 zoneAxis: 'x'
             });
@@ -176,7 +176,7 @@ class Graph extends Component {
             text: `Active cases and prediction for ${countries.join(', ')}`
         };
 
-        finalOptions.series = series;
+        finalOptions.series = resultSeries;
 
         switch (axesType) {
             default:
@@ -226,6 +226,7 @@ class Graph extends Component {
             highcharts={Highcharts}
             immutable={true}
             containerProps={{ style: { height: "100%" } }}
+            className='graph'
             options={finalOptions}/>;
     }
 }

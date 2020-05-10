@@ -5,6 +5,7 @@ services:
     image: nginx:stable-alpine
     volumes:
       - "react-web:/app/covid19/graphs/"
+      - "static-rest:/app/covid19/rest/"
       - "./web/nginx/nginx.conf:/etc/nginx/nginx.conf:ro"
     ports:
       - 127.0.0.1:8081:80
@@ -14,10 +15,12 @@ services:
     image: flask_server
     volumes:
       - "./data:/covid19/data:ro"
+      - "static-rest:/covid19/rest"
     environment:
       DATA_PATH: "/covid19/data/"
+      STATIC_REST_PATH: "/covid19/rest/"
     restart: always
-    command: "uwsgi --uid www-data --gid www-data --socket 0.0.0.0:5000 --die-on-term -w covid_web.wsgi:app"
+    command: "flask_server.sh"
   react-web-deploy:
     build: web/react-web/
     image: react-web-builder
@@ -27,3 +30,4 @@ services:
 
 volumes:
   react-web:
+  static-rest:

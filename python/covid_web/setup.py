@@ -19,6 +19,7 @@ setup(
     entry_points={
         "console_scripts": [
             "covid_web.run_server = covid_web.server:run_server",
+            "covid_web.generate_static_rest = covid_web.rest:generate_static_rest",
         ]
     },
     package_data={"": ["*.html"], "covid_web": ["py.typed"]},

@@ -8,8 +8,12 @@ fi
 
 PYTHON_PACKAGES=(covid_graphs covid_web)
 
-echo "Formatting imports (isort)"
-isort --apply --recursive $PYTHON_PACKAGES
-
-echo "Formatting code (black)"
-black $PYTHON_PACKAGES
+for PYTHON_PACKAGE in "${PYTHON_PACKAGES[@]}"
+do
+   echo "☞  Running on ${PYTHON_PACKAGE}"
+   echo "Formatting imports (isort)"
+   isort --apply --recursive $PYTHON_PACKAGE
+   
+   echo "Formatting code (black)"
+   black $PYTHON_PACKAGE
+done

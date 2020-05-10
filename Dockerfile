@@ -9,3 +9,4 @@ RUN apt update \
 COPY python /python
 RUN pip3 install /python/covid_graphs /python/covid_web && rm -rf /python
 RUN pip3 install uwsgi
+COPY python/covid_web/flask_server.sh /usr/bin/

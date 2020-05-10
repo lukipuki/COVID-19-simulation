@@ -852,4 +852,74 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 3
+  positive: 26
+  recovered: 126
+  date {
+    day: 3
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 4
+  positive: 38
+  recovered: 220
+  date {
+    day: 4
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 5
+  positive: 77
+  recovered: 199
+  date {
+    day: 5
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 5
+  positive: 78
+  recovered: 199
+  date {
+    day: 6
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 8
+  positive: 57
+  recovered: 166
+  date {
+    day: 7
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 3
+  positive: 46
+  recovered: 42
+  date {
+    day: 8
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 3
+  positive: 18
+  recovered: 34
+  date {
+    day: 9
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Czechia"

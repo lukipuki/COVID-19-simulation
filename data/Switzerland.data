@@ -868,4 +868,73 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 88
+  recovered: 300
+  date {
+    day: 3
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 22
+  positive: 76
+  recovered: 700
+  date {
+    day: 4
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 11
+  positive: 28
+  recovered: 200
+  date {
+    day: 5
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 10
+  positive: 51
+  recovered: 300
+  date {
+    day: 6
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 5
+  positive: 66
+  recovered: 200
+  date {
+    day: 7
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 13
+  positive: 81
+  recovered: 200
+  date {
+    day: 8
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 7
+  positive: 44
+  recovered: 300
+  date {
+    day: 9
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Switzerland"

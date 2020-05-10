@@ -870,4 +870,74 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 79
+  positive: 389
+  recovered: 98
+  date {
+    day: 3
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 80
+  positive: 361
+  recovered: 69
+  date {
+    day: 4
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 92
+  positive: 242
+  recovered: 63
+  date {
+    day: 5
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 323
+  positive: 272
+  recovered: 290
+  date {
+    day: 6
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 76
+  positive: 639
+  recovered: 249
+  date {
+    day: 7
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 106
+  positive: 591
+  recovered: 221
+  date {
+    day: 8
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 60
+  positive: 585
+  recovered: 210
+  date {
+    day: 9
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Belgium"

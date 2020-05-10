@@ -868,4 +868,74 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 2
+  positive: 39
+  recovered: 48
+  date {
+    day: 3
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 24
+  recovered: 88
+  date {
+    day: 4
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 6
+  positive: 29
+  recovered: 146
+  date {
+    day: 5
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 34
+  recovered: 177
+  date {
+    day: 6
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 68
+  recovered: 59
+  date {
+    day: 7
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 5
+  positive: 22
+  recovered: 138
+  date {
+    day: 8
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 59
+  recovered: 92
+  date {
+    day: 9
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Austria"

@@ -859,4 +859,71 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 69
+  positive: 335
+  date {
+    day: 3
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 26
+  positive: 199
+  date {
+    day: 4
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 87
+  positive: 318
+  recovered: 1
+  date {
+    day: 5
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 36
+  positive: 232
+  recovered: 7
+  date {
+    day: 6
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 85
+  positive: 455
+  recovered: 1
+  date {
+    day: 7
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 71
+  positive: 319
+  date {
+    day: 8
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 64
+  positive: 289
+  recovered: 2
+  date {
+    day: 9
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Netherlands"

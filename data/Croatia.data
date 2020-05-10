@@ -848,4 +848,73 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 2
+  positive: 8
+  recovered: 26
+  date {
+    day: 3
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 5
+  recovered: 33
+  date {
+    day: 4
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 3
+  positive: 11
+  recovered: 38
+  date {
+    day: 5
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 7
+  recovered: 41
+  date {
+    day: 6
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 6
+  recovered: 40
+  date {
+    day: 7
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 36
+  recovered: 48
+  date {
+    day: 8
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 15
+  recovered: 37
+  date {
+    day: 9
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Croatia"

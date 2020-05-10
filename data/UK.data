@@ -882,4 +882,74 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 315
+  positive: 4342
+  recovered: 5
+  date {
+    day: 3
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 289
+  positive: 3990
+  recovered: 9
+  date {
+    day: 4
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 692
+  positive: 4411
+  recovered: 16
+  date {
+    day: 5
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 649
+  positive: 6116
+  recovered: 8
+  date {
+    day: 6
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 539
+  positive: 5618
+  recovered: 36
+  date {
+    day: 7
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 627
+  positive: 4652
+  recovered: 27
+  date {
+    day: 8
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 346
+  positive: 3896
+  recovered: 4
+  date {
+    day: 9
+    month: 5
+    year: 2020
+  }
+}
 short_name: "UK"

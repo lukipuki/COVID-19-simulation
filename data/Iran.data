@@ -918,4 +918,74 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 47
+  positive: 976
+  recovered: 1072
+  date {
+    day: 3
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 74
+  positive: 1223
+  recovered: 957
+  date {
+    day: 4
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 63
+  positive: 1323
+  recovered: 1096
+  date {
+    day: 5
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 78
+  positive: 1680
+  recovered: 1112
+  date {
+    day: 6
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 68
+  positive: 1485
+  recovered: 1157
+  date {
+    day: 7
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 55
+  positive: 1556
+  recovered: 1093
+  date {
+    day: 8
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 48
+  positive: 1529
+  recovered: 1227
+  date {
+    day: 9
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Iran"

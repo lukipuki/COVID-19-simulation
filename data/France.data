@@ -890,4 +890,74 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 137
+  positive: 407
+  recovered: 222
+  date {
+    day: 3
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 304
+  positive: 658
+  recovered: 591
+  date {
+    day: 4
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 333
+  positive: 1104
+  recovered: 1366
+  date {
+    day: 5
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 275
+  positive: 3537
+  recovered: 1237
+  date {
+    day: 6
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 178
+  positive: 694
+  recovered: 1112
+  date {
+    day: 7
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 243
+  positive: 1284
+  recovered: 701
+  date {
+    day: 8
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 80
+  positive: 580
+  recovered: 256
+  date {
+    day: 9
+    month: 5
+    year: 2020
+  }
+}
 short_name: "France"

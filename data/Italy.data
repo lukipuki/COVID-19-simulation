@@ -922,4 +922,74 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 174
+  positive: 1389
+  recovered: 1740
+  date {
+    day: 3
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 195
+  positive: 1221
+  recovered: 1225
+  date {
+    day: 4
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 236
+  positive: 1075
+  recovered: 2352
+  date {
+    day: 5
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 369
+  positive: 1444
+  recovered: 8014
+  date {
+    day: 6
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 274
+  positive: 1401
+  recovered: 3031
+  date {
+    day: 7
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 243
+  positive: 1327
+  recovered: 2747
+  date {
+    day: 8
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 194
+  positive: 1083
+  recovered: 4008
+  date {
+    day: 9
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Italy"

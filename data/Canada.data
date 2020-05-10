@@ -881,4 +881,74 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 111
+  positive: 2578
+  recovered: 1107
+  date {
+    day: 3
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 208
+  positive: 1453
+  recovered: 1109
+  date {
+    day: 4
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 187
+  positive: 1258
+  recovered: 976
+  date {
+    day: 5
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 176
+  positive: 1479
+  recovered: 1178
+  date {
+    day: 6
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 175
+  positive: 1507
+  recovered: 1076
+  date {
+    day: 7
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 156
+  positive: 1473
+  recovered: 979
+  date {
+    day: 8
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 126
+  positive: 1244
+  recovered: 1023
+  date {
+    day: 9
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Canada"

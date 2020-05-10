@@ -850,4 +850,74 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 20
+  positive: 92
+  recovered: 18
+  date {
+    day: 3
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 20
+  positive: 242
+  recovered: 23
+  date {
+    day: 4
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 11
+  positive: 178
+  recovered: 31
+  date {
+    day: 5
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 15
+  positive: 480
+  recovered: 333
+  date {
+    day: 6
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 16
+  positive: 533
+  recovered: 182
+  date {
+    day: 7
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 9
+  positive: 553
+  recovered: 164
+  date {
+    day: 8
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 12
+  positive: 138
+  recovered: 77
+  date {
+    day: 9
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Portugal"

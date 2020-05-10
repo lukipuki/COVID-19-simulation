@@ -896,4 +896,72 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 54
+  positive: 697
+  recovered: 1600
+  date {
+    day: 3
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 127
+  positive: 488
+  recovered: 2100
+  date {
+    day: 4
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 855
+  recovered: 2400
+  date {
+    day: 5
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 282
+  positive: 1155
+  recovered: 4800
+  date {
+    day: 6
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 117
+  positive: 1268
+  recovered: 1800
+  date {
+    day: 7
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 118
+  positive: 1158
+  date {
+    day: 8
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 39
+  positive: 736
+  recovered: 1600
+  date {
+    day: 9
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Germany"

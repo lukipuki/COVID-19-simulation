@@ -891,4 +891,74 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 164
+  positive: 884
+  recovered: 1654
+  date {
+    day: 3
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 164
+  positive: 545
+  recovered: 2441
+  date {
+    day: 4
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 185
+  positive: 1318
+  recovered: 2143
+  date {
+    day: 5
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 244
+  positive: 996
+  recovered: 2516
+  date {
+    day: 6
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 213
+  positive: 1122
+  recovered: 2509
+  date {
+    day: 7
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 229
+  positive: 1410
+  recovered: 2637
+  date {
+    day: 8
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 179
+  positive: 721
+  recovered: 2804
+  date {
+    day: 9
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Spain"

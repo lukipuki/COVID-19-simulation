@@ -829,4 +829,62 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 1
+  recovered: 11
+  date {
+    day: 3
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  recovered: 6
+  date {
+    day: 4
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  recovered: 10
+  date {
+    day: 5
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  recovered: 17
+  date {
+    day: 6
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 2
+  recovered: 5
+  date {
+    day: 7
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  recovered: 10
+  date {
+    day: 8
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  recovered: 8
+  date {
+    day: 9
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Iceland"

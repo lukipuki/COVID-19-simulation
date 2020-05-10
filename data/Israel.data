@@ -866,4 +866,74 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 3
+  positive: 23
+  recovered: 156
+  date {
+    day: 3
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 3
+  positive: 38
+  recovered: 315
+  date {
+    day: 4
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 3
+  positive: 43
+  recovered: 401
+  date {
+    day: 5
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 21
+  recovered: 172
+  date {
+    day: 6
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 71
+  recovered: 236
+  date {
+    day: 7
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 5
+  positive: 55
+  recovered: 356
+  date {
+    day: 8
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 18
+  recovered: 147
+  date {
+    day: 9
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Israel"

@@ -41,6 +41,7 @@ countries=(
   Norway
   Poland
   Portugal
+  Romania
   Russia
   Slovakia
   "South Korea"
@@ -50,6 +51,7 @@ countries=(
   Thailand
   Tunisia
   Turkey
+  Ukraine
   "United Kingdom"
   "United States"
 )

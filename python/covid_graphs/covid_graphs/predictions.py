@@ -17,9 +17,13 @@ MAX_PEAK_DISTANCE = datetime.timedelta(days=14)
 @dataclass(frozen=True, eq=True)
 class PredictionEvent:
     name: str
+    label_prefix: str
     # Data until this date (inclusive) was used for the prediction.
     last_data_date: datetime.date
     prediction_date: datetime.date
+
+    def create_label(self) -> str:
+        return f"{self.label_prefix} {self.prediction_date.strftime('%b %d')}"
 
 
 @dataclass
@@ -31,11 +35,13 @@ class CountryPrediction:
 
 BK_20200329 = PredictionEvent(
     name="bk_20200329",
+    label_prefix="Boďová and Kollár",
     last_data_date=datetime.date(2020, 3, 29),
     prediction_date=datetime.date(2020, 3, 30),
 )
 BK_20200411 = PredictionEvent(
     name="bk_20200411",
+    label_prefix="Boďová and Kollár",
     last_data_date=datetime.date(2020, 4, 11),
     prediction_date=datetime.date(2020, 4, 12),
 )
@@ -274,6 +280,7 @@ def _create_predictions_from_formulas(
         CountryPrediction(
             prediction_event=PredictionEvent(
                 name=f"daily_fit_{fitted_formula.last_data_date.strftime('%Y_%m_%d')}",
+                label_prefix="Automatic prediction",
                 last_data_date=fitted_formula.last_data_date,
                 prediction_date=fitted_formula.last_data_date,
             ),

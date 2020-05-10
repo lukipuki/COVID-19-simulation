@@ -81,6 +81,7 @@ def calculate_posterior(filename: Path, cutoff: int):
         CountryPrediction(
             prediction_event=PredictionEvent(
                 name=f"daily_fit_{last_data_date.strftime('%Y_%m_%d')}_{i}",
+                label_prefix="Bayesian prediction",
                 last_data_date=last_data_date,
                 prediction_date=last_data_date,
             ),

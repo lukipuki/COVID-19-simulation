@@ -248,7 +248,7 @@ class DashboardFactory:
             ],
             [Input("prediction-event", "value")],
         )
-        def update_event(prediction_event_name: str):
+        def update_dashboard(prediction_event_name: str):
             graphs = dash_graph_dict[prediction_event_name]
             next_day = self.prediction_event_by_name[prediction_event_name].prediction_date
             return graphs, f"{next_day.strftime('%B %d')} predictions"
@@ -281,24 +281,26 @@ class DashboardFactory:
                 result.append(graph.figure)
             return result
 
-        # TODO(lukas): For some reason the following code doesn't work. Previously we worked around
-        # it by having two callbacks, one for each BK prediction, but this cannot be done here. So
-        # right now semi-log graphs do not work but I doubt too many people look at them.
-        #
-        # @app.callback(
-        #     [
-        #         Output(f"{graph.short_name}-graph-{prediction_event.name}", component_property="figure")
-        #         for prediction_event in self._dropdown_prediction_events[:4]
-        #         for graph in self.graphs_by_event[prediction_event.name]
-        #     ],
-        #     [Input("graph-axis-type", "value"), Input("prediction-event", "value")],
-        # )
-        # def update_country_graphs_automatic(graph_axis_type: str, prediction_event_name: str):
-        #     result = []
-        #     for graph in self.graphs_by_event[prediction_event_name]:
-        #         graph.update_graph_axis_type(GraphAxisType[graph_axis_type])
-        #         result.append(graph.figure)
-        #     return result
+        # TODO: Creating callbacks like this doesn't work, since the number of outputs differs
+        # between events (some countries only got good predictions later). Don't know what's the
+        # solution, perhaps the only option is the rewrite in JavaScript.
+        # for prediction_event in self._dropdown_prediction_events[:4]:
+        #     @app.callback(
+        #         [
+        #             Output(
+        #                 f"{graph.short_name}-graph-{prediction_event.name}",
+        #                 component_property="figure",
+        #             )
+        #             for graph in self.graphs_by_event[prediction_event.name]
+        #         ],
+        #         [Input("graph-axis-type", "value")],
+        #     )
+        #     def update_country_graphs(graph_axis_type: str):
+        #         result = []
+        #         for graph in self.graphs_by_event[prediction_event.name]:
+        #             graph.update_graph_axis_type(GraphAxisType[graph_axis_type])
+        #             result.append(graph.figure)
+        #         return result
 
 
 def _get_header_content(title: str) -> List[Component]:

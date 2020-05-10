@@ -91,12 +91,6 @@ class DashboardFactory:
         else:
             content += [
                 html.H1(id="graph-title", children="Automated daily predictions"),
-                dcc.Markdown(
-                    f"""
-                    We display an automated prediction until yesterday and the week before. Note that the method to compute
-                    these predictions slightly differs from Boďová and Kollár due to differences in implementation details.
-                    """
-                ),
             ]
         content += self._create_buttons(dashboard_type, self.report_by_short_name)
         content += extra_content
@@ -326,10 +320,11 @@ def _get_header_content(title: str) -> List[Component]:
             * *A*, *T<sub>G</sub>* and *α* are country-specific parameters
 
             They made two predictions, on March 30 (for 7 countries) and on April 12 (for 23
-            countries), each based on data available until the day before. The first prediction
-            assumed a common growth parameter *α* = 6.23.
+            countries), each based on data available until the day before.
 
-            We've replicated their method and now publish automatic predictions every day.
+            We have replicated their method and now publish automatic predictions every day. Note
+            that the method to compute these predictions slightly differs from Boďová and Kollár due
+            to differences in implementation details.
 
             ### References
             * [Polynomial growth in age-dependent branching processes with diverging
@@ -348,7 +343,7 @@ def _get_header_content(title: str) -> List[Component]:
         html.Ul(
             children=[
                 html.Li("Solid/dashed line is prediction"),
-                html.Li("The star marks the culmination of the prediction"),
+                html.Li("Star marks the culmination of the prediction"),
                 html.Li("Red line is observed number of active cases"),
                 html.Li(
                     children=[

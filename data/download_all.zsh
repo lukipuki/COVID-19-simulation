@@ -30,6 +30,7 @@ countries=(
   Ireland
   Israel
   Italy
+  Japan
   Jordan
   Latvia
   Lithuania

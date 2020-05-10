@@ -229,7 +229,8 @@ def load_prediction_db(prediction_dir: Path) -> PredictionDb:
             formula.create_formula_from_proto(atg_parameters)
             for atg_parameters in country_atg_parameters.parameters
         ]
-        # TODO(miskosz): The decision on which predictions to display should be made by the caller.
+        # TODO(miskosz): The decision on which predictions to display should not be a reponsibility
+        # of `predictions` module. All data should be served.
         start_idx = _calculate_earliest_displayable_idx(fitted_formulas, MAX_PEAK_DISTANCE)
         fitted_predictions = _create_predictions_from_formulas(
             fitted_formulas[start_idx:], country_atg_parameters.short_country_name
@@ -239,7 +240,6 @@ def load_prediction_db(prediction_dir: Path) -> PredictionDb:
     return PredictionDb(country_predictions=country_predictions)
 
 
-# TODO(miskosz): Move to the caller.
 def _calculate_earliest_displayable_idx(
     fitted_formulas: Iterable[FittedFormula], max_peak_distance: datetime.timedelta
 ) -> int:

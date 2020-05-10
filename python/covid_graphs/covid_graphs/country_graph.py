@@ -15,7 +15,6 @@ from .predictions import BK_20200329, BK_20200411, CountryPrediction, Prediction
 
 # Extend the predictions at least by 1/5th of the length of active cases.
 EXTENSION_RATIO = 0.2
-MAX_PEAK_DISTANCE = datetime.timedelta(days=14)
 
 
 class GraphType(Enum):

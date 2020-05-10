@@ -177,7 +177,7 @@ class DashboardFactory:
                 # TODO(mszabados): Make it possible to select only automatic predictions.
                 self.prediction_db.select_predictions(
                     country=country_short_name,
-                    last_data_dates=self.report_by_short_name[country_short_name].dates[-1:],
+                    last_data_dates=self.report_by_short_name[country_short_name].dates,
                 ),
             )
             for country_short_name in self.prediction_db.get_countries()
@@ -199,8 +199,10 @@ class DashboardFactory:
             report = self.report_by_short_name[country_short_name]
             country_predictions = self.prediction_db.select_predictions(
                 country=country_short_name,
-                last_data_dates=[report.dates[-1], report.dates[-8]],
+                last_data_dates=[report.dates[-1], report.dates[-8], report.dates[-15]],
             )
+            country_predictions.extend(self.prediction_db.predictions_for_event(BK_20200411))
+            country_predictions.extend(self.prediction_db.predictions_for_event(BK_20200329))
             graph_by_short_name[country_short_name] = CountryGraph(
                 report=report, country_predictions=country_predictions
             )

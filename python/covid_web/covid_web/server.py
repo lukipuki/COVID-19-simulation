@@ -50,34 +50,8 @@ def setup_server(data_dir: Path, prediction_dir: Path) -> Flask:
 
     _create_prediction_apps(server=server, data_dir=data_dir, prediction_dir=prediction_dir)
     _create_simulation_apps(server=server, data_dir=data_dir)
-    _create_rest(server=server, data_dir=data_dir, prediction_dir=prediction_dir)
 
     return server
-
-
-def _create_rest(server: Flask, data_dir: Path, prediction_dir: Path):
-    rest = Rest(data_dir=data_dir, prediction_dir=prediction_dir)
-
-    @server.route("/covid19/rest/data/<country>")
-    def covid19_country_data(country):
-        return rest.get_country_data(country)
-
-    @server.route("/covid19/rest/predictions/list")
-    def covid19_available_predictions():
-        return rest.get_available_predictions()
-
-    @server.route("/covid19/rest/predictions/by_prediction/<prediction>")
-    def covid19_get_predictions_by_name(prediction):
-        return rest.get_predictions_by_name(prediction)
-
-    @server.route("/covid19/rest/predictions/by_country/<country>")
-    def covid19_get_predictions_by_country(country):
-        return rest.get_predictions_by_country(country)
-
-    @server.route("/covid19/rest/predictions/by_prediction/<prediction>/<country>")
-    @server.route("/covid19/rest/predictions/by_country/<country>/<prediction>")
-    def covid19_get_specific_prediction(prediction, country):
-        return rest.get_specific_prediction(prediction, country)
 
 
 def _create_prediction_apps(server: Flask, data_dir: Path, prediction_dir: Path):

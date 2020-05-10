@@ -8,7 +8,6 @@ from covid_graphs.heat_map import create_heat_map_dashboard
 from covid_graphs.simulation_report import GrowthType
 
 from .country_dashboard import DashboardFactory, DashboardType
-from .rest import Rest
 
 CURRENT_DIR = Path(__file__).parent
 

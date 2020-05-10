@@ -201,8 +201,6 @@ class DashboardFactory:
                 country=country_short_name,
                 last_data_dates=[report.dates[-1], report.dates[-8], report.dates[-15]],
             )
-            country_predictions.extend(self.prediction_db.predictions_for_event(BK_20200411))
-            country_predictions.extend(self.prediction_db.predictions_for_event(BK_20200329))
             graph_by_short_name[country_short_name] = CountryGraph(
                 report=report, country_predictions=country_predictions
             )
@@ -313,8 +311,7 @@ def _get_header_content(title: str) -> List[Component]:
         ),
         html.Ul(
             children=[
-                html.Li("Solid line is prediction"),
-                html.Li("Dashed line marks the culmination of the prediction"),
+                html.Li("Star marks the peak of the prediction"),
                 html.Li("Red line is observed number of active cases"),
                 html.Li(
                     children=[

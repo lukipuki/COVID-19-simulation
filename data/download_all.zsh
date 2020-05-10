@@ -43,7 +43,9 @@ countries=(
   Portugal
   Romania
   Russia
+  Serbia
   Slovakia
+  Slovenia
   "South Korea"
   Spain
   Switzerland

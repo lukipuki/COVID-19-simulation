@@ -1,5 +1,5 @@
 import argparse
-from datetime import datetime, timedelta
+import datetime
 
 import pandas as pd
 from google.protobuf import text_format  # type: ignore
@@ -43,10 +43,9 @@ def main():
         row = table.loc[table["Country/Region"] == country_name_JHU].iloc[:, 4:].sum()
         data[typ] = diff(row.values.tolist())
 
-    start_day = datetime(2020, 1, 22)
-    delta = -1 if args.country == "Slovakia" else 0
+    start_day = datetime.datetime(2020, 1, 22)
     length = len(data["deaths"])
-    dates = [start_day + timedelta(days=i + delta) for i in range(length)]
+    dates = [start_day + datetime.timedelta(days=i) for i in range(length)]
 
     points = []
     country_data = CountryData()

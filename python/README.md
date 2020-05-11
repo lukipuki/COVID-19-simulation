@@ -32,4 +32,9 @@ covid_graphs.show_scatter_plot ../simulation/Slovakia.data polynomial.sim
 covid_graphs.show_heat_map exponential.sim
 ```
 
+To create static data used for our REST service:
+```sh
+covid_web.generate_static_rest ../data ../web/react-web/public/rest/
+```
+
 All the commands above can be called with `--help` option for additional information.

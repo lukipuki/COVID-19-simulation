@@ -106,7 +106,26 @@
 
 .App .sliderWrapper button {
   margin: 0;
-  min-width: 50px;
+  padding: 0;
+}
+
+.App .sliderWrapper button div {
+  width: 50px;
+  height: 30px;
+}
+
+.App .sliderWrapper button .play {
+  mask: url(assets/play.svg) no-repeat center / contain;
+  background-color: black;
+}
+
+.App .sliderWrapper button .pause {
+  mask: url(assets/pause.svg) no-repeat center / contain;
+  background-color: black;
+}
+
+.App .sliderWrapper button:disabled div {
+  background-color: grey;
 }
 
 .App #sliderWrapper {

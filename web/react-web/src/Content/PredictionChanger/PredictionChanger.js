@@ -241,9 +241,9 @@ class PredictionChanger extends Component {
             playing
         } = this.state;
 
-        let buttonText = '|>';
+        let buttonText = <div className='play'/>;
         if (this.state.playing) {
-            buttonText = '||';
+            buttonText = <div className='pause'/>;
         }
 
         const buttonDisabled = Object.keys(marks).length < 2;

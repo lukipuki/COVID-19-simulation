@@ -9,10 +9,10 @@ fi
 PYTHON_PACKAGES=(covid_graphs covid_web)
 
 echo "📝 Checking order of imports..."
-isort --check-only --recursive --diff $PYTHON_PACKAGES
+isort --check-only --recursive --diff "${PYTHON_PACKAGES[@]}"
 
 echo "⚫ Checking code format..."
-black --diff --check $PYTHON_PACKAGES
+black --diff --check "${PYTHON_PACKAGES[@]}"
 
 echo "👮 Type checking..."
 for package in "${PYTHON_PACKAGES[@]}"
@@ -21,7 +21,7 @@ do
 done
 
 echo "🧶 Linting..."
-flake8 --config setup.cfg --jobs auto $PYTHON_PACKAGES
+flake8 --config setup.cfg --jobs auto "${PYTHON_PACKAGES[@]}"
 
 echo "🏃 Running tests..."
 pytest

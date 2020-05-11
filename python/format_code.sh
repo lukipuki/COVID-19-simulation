@@ -9,7 +9,7 @@ fi
 PYTHON_PACKAGES=(covid_graphs covid_web)
 
 echo "Formatting imports (isort)"
-isort --apply --recursive $PYTHON_PACKAGES
+isort --apply --recursive "${PYTHON_PACKAGES[@]}"
 
 echo "Formatting code (black)"
-black $PYTHON_PACKAGES
+black "${PYTHON_PACKAGES[@]}"

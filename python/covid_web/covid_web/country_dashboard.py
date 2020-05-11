@@ -206,8 +206,12 @@ class DashboardFactory:
             report = self.report_by_short_name[country_short_name]
             country_predictions = self.prediction_db.select_predictions(
                 country=country_short_name,
-                last_data_dates=[report.dates[-1], report.dates[-8], report.dates[-15],
-                                 report.dates[-22]],
+                last_data_dates=[
+                    report.dates[-1],
+                    report.dates[-8],
+                    report.dates[-15],
+                    report.dates[-22],
+                ],
             )
             graph_by_short_name[country_short_name] = CountryGraph(
                 report=report, country_predictions=country_predictions

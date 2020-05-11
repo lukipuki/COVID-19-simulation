@@ -33,10 +33,20 @@ class DashboardFactory:
     def __init__(self, data_dir: Path, prediction_dir: Path):
         self.prediction_db = predictions.load_prediction_db(prediction_dir=prediction_dir)
         prediction_events = self.prediction_db.get_prediction_events()
-        prediction_events.sort(key=lambda event: event.last_data_date, reverse=True)
+        prediction_events.sort(key=lambda event: event.last_data_date)
         self.prediction_event_by_name = {
             prediction_event.name: prediction_event for prediction_event in prediction_events
         }
+        self._dropdown_prediction_events = [
+            prediction_events[-1],
+            prediction_events[-8],
+            prediction_events[-15],
+            prediction_events[-22],
+            BK_20200411,
+            BK_20200329,
+        ]
+        # Show the week-old prediction by default
+        self._dropdown_initial_value = self._dropdown_prediction_events[1]
 
         reports = [
             country_report.create_report(data_dir / f"{country_short_name}.data")
@@ -81,14 +91,8 @@ class DashboardFactory:
         else:
             content += [
                 html.H1(id="graph-title", children="Automated daily predictions"),
-                dcc.Markdown(
-                    f"""
-                    We display an automated prediction until yesterday and the week before. Note that the method to compute
-                    these predictions slightly differs from Boďová and Kollár due to differences in implementation details.
-                    """
-                ),
             ]
-        content += DashboardFactory._create_buttons(dashboard_type, self.report_by_short_name)
+        content += self._create_buttons(dashboard_type, self.report_by_short_name)
         content += extra_content
 
         app.title = TITLE
@@ -123,9 +127,8 @@ class DashboardFactory:
         country_graphs.sort(key=lambda graph: graph.long_name)
         return country_graphs
 
-    @staticmethod
     def _create_buttons(
-        dashboard_type: DashboardType, report_by_short_name: Dict[str, CountryReport]
+        self, dashboard_type: DashboardType, report_by_short_name: Dict[str, CountryReport]
     ) -> List[dash.development.base_component.Component]:
         buttons = []
         if dashboard_type == DashboardType.AllCountries:
@@ -133,11 +136,11 @@ class DashboardFactory:
                 dcc.Dropdown(
                     id="prediction-event",
                     options=[
-                        dict(label=event.prediction_date.strftime("%B %d"), value=event.name,)
-                        for event in [BK_20200329, BK_20200411]
+                        dict(label=event.create_label(), value=event.name,)
+                        for event in self._dropdown_prediction_events
                     ],
-                    value=BK_20200411.name,
-                    style={"width": "220px", "margin": "8px 0"},
+                    value=self._dropdown_initial_value.name,
+                    style={"width": "350px", "margin": "8px 0"},
                 )
             )
 
@@ -203,7 +206,8 @@ class DashboardFactory:
             report = self.report_by_short_name[country_short_name]
             country_predictions = self.prediction_db.select_predictions(
                 country=country_short_name,
-                last_data_dates=[report.dates[-1], report.dates[-8], report.dates[-15]],
+                last_data_dates=[report.dates[-1], report.dates[-8], report.dates[-15],
+                                 report.dates[-22]],
             )
             graph_by_short_name[country_short_name] = CountryGraph(
                 report=report, country_predictions=country_predictions
@@ -239,7 +243,7 @@ class DashboardFactory:
             ],
             [Input("prediction-event", "value")],
         )
-        def update_event(prediction_event_name):
+        def update_dashboard(prediction_event_name: str):
             graphs = dash_graph_dict[prediction_event_name]
             next_day = self.prediction_event_by_name[prediction_event_name].prediction_date
             return graphs, f"{next_day.strftime('%B %d')} predictions"
@@ -252,10 +256,10 @@ class DashboardFactory:
             ],
             [Input("graph-axis-type", "value")],
         )
-        def update_country_graphs_20200411(graph_axis_type_str):
+        def update_country_graphs_20200411(graph_axis_type: str):
             result = []
             for graph in self.graphs_by_event[BK_20200411.name]:
-                result.append(graph.update_graph_axis_type(GraphAxisType[graph_axis_type_str]))
+                result.append(graph.update_graph_axis_type(GraphAxisType[graph_axis_type]))
             return result
 
         @app.callback(
@@ -265,12 +269,33 @@ class DashboardFactory:
             ],
             [Input("graph-axis-type", "value")],
         )
-        def update_country_graphs_20200329(graph_axis_type_str):
+        def update_country_graphs_20200329(graph_axis_type: str):
             result = []
             for graph in self.graphs_by_event[BK_20200329.name]:
-                graph.update_graph_axis_type(GraphAxisType[graph_axis_type_str])
+                graph.update_graph_axis_type(GraphAxisType[graph_axis_type])
                 result.append(graph.figure)
             return result
+
+        # TODO: Creating callbacks like this doesn't work, since the number of outputs differs
+        # between events (some countries only got good predictions later). Don't know what's the
+        # solution, perhaps the only option is the rewrite in JavaScript.
+        # for prediction_event in self._dropdown_prediction_events[:4]:
+        #     @app.callback(
+        #         [
+        #             Output(
+        #                 f"{graph.short_name}-graph-{prediction_event.name}",
+        #                 component_property="figure",
+        #             )
+        #             for graph in self.graphs_by_event[prediction_event.name]
+        #         ],
+        #         [Input("graph-axis-type", "value")],
+        #     )
+        #     def update_country_graphs(graph_axis_type: str):
+        #         result = []
+        #         for graph in self.graphs_by_event[prediction_event.name]:
+        #             graph.update_graph_axis_type(GraphAxisType[graph_axis_type])
+        #             result.append(graph.figure)
+        #         return result
 
 
 def _get_header_content(title: str) -> List[Component]:
@@ -296,10 +321,11 @@ def _get_header_content(title: str) -> List[Component]:
             * *A*, *T<sub>G</sub>* and *α* are country-specific parameters
 
             They made two predictions, on March 30 (for 7 countries) and on April 12 (for 23
-            countries), each based on data available until the day before. The first prediction
-            assumed a common growth parameter *α* = 6.23.
+            countries), each based on data available until the day before.
 
-            We've replicated their method and now publish automatic predictions every day.
+            We have replicated their method and now publish automatic predictions every day. Note
+            that the method to compute these predictions slightly differs from Boďová and Kollár due
+            to differences in implementation details.
 
             ### References
             * [Polynomial growth in age-dependent branching processes with diverging
@@ -318,7 +344,7 @@ def _get_header_content(title: str) -> List[Component]:
         html.Ul(
             children=[
                 html.Li("Solid/dashed line is prediction"),
-                html.Li("The star marks the culmination of the prediction"),
+                html.Li("Star marks the culmination of the prediction"),
                 html.Li("Red line is observed number of active cases"),
                 html.Li(
                     children=[

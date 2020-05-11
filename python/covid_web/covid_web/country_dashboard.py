@@ -9,11 +9,11 @@ from dash.dependencies import Input, Output
 from dash.development.base_component import Component
 from flask import Flask
 
-from covid_graphs import predictions
 import covid_graphs.country_report as country_report
+from covid_graphs import predictions
 from covid_graphs.country_graph import CountryGraph, GraphAxisType, GraphType
 from covid_graphs.country_report import CountryReport
-from covid_graphs.predictions import BK_20200329, BK_20200411, PredictionEvent, PredictionDb
+from covid_graphs.predictions import BK_20200329, BK_20200411, PredictionDb, PredictionEvent
 
 
 class DashboardType(Enum):
@@ -111,7 +111,9 @@ class DashboardFactory:
 
     @staticmethod
     def _create_graphs(
-        prediction_db: PredictionDb, report_by_short_name: Dict[str, CountryReport], prediction_event: PredictionEvent,
+        prediction_db: PredictionDb,
+        report_by_short_name: Dict[str, CountryReport],
+        prediction_event: PredictionEvent,
     ) -> List[CountryGraph]:
         # Note: We silently assume there is only one prediction per country.
         country_graphs = [

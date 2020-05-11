@@ -1,6 +1,5 @@
 from pathlib import Path
 
-
 import click
 import click_pathlib
 from flask import Flask, redirect, render_template, url_for
@@ -9,7 +8,6 @@ from covid_graphs.heat_map import create_heat_map_dashboard
 from covid_graphs.simulation_report import GrowthType
 
 from .country_dashboard import DashboardFactory, DashboardType
-from .rest import Rest
 
 CURRENT_DIR = Path(__file__).parent
 
@@ -51,25 +49,8 @@ def setup_server(data_dir: Path, prediction_dir: Path) -> Flask:
 
     _create_prediction_apps(server=server, data_dir=data_dir, prediction_dir=prediction_dir)
     _create_simulation_apps(server=server, data_dir=data_dir)
-    _create_rest(server=server, data_dir=data_dir, prediction_dir=prediction_dir)
 
     return server
-
-
-def _create_rest(server: Flask, data_dir: Path, prediction_dir: Path):
-    rest = Rest(data_dir=data_dir, prediction_dir=prediction_dir)
-
-    @server.route("/covid19/rest/data/<country>")
-    def covid19_country_data(country):
-        return rest.get_country_data(country)
-
-    @server.route("/covid19/rest/predictions/list/")
-    def covid19_available_predictions():
-        return rest.get_available_predictions()
-
-    @server.route("/covid19/rest/predictions/data/<date>/<country>")
-    def covid19_get_specific_prediction(date, country):
-        return rest.get_specific_prediction(date, country)
 
 
 def _create_prediction_apps(server: Flask, data_dir: Path, prediction_dir: Path):

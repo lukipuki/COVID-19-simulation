@@ -3,7 +3,7 @@
 You need to have [`NodeJS`](https://nodejs.org/) with [`npm`](https://www.npmjs.com/) or [`yarn`](https://yarnpkg.com/) and backend (see [README](../covid_graphs/README.md)).
 
 1. run `npm install` or `yarn install`. This step is needed only once.
-1. execute backend from. See [README](../README.md) what step are needed.
+1. generate static rest files using `covid_web.generate_static_rest` to `public/rest/` folder. 
 1. run `yarn start` or `npm start`.
 
 Application should be available at http://localhost:3000/.
@@ -24,6 +24,7 @@ You can then access the server locally at [localhost:8081](http://127.0.0.1:8081
 
 Application expects that after deployment, following paths will be answered by backend.
 * `/covid19/rest/data/*`
-* `/covid19/rest/predictions/list/`
-* `/covid19/rest/predictions/data/*`
+* `/covid19/rest/predictions/list`
+* `/covid19/rest/predictions/by_country/*`
+* `/covid19/rest/predictions/by_prediction/*`
 

@@ -36,5 +36,7 @@
     ]
   },
   "homepage": "./",
-  "proxy": "http://localhost:8081/"
+  "devDependencies": {
+    "http-proxy-middleware": "^1.0.3"
+  }
 }

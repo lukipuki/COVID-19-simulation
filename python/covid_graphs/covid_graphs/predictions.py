@@ -2,7 +2,7 @@ import datetime
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, List
+from typing import Iterable, List, Tuple
 
 from google.protobuf import text_format  # type: ignore
 
@@ -10,7 +10,9 @@ from . import formula
 from .formula import AtgFormula, FittedFormula, Formula
 from .pb.atg_prediction_pb2 import CountryAtgParameters
 
-MAX_PEAK_DISTANCE = datetime.timedelta(days=14)
+# Ten weeks
+MAX_PEAK_DISTANCE = datetime.timedelta(days=7 * 10)
+MAX_PEAK_VARIABILITY = datetime.timedelta(days=14)
 
 
 # Make the class hashable.
@@ -241,36 +243,50 @@ def load_prediction_db(prediction_dir: Path) -> PredictionDb:
         ]
         # TODO(miskosz): The decision on which predictions to display should not be a reponsibility
         # of `predictions` module. All data should be served.
-        start_idx = _calculate_earliest_displayable_idx(fitted_formulas, MAX_PEAK_DISTANCE)
+        start_idx, end_idx = _calculate_displayable_interval(
+            fitted_formulas, MAX_PEAK_DISTANCE, MAX_PEAK_VARIABILITY
+        )
         fitted_predictions = _create_predictions_from_formulas(
-            fitted_formulas[start_idx:], country_atg_parameters.short_country_name
+            fitted_formulas[start_idx:end_idx], country_atg_parameters.short_country_name
         )
         country_predictions.extend(fitted_predictions)
 
     return PredictionDb(country_predictions=country_predictions)
 
 
-def _calculate_earliest_displayable_idx(
-    fitted_formulas: Iterable[FittedFormula], max_peak_distance: datetime.timedelta
-) -> int:
+def _calculate_displayable_interval(
+    fitted_formulas: Iterable[FittedFormula],
+    max_peak_distance: datetime.timedelta,
+    max_peak_variability: datetime.timedelta,
+) -> Tuple[int, int]:
     """
-    Calculates the earliest index in fitted_formulas, after which the peaks of formulas are within
-    'max_peak_distance'.
+    Returns a half-open interval [start, end), for which the following holds:
+    * fitted_formulas[end - 1] is the latest prediction whose peak is not too far in the future,
+      i.e. it's earlier than 'max_peak_distance' from now.
+    * fitted_formula[start] is the earliest prediction, after which the peaks are within
+      'max_peak_variability'.
     """
     peak_days = [
         formula.get_peak(country_report=None) for formula in reversed(list(fitted_formulas))
     ]
+    skip = 0
+    latest_peak = datetime.datetime.now() + max_peak_distance
+    while skip < len(peak_days) and peak_days[skip] > latest_peak:
+        skip += 1
+    clipped_peaks = peak_days[skip:]
+    if len(clipped_peaks) == 0:
+        return skip, skip
 
-    min_peak, max_peak = peak_days[0], peak_days[0]
+    min_peak, max_peak = clipped_peaks[0], clipped_peaks[0]
     take_count = 1
-    for peak in peak_days[1:]:
+    for peak in clipped_peaks[1:]:
         min_peak = min(min_peak, peak)
         max_peak = max(max_peak, peak)
-        if max_peak - min_peak <= max_peak_distance:
+        if max_peak - min_peak <= max_peak_variability:
             take_count += 1
         else:
             break
-    return len(peak_days) - take_count
+    return len(clipped_peaks) - take_count, len(clipped_peaks)
 
 
 def _create_predictions_from_formulas(

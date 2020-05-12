@@ -897,4 +897,24 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 6
+  recovered: 3
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 2
+  recovered: 1
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Estonia"
+population: 1309632

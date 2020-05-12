@@ -960,4 +960,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 70
+  positive: 312
+  recovered: 179
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 263
+  positive: 453
+  recovered: 508
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "France"
+population: 64979548

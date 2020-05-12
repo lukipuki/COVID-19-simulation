@@ -925,4 +925,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 88
+  positive: 11012
+  recovered: 2390
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 94
+  positive: 11656
+  recovered: 5495
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Russia"
+population: 143989754

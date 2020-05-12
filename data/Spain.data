@@ -875,6 +875,7 @@ stats {
   }
 }
 stats {
+  positive: 1781
   date {
     day: 1
     month: 5
@@ -883,7 +884,7 @@ stats {
 }
 stats {
   dead: 557
-  positive: 3147
+  positive: 1366
   recovered: 5198
   date {
     day: 2
@@ -961,4 +962,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 143
+  positive: 772
+  recovered: 2214
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 123
+  positive: 3086
+  recovered: 973
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Spain"
+population: 46354321

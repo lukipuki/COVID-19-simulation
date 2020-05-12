@@ -889,4 +889,21 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 6
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 10
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Greece"
+population: 11159773

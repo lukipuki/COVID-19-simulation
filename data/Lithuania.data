@@ -880,4 +880,23 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 1
+  positive: 35
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 6
+  recovered: 5
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Lithuania"
+population: 2890297

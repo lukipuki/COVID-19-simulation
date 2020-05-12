@@ -893,4 +893,22 @@ stats {
     year: 2020
   }
 }
+stats {
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 3
+  positive: 144
+  recovered: 558
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Serbia"
+population: 6963764

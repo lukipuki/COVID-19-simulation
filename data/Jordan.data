@@ -865,4 +865,23 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 18
+  recovered: 2
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 22
+  recovered: 1
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Jordan"
+population: 9702353

@@ -812,4 +812,20 @@ stats {
     year: 2020
   }
 }
+stats {
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  recovered: 3
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Monaco"
+population: 38695

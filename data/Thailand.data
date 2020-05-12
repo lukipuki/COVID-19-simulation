@@ -932,4 +932,23 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 5
+  recovered: 7
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 6
+  recovered: 2
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Thailand"
+population: 69037513

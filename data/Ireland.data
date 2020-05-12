@@ -885,4 +885,23 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 12
+  positive: 236
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 9
+  positive: 139
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Ireland"
+population: 4761657

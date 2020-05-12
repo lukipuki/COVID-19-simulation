@@ -859,4 +859,22 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 1
+  positive: 6
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 3
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Cyprus"
+population: 1179551

@@ -938,4 +938,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 3
+  positive: 38
+  recovered: 63
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 11
+  recovered: 70
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Austria"
+population: 8735453

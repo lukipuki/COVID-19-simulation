@@ -940,4 +940,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 75
+  positive: 485
+  recovered: 231
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 51
+  positive: 368
+  recovered: 55
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Belgium"
+population: 11429336

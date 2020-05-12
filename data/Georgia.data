@@ -880,4 +880,24 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 9
+  recovered: 12
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 3
+  recovered: 8
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Georgia"
+population: 3912061

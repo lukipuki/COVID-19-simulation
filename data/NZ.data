@@ -881,4 +881,22 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 3
+  recovered: 15
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  recovered: 12
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "NZ"
+population: 4705818

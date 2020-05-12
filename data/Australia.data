@@ -928,4 +928,23 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 9
+  recovered: 26
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 22
+  recovered: 46
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Australia"
+population: 24450561

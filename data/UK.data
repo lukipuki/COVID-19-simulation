@@ -952,4 +952,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 268
+  positive: 3924
+  recovered: 1
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 211
+  positive: 3883
+  recovered: 13
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "UK"
+population: 66181585

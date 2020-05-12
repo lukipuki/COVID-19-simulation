@@ -886,4 +886,23 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 2
+  positive: 82
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 4
+  positive: 22
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Finland"
+population: 5523231

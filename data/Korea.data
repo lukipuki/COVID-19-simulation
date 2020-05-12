@@ -995,4 +995,24 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 35
+  recovered: 22
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 27
+  recovered: 38
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Korea"
+population: 50982212

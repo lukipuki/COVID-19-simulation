@@ -887,4 +887,19 @@ stats {
     year: 2020
   }
 }
+stats {
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Iceland"
+population: 335025

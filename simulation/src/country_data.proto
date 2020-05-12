@@ -17,6 +17,6 @@ message DailyStats {
 message CountryData {
   string name = 1;
   string short_name = 3;
-  uint32 population = 4;
+  uint64 population = 4;
   repeated DailyStats stats = 2;
 }

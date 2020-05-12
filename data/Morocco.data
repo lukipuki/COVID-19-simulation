@@ -921,4 +921,24 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 2
+  positive: 153
+  recovered: 93
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 218
+  recovered: 257
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Morocco"
+population: 35739580

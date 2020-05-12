@@ -904,4 +904,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 15
+  positive: 522
+  recovered: 151
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 17
+  positive: 416
+  recovered: 228
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Ukraine"
+population: 44222947

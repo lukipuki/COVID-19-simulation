@@ -1,26 +1,35 @@
-import argparse
 import datetime
+import json
+from pathlib import Path
 
+import click
+import click_pathlib
 import pandas as pd
 from google.protobuf import text_format  # type: ignore
 
 from .pb.country_data_pb2 import CountryData, DailyStats
 
 
-def main():
-    parser = argparse.ArgumentParser(
-        description="COVID-19 data downloader, writes into current directory"
-    )
-    parser.add_argument("country", metavar="country", type=str, help="Country")
-    parser.add_argument(
-        "--short_name",
-        metavar="short_name",
-        type=str,
-        help="Short name of the country",
-        default=None,
-    )
-    args = parser.parse_args()
-    short_name = args.short_name if args.short_name is not None else args.country
+@click.command(help="COVID-19 data downloader, writes into current directory")
+@click.argument(
+    "country", required=True, type=str,
+)
+@click.option(
+    "-s", "--short_name", type=str, required=True, default=None, help="Short name of the country",
+)
+@click.option(
+    "-d",
+    "--data-dir",
+    required=False,
+    default=Path("."),
+    type=click_pathlib.Path(exists=True),
+    help="Directory with the population JSON",
+)
+def main(country: str, short_name: str, data_dir: Path):
+    with (data_dir / "country-populations.json").open() as stream:
+        population = {}
+        for data in json.load(stream):
+            population[data["country"]] = data["population"]
 
     def diff(a):
         "Calculates the daily increase from a cumulative number"
@@ -31,7 +40,7 @@ def main():
 
     # JHU uses country names that we want to improve.
     name_map = {"United States": "US", "South Korea": "Korea, South"}
-    country_name_JHU = args.country if args.country not in name_map else name_map[args.country]
+    country_name_JHU = country if country not in name_map else name_map[country]
     data = {}
 
     for typ in ["deaths", "recovered", "confirmed"]:
@@ -49,8 +58,9 @@ def main():
 
     points = []
     country_data = CountryData()
-    country_data.name = args.country
+    country_data.name = country
     country_data.short_name = short_name
+    country_data.population = population[country]
     for c, r, d, t in zip(data["confirmed"], data["recovered"], data["deaths"], dates):
         points.append({"positive": c, "recovered": r, "dead": d, "date": t.strftime("%Y-%m-%d")})
         stats = DailyStats()

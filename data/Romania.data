@@ -935,4 +935,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 22
+  positive: 231
+  recovered: 139
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 21
+  positive: 226
+  recovered: 194
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Romania"
+population: 19679306

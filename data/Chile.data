@@ -919,4 +919,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 8
+  positive: 1647
+  recovered: 445
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 11
+  positive: 1197
+  recovered: 493
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Chile"
+population: 18054726

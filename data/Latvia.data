@@ -847,4 +847,21 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 9
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 7
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Latvia"
+population: 1949670

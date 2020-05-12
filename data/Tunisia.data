@@ -870,4 +870,21 @@ stats {
     year: 2020
   }
 }
+stats {
+  recovered: 40
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  recovered: 27
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Tunisia"
+population: 11532127

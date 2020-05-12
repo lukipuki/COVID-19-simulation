@@ -936,4 +936,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 5
+  positive: 23
+  recovered: 54
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 6
+  positive: 29
+  recovered: 413
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Israel"
+population: 8321570

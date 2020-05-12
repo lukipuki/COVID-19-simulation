@@ -988,4 +988,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 51
+  positive: 1383
+  recovered: 1079
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 45
+  positive: 1683
+  recovered: 1279
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Iran"
+population: 81162788

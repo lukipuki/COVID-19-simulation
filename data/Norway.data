@@ -887,4 +887,22 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 6
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 5
+  positive: 27
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Norway"
+population: 5305383

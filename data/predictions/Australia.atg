@@ -1,37 +1,5 @@
 parameters {
   last_data_date {
-    day: 5
-    month: 4
-    year: 2020
-  }
-  alpha: 9.324622932013078
-  tg: 3.7426258764618106
-  a: 0.18809140901267776
-  offset: 0.31316582800640447
-  start_date {
-    day: 2
-    month: 3
-    year: 2020
-  }
-}
-parameters {
-  last_data_date {
-    day: 6
-    month: 4
-    year: 2020
-  }
-  alpha: 10.326579915337316
-  tg: 3.3757413882757237
-  a: 0.01680182455261114
-  offset: 0.6386480258101699
-  start_date {
-    day: 1
-    month: 3
-    year: 2020
-  }
-}
-parameters {
-  last_data_date {
     day: 7
     month: 4
     year: 2020
@@ -555,6 +523,38 @@ parameters {
   start_date {
     day: 29
     month: 2
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+  alpha: 10.52899534569771
+  tg: 3.3484685883327208
+  a: 0.010533911428305712
+  offset: 0.406633739206157
+  start_date {
+    day: 1
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+  alpha: 9.937317297275582
+  tg: 3.455234485264455
+  a: 0.04298226416506333
+  offset: 0.2909336569681784
+  start_date {
+    day: 2
+    month: 3
     year: 2020
   }
 }

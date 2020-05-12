@@ -902,4 +902,23 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 5
+  positive: 401
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 31
+  positive: 348
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Sweden"
+population: 9910701

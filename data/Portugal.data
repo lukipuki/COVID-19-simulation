@@ -920,4 +920,24 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 9
+  positive: 175
+  recovered: 50
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 9
+  positive: 98
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Portugal"
+population: 10329506

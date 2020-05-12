@@ -964,4 +964,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 20
+  positive: 555
+  recovered: 1100
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 92
+  positive: 697
+  recovered: 1217
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Germany"
+population: 82114224

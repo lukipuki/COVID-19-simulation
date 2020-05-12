@@ -966,4 +966,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 17
+  positive: 114
+  recovered: 2221
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 9
+  positive: 70
+  recovered: 166
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Japan"
+population: 127484450

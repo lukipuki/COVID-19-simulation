@@ -951,4 +951,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 168
+  positive: 1173
+  recovered: 847
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 124
+  positive: 1173
+  recovered: 898
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Canada"
+population: 36624199

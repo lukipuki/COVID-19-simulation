@@ -951,4 +951,24 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 67
+  recovered: 96
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 70
+  recovered: 88
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Malaysia"
+population: 31624264

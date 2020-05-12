@@ -919,4 +919,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 8
+  positive: 50
+  recovered: 29
+  date {
+    day: 10
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 8
+  positive: 21
+  recovered: 25
+  date {
+    day: 11
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Hungary"
+population: 9721559

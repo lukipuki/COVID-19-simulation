@@ -9,6 +9,7 @@
     "@testing-library/user-event": "^7.1.2",
     "highcharts": "^8.0.4",
     "highcharts-react-official": "^3.0.0",
+    "rc-slider": "^9.2.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1"
@@ -35,5 +36,7 @@
     ]
   },
   "homepage": "./",
-  "proxy": "http://localhost:8081/"
+  "devDependencies": {
+    "http-proxy-middleware": "^1.0.3"
+  }
 }

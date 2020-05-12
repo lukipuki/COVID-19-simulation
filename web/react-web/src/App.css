@@ -31,6 +31,12 @@
 .App .content {
   flex: 1;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.App .graph {
+  flex: 1;
 }
 
 .App button {
@@ -88,6 +94,49 @@
 
 .App fieldset table tbody tr:nth-child(even) {
   background-color: rgba(160, 160, 160, 0.1);
+}
+
+.App .sliderWrapper {
+  height: 50px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.App .sliderWrapper button {
+  margin: 0;
+  padding: 0;
+}
+
+.App .sliderWrapper button div {
+  width: 50px;
+  height: 30px;
+}
+
+.App .sliderWrapper button .play {
+  mask: url(assets/play.svg) no-repeat center / contain;
+  background-color: black;
+}
+
+.App .sliderWrapper button .pause {
+  mask: url(assets/pause.svg) no-repeat center / contain;
+  background-color: black;
+}
+
+.App .sliderWrapper button:disabled div {
+  background-color: grey;
+}
+
+.App #sliderWrapper {
+  margin: 0 20px;
+  flex: 1;
+}
+
+.rc-slider-tooltip .rc-slider-tooltip-inner {
+  background-color: linen;
+  padding: 3px 5px;
+  color: black;
 }
 
 @media screen

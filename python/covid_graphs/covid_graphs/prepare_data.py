@@ -11,12 +11,12 @@ def main():
     parser = argparse.ArgumentParser(
         description="COVID-19 data downloader, writes into current directory"
     )
-    parser.add_argument("country", metavar="country", type=str, help=f"Country")
+    parser.add_argument("country", metavar="country", type=str, help="Country")
     parser.add_argument(
         "--short_name",
         metavar="short_name",
         type=str,
-        help=f"Short name of the country",
+        help="Short name of the country",
         default=None,
     )
     args = parser.parse_args()

@@ -75,7 +75,7 @@ class DashboardFactory:
             ]
 
         app = dash.Dash(
-            name=f"COVID-19 predictions",
+            name="COVID-19 predictions",
             url_base_pathname=f"/covid19/predictions/{dashboard_type}/",
             server=server,
             external_scripts=[

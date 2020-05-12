@@ -141,9 +141,9 @@ class Rest:
         return flask.jsonify(self.country_reports_active[country])
 
     def generate_static_files(self, output_dir: Path) -> None:
-        Path(output_dir / f"data").mkdir(parents=True, exist_ok=True)
-        Path(output_dir / f"predictions/by_prediction").mkdir(parents=True, exist_ok=True)
-        Path(output_dir / f"predictions/by_country").mkdir(parents=True, exist_ok=True)
+        Path(output_dir / "data").mkdir(parents=True, exist_ok=True)
+        Path(output_dir / "predictions/by_prediction").mkdir(parents=True, exist_ok=True)
+        Path(output_dir / "predictions/by_country").mkdir(parents=True, exist_ok=True)
 
         # country data
         for country in self.country_reports_active:
@@ -151,7 +151,7 @@ class Rest:
                 output.write(flask.json.dumps(self.country_reports_active[country]))
 
         # list of all available predictions for each country
-        with open(output_dir / "predictions" / f"list.json", "w") as output:
+        with open(output_dir / "predictions" / "list.json", "w") as output:
             output.write(flask.json.dumps(self.available_predictions))
 
         # all predictions by country

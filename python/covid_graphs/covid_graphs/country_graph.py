@@ -183,7 +183,7 @@ class CountryGraph:
                         ],
                         y=[1.0, data_until_y],
                         mode="markers",
-                        name=f"Data cutoff",
+                        name="Data cutoff",
                         marker=dict(size=15, symbol="circle", color=color),
                         line=dict(width=3, color=color),
                         opacity=opacity,

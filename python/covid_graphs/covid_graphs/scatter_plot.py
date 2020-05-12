@@ -29,7 +29,7 @@ def create_dates(simulation_results: List[List[int]], date_list: List[str]) -> L
 
     Typically used as x-axis labels of the simulation results.
     """
-    return [date_list[index] for l in simulation_results for index in range(len(l))]
+    return [date_list[index] for result in simulation_results for index in range(len(result))]
 
 
 class SimulationGraph:

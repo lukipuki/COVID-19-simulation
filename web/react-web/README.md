@@ -20,7 +20,7 @@ In the root directory of the repository, run `docker-compose`.
 ```sh
 docker-compose up --build # Optionally add -d for daemon
 ```
-You can then access the server locally at [localhost:8081](http://127.0.0.1:8081/covid19/graphs/).
+You can then access the server locally at [localhost:8081](http://127.0.0.1:8081/covid19/predictions/overview/).
 
 Application expects that after deployment, following paths will be answered by backend.
 * `/covid19/rest/data/*`

@@ -8,6 +8,27 @@ class Countries extends Component {
         series: {}
     };
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        const {
+            data: oldData
+        } = prevProps.predictions;
+
+        const {
+            data
+        } = this.props.predictions;
+
+        if (data !== oldData && data.length > 0 && this.props.series.data.length === 0) {
+            //no series selected? Autoselect Slovakia or first country
+            const country = data.reduce((currentValue, prediction) => {
+                if (prediction.country === 'Slovakia') {
+                    return 'Slovakia';
+                }
+                return currentValue;
+            }, data[0].country);
+            this.toggleItem(country)();
+        }
+    }
+
     isCountryUsed = (country) => {
         const {
             data

@@ -76,7 +76,6 @@ class Sidebar extends Component {
                                     </ul>
                                 </>}
                             {activeTab === 1 &&
-                            //TODO: load markdown content from backend and render it, once it'll be available
                             <>
                                 <h1>COVID-19 predictions of Boďová and Kollár</h1>
                                 <ReactMarkdown source={this.state.aboutMarkdown} escapeHtml={false} linkTarget='_blank' />

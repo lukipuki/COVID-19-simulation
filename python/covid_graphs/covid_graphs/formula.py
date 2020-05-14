@@ -166,7 +166,7 @@ class FittedFormula(Formula):
             label=label,
         )
 
-    def get_peak(self, country_report: Optional[CountryReport]) -> datetime.datetime:
+    def get_peak(self, country_report: Optional[CountryReport] = None) -> datetime.datetime:
         return datetime.datetime.combine(
             self.start_date, datetime.datetime.min.time()
         ) + datetime.timedelta(days=self.fit.exp * self.fit.tg + self.fit.t0)

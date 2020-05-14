@@ -341,9 +341,6 @@ def get_about_content() -> str:
 
 
 def _get_header_content(title: str) -> List[Component]:
-    mar30_prediction_link = (
-        "https://www.facebook.com/permalink.php?story_fbid=10113020662000793&id=2247644"
-    )
     return [
         html.H1(children=title),
         dcc.Markdown(get_about_content(), dangerously_allow_html=True,),

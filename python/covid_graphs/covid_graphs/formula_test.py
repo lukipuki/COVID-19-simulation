@@ -21,6 +21,7 @@ def test_two_traces():
         daily_recovered=None,
         daily_active=None,
         cumulative_active=cumulative_active,
+        population=None,
     )
     display_until = datetime.date(2020, 4, 30)
 

@@ -168,17 +168,17 @@ class Graph extends Component {
                     }
                     yRatio = maxPeakValue / maxValue / maxPeakValue * 100.0;
 
-                    finalOptions.yAxis.title = 'Active cases %';
+                    finalOptions.yAxis.title.text = 'Active cases %';
                     finalOptions.yAxis.labels.format = '{value}%';
                     break;
                 case SCALING_PER_CAPITA:
                     yRatio = 1.0 / (one.population / 100000.0);
-                    finalOptions.yAxis.title = 'Active cases per 100 000 citizens';
+                    finalOptions.yAxis.title.text = 'Active cases per 100 000 citizens';
                     finalOptions.yAxis.labels.format = '{value}';
                     break;
                 case SCALING_ABSOLUTE:
                 default:
-                    finalOptions.yAxis.title = 'Active cases';
+                    finalOptions.yAxis.title.text = 'Active cases';
                     finalOptions.yAxis.labels.format = '{value}';
                     break;
             }

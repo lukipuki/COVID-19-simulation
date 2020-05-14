@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {GraphDetailContext, AXES_LINEAR, AXES_LOG, AXES_LOG_LOG} from "../Commons/sharedObjects";
 import CountriesWrapper from "./CountriesWrapper";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown from "react-markdown/with-html";
 import {api} from "../Commons/api";
 
 class Sidebar extends Component {
@@ -79,7 +79,7 @@ class Sidebar extends Component {
                             //TODO: load markdown content from backend and render it, once it'll be available
                             <>
                                 <h1>COVID-19 predictions of Boďová and Kollár</h1>
-                                <ReactMarkdown source={this.state.aboutMarkdown} escapeHtml={false} />
+                                <ReactMarkdown source={this.state.aboutMarkdown} escapeHtml={false} linkTarget='_blank' />
                             </>}
                         </>
                     )

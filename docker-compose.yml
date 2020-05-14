@@ -11,7 +11,7 @@ services:
       - 127.0.0.1:8081:80
     restart: always
   flask_server:
-    build: .
+    build: python
     image: flask_server
     volumes:
       - "./data:/covid19/data:ro"

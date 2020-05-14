@@ -214,9 +214,10 @@ class DashboardFactory:
                     report.dates[-22],
                 ],
             )
-            graph_by_short_name[country_short_name] = CountryGraph(
-                report=report, country_predictions=country_predictions
-            )
+            if len(country_predictions) > 0:
+                graph_by_short_name[country_short_name] = CountryGraph(
+                    report=report, country_predictions=country_predictions
+                )
 
         @app.callback(
             Output("country-graph", component_property="figure"),

@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 from typing import Dict, List, Tuple
 
@@ -9,7 +10,8 @@ from covid_graphs import predictions
 from covid_graphs.country_graph import CountryGraph
 from covid_graphs.country_report import CountryReport, create_report
 from covid_graphs.predictions import PredictionDb
-from covid_web import country_dashboard
+
+CURRENT_DIR = Path(__file__).parent
 
 
 @click.command(help="COVID-19 static REST generator")
@@ -148,12 +150,8 @@ class Rest:
         Path(output_dir / "predictions/by_prediction").mkdir(parents=True, exist_ok=True)
         Path(output_dir / "predictions/by_country").mkdir(parents=True, exist_ok=True)
 
-        about = "\n".join(
-            line.strip() for line in country_dashboard.get_about_content().splitlines()
-        )
         # about page
-        with open(output_dir / "about.md", "w") as output:
-            output.write(about)
+        shutil.copy(CURRENT_DIR / "about.md", output_dir / "about.md")
 
         # country data
         for country in self.country_reports_active:

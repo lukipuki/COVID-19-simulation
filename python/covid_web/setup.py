@@ -16,5 +16,5 @@ setup(
             "covid_web.generate_static_rest = covid_web.rest:generate_static_rest",
         ]
     },
-    package_data={"": ["*.html"], "covid_web": ["py.typed"]},
+    package_data={"": ["*.html"], "covid_web": ["py.typed", "about.md"]},
 )

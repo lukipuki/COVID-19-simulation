@@ -19,6 +19,7 @@ class CountryReport:
     daily_recovered: np.ndarray
     daily_active: np.ndarray
     cumulative_active: np.ndarray
+    population: np.uint64
 
 
 def create_report(country_data_file: Path) -> CountryReport:
@@ -28,6 +29,7 @@ def create_report(country_data_file: Path) -> CountryReport:
 
     long_name = country_data.name
     short_name = country_data.short_name
+    popuplation = country_data.population
     dates = [
         datetime.date(day=day.date.day, month=day.date.month, year=day.date.year)
         for day in country_data.stats
@@ -49,4 +51,5 @@ def create_report(country_data_file: Path) -> CountryReport:
         daily_recovered,
         daily_active,
         cumulative_active,
+        popuplation,
     )

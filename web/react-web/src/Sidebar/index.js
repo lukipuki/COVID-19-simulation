@@ -1,11 +1,27 @@
 import React, {Component} from 'react';
 import {GraphDetailContext, AXES_LINEAR, AXES_LOG, AXES_LOG_LOG} from "../Commons/sharedObjects";
 import CountriesWrapper from "./CountriesWrapper";
+import ReactMarkdown from "react-markdown";
+import {api} from "../Commons/api";
 
 class Sidebar extends Component {
     state = {
-        activeTab: 0
+        activeTab: 0,
+        aboutMarkdown: ''
     };
+
+    componentDidMount() {
+        api.getAbout()
+            .then((text) => {
+                this.setState({
+                    aboutMarkdown: text
+                })
+            })
+            .catch((error) => {
+                // TODO: handle better
+                console.log(error);
+            })
+    }
 
     selectTab = (activeTab) => () => {
         this.setState({activeTab})
@@ -63,27 +79,7 @@ class Sidebar extends Component {
                             //TODO: load markdown content from backend and render it, once it'll be available
                             <>
                                 <h1>COVID-19 predictions of Boďová and Kollár</h1>
-                                <p>Mathematicians Katarína Boďová and Richard Kollár predicted in March and April 2020
-                                    the growth of active cases during COVID-19 pandemic. Their model suggests polynomial
-                                    growth with exponential decay given by:</p>
-                                <ul>
-                                    <li><em>N</em>(<em>t</em>) = (<em>A</em>/<em>T</em><sub><em>G</em></sub>) ⋅
-                                        (<em>t</em>/<em>T</em><sub><em>G</em></sub>)<sup>α</sup> /
-                                        e<sup><em>t</em>/<em>T</em><sub><em>G</em></sub></sup></li>
-                                </ul>
-                                <p>Where:</p>
-                                <ul><li><em>t</em> is time in days counted from a country-specific "day one"</li><li><em>N(t)</em> the number of active cases (cumulative positively tested minus recovered and deceased)</li><li><em>A</em>, <em>T<sub>G</sub></em> and <em>α</em> are country-specific parameters</li></ul>
-                                <p>They made two predictions, on March 30 (for 7 countries) and on April 12 (for 23
-                                    countries), each based on data available until the day before. The first prediction
-                                    assumed a common growth parameter <em>α</em> = 6.23.</p>
-                                <h3>References</h3>
-                                <ul>
-                                    <li><a href="https://arxiv.org/abs/cond-mat/0505116">Polynomial growth in age-dependent branching processes with diverging reproductive number</a> by Alexei Vazquez</li>
-                                    <li><a href="https://www.medrxiv.org/content/10.1101/2020.02.16.20023820v2.full.pdf">Fractal kinetics of COVID-19 pandemic</a> by Robert Ziff and Anna Ziff</li>
-                                    <li>Unpublished manuscript by Katarína Boďová and Richard Kollár</li>
-                                    <li>March 30 predictions: <a href="https://www.facebook.com/permalink.php?story_fbid=10113020662000793&amp;id=2247644">Facebook post</a></li>
-                                    <li>April 12 predictions: Personal communication</li>
-                                </ul>
+                                <ReactMarkdown source={this.state.aboutMarkdown} escapeHtml={false} />
                             </>}
                         </>
                     )

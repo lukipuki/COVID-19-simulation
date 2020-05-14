@@ -302,14 +302,11 @@ class DashboardFactory:
         #         return result
 
 
-def _get_header_content(title: str) -> List[Component]:
+def get_about_content() -> str:
     mar30_prediction_link = (
         "https://www.facebook.com/permalink.php?story_fbid=10113020662000793&id=2247644"
     )
-    return [
-        html.H1(children=title),
-        dcc.Markdown(
-            f"""
+    return f"""
             Mathematicians Katarína Boďová and Richard Kollár predicted in March and April 2020
             the growth of active cases during COVID-19 pandemic. Their model suggests polynomial
             growth with exponential decay given by:
@@ -340,11 +337,17 @@ def _get_header_content(title: str) -> List[Component]:
             * Unpublished manuscript by Katarína Boďová and Richard Kollár
             * March 30 predictions: [Facebook post]({mar30_prediction_link})
             * April 12 predictions: Personal communication
+            """
 
-            ### Legend
-            """,
-            dangerously_allow_html=True,
-        ),
+
+def _get_header_content(title: str) -> List[Component]:
+    mar30_prediction_link = (
+        "https://www.facebook.com/permalink.php?story_fbid=10113020662000793&id=2247644"
+    )
+    return [
+        html.H1(children=title),
+        dcc.Markdown(get_about_content(), dangerously_allow_html=True,),
+        html.H3(children="Legend"),
         html.Ul(
             children=[
                 html.Li("Solid/dashed line is prediction"),

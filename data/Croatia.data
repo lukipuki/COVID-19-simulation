@@ -937,5 +937,24 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 11
+  recovered: 24
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 3
+  positive: 6
+  recovered: 26
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Croatia"
 population: 4189353

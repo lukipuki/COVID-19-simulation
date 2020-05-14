@@ -905,5 +905,23 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 1
+  positive: 18
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 3
+  positive: 16
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Greece"
 population: 11159773

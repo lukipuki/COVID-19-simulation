@@ -863,5 +863,23 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 4
+  recovered: 163
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 1
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Latvia"
 population: 1949670

@@ -942,5 +942,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 1
+  positive: 45
+  recovered: 178
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 7
+  positive: 48
+  recovered: 158
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Czechia"
 population: 10618303

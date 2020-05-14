@@ -916,5 +916,22 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 5
+  recovered: 26
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 5
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Estonia"
 population: 1309632

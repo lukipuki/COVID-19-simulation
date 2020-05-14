@@ -876,5 +876,23 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 2
+  recovered: 48
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 2
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Cyprus"
 population: 1179551

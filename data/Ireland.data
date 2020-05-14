@@ -903,5 +903,24 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 21
+  positive: 107
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 9
+  positive: 159
+  recovered: 2360
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Ireland"
 population: 4761657

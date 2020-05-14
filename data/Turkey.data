@@ -938,5 +938,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 53
+  positive: 1704
+  recovered: 3109
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 58
+  positive: 1639
+  recovered: 2826
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Turkey"
 population: 80745020

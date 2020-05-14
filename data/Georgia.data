@@ -899,5 +899,23 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 4
+  recovered: 32
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 5
+  recovered: 23
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Georgia"
 population: 3912061

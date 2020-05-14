@@ -944,5 +944,24 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 54
+  positive: 196
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 52
+  positive: 227
+  recovered: 8
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Netherlands"
 population: 17035938

@@ -1012,5 +1012,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 172
+  positive: 1402
+  recovered: 2452
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 195
+  positive: 888
+  recovered: 3502
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Italy"
 population: 59359900

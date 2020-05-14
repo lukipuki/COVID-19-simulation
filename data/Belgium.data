@@ -960,5 +960,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 54
+  positive: 330
+  recovered: 35
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 82
+  positive: 202
+  recovered: 205
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Belgium"
 population: 11429336

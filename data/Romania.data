@@ -955,5 +955,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 20
+  positive: 190
+  recovered: 440
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 34
+  positive: 224
+  recovered: 276
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Romania"
 population: 19679306

@@ -898,5 +898,21 @@ stats {
     year: 2020
   }
 }
+stats {
+  recovered: 4
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  recovered: 9
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "NZ"
 population: 4705818

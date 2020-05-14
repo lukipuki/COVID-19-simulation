@@ -950,5 +950,22 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 2
+  recovered: 2
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  recovered: 46
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Thailand"
 population: 69037513

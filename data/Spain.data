@@ -982,5 +982,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 176
+  positive: 594
+  recovered: 1841
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 184
+  positive: 661
+  recovered: 1843
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Spain"
 population: 46354321

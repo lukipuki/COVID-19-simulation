@@ -1,13 +1,15 @@
 #!/bin/zsh -xe
 
+if [[ "${VIRTUAL_ENV:-}" == "" ]]
+then
+    echo "⚠️  Running outside of a virtual environment."
+fi
+
 declare -A short_names
 short_names["United States"]=USA
 short_names["United Kingdom"]=UK
 short_names["New Zealand"]=NZ
 short_names["South Korea"]=Korea
-
-python3 -m venv --system-site-packages venv && source venv/bin/activate
-pip install $1/
 
 countries=(
   Australia
@@ -69,5 +71,3 @@ do
   covid_graphs.prepare_data ${(p)country} --short_name ${short_name}
   covid_graphs.generate_predictions ${short_name}.data predictions
 done
-
-deactivate && rm -rf venv

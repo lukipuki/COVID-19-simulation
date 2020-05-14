@@ -898,5 +898,24 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 1
+  positive: 8
+  recovered: 24
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 4
+  recovered: 77
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Slovakia"
 population: 5447662

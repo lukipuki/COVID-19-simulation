@@ -995,5 +995,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 1674
+  positive: 21495
+  recovered: -2446
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1763
+  positive: 21030
+  recovered: 13143
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "USA"
 population: 324459463

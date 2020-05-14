@@ -940,5 +940,23 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 137
+  recovered: 180
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 94
+  recovered: 140
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Morocco"
 population: 35739580

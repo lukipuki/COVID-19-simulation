@@ -986,5 +986,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 24
+  positive: 121
+  recovered: 238
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 21
+  positive: 81
+  recovered: 389
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Japan"
 population: 127484450

@@ -1014,5 +1014,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 1
+  positive: 26
+  recovered: 25
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 29
+  recovered: 67
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Korea"
 population: 50982212

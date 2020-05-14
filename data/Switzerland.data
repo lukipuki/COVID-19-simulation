@@ -957,5 +957,24 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 22
+  positive: 36
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 3
+  positive: 33
+  recovered: 300
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Switzerland"
 population: 8476005

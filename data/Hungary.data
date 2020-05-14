@@ -939,5 +939,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 4
+  positive: 29
+  recovered: 49
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 5
+  positive: 28
+  recovered: 95
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Hungary"
 population: 9721559

@@ -920,5 +920,23 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 57
+  positive: 602
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 147
+  positive: 637
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Sweden"
 population: 9910701

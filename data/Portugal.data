@@ -939,5 +939,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 19
+  positive: 234
+  recovered: 464
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 12
+  positive: 219
+  recovered: 169
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Portugal"
 population: 10329506

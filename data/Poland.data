@@ -941,5 +941,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 28
+  positive: 595
+  recovered: 315
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 22
+  positive: 283
+  recovered: 279
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Poland"
 population: 38170712

@@ -945,5 +945,25 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 107
+  positive: 10899
+  recovered: 3711
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 96
+  positive: 10028
+  recovered: 4491
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Russia"
 population: 143989754

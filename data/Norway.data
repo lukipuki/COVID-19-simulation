@@ -904,5 +904,23 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 4
+  positive: 25
+  date {
+    day: 12
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 18
+  date {
+    day: 13
+    month: 5
+    year: 2020
+  }
+}
 short_name: "Norway"
 population: 5305383

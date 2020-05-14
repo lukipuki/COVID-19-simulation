@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 from typing import Dict, List, Tuple
 
@@ -9,6 +10,8 @@ from covid_graphs import predictions
 from covid_graphs.country_graph import CountryGraph
 from covid_graphs.country_report import CountryReport, create_report
 from covid_graphs.predictions import PredictionDb
+
+CURRENT_DIR = Path(__file__).parent
 
 
 @click.command(help="COVID-19 static REST generator")
@@ -64,6 +67,7 @@ class Rest:
                 "values": graph.cropped_cumulative_active.tolist(),
                 "short_name": country_report.short_name,
                 "long_name": country_report.long_name,
+                "population": country_report.population,
             }
             for event, trace in graph.trace_by_event.items():
                 result_predictions.append(
@@ -79,6 +83,7 @@ class Rest:
                         "prediction_name": event.name,
                         "last_data_date": event.last_data_date,
                         "prediction_date": event.prediction_date,
+                        "population": country_report.population,
                     }
                 )
 
@@ -144,6 +149,9 @@ class Rest:
         Path(output_dir / "data").mkdir(parents=True, exist_ok=True)
         Path(output_dir / "predictions/by_prediction").mkdir(parents=True, exist_ok=True)
         Path(output_dir / "predictions/by_country").mkdir(parents=True, exist_ok=True)
+
+        # about page
+        shutil.copy(CURRENT_DIR / "about.md", output_dir / "about.md")
 
         # country data
         for country in self.country_reports_active:

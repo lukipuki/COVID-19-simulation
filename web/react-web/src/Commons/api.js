@@ -93,5 +93,15 @@ export const api = {
     },
     getPrediction: (prediction, country) => {
         return doRequest('GET', `/covid19/rest/predictions/by_prediction/${prediction}/${country}`);
+    },
+    getAbout: () => {
+        return fetch('/covid19/rest/about.md')
+            .then((response) => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    throw new Error(response.statusText, response.status);
+                }
+            });
     }
 };

@@ -10,8 +10,13 @@ export const AXES_LINEAR = 1;
 export const AXES_LOG = 2;
 export const AXES_LOG_LOG = 3;
 
+export const SCALING_ABSOLUTE = 1;
+export const SCALING_PER_CAPITA = 2;
+export const SCALING_SAME_PEAK = 3;
+
 export const graphDetailsInit = { //options for graph
     axesType: AXES_LINEAR,
+    dataScaling: SCALING_PER_CAPITA,
     isXAxisRelative: false
 };
 export const GraphDetailContext = React.createContext(graphDetailsInit);

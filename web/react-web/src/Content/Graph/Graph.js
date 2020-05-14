@@ -1,7 +1,10 @@
 import React, {Component} from 'react';
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
-import {AXES_LINEAR, AXES_LOG, AXES_LOG_LOG} from "../../Commons/sharedObjects";
+import {
+    AXES_LINEAR, AXES_LOG, AXES_LOG_LOG, SCALING_ABSOLUTE, SCALING_PER_CAPITA,
+    SCALING_SAME_PEAK
+} from "../../Commons/sharedObjects";
 
 const colors = ["#7cb5ec", "#434348", "#90ed7d", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"];
 
@@ -34,6 +37,9 @@ const predefinedOptions = {
         type: 'linear',
         title: {
             text: 'Active cases'
+        },
+        labels: {
+            format: '{value}'
         }
     },
     legend: {
@@ -96,6 +102,7 @@ class Graph extends Component {
         const {
             axesType,
             isXAxisRelative,
+            dataScaling
         } = options.options;
 
         const finalOptions = {
@@ -110,6 +117,16 @@ class Graph extends Component {
         countries = [...countries].sort();
 
         const resultSeries = [];
+
+        let maxPeakValue = 0;
+        if (dataScaling === SCALING_SAME_PEAK) {
+            maxPeakValue = series.reduce((currentValue, one) => {
+                if (one.type === 'prediction') {
+                    return Math.max(currentValue, one.max_value);
+                }
+                return currentValue;
+            }, maxPeakValue);
+        }
 
         series.forEach((one, index)=> {
             let maxXValue = null;
@@ -142,9 +159,32 @@ class Graph extends Component {
                 name = `Active cases for ${one.long_name}`;
             }
 
+            let yRatio = 1.0;
+            switch (dataScaling) {
+                case SCALING_SAME_PEAK:
+                    let maxValue = one.max_value;
+                    if (one.type !== 'prediction') {
+                        maxValue = Math.max(...one.values);
+                    }
+                    yRatio = maxPeakValue / maxValue / maxPeakValue * 100.0;
+
+                    finalOptions.yAxis.title = 'Active cases %';
+                    finalOptions.yAxis.labels.format = '{value}%';
+                    break;
+                case SCALING_PER_CAPITA:
+                    yRatio = 1.0 / (one.population / 100000.0);
+                    finalOptions.yAxis.title = 'Active cases per 100 000 citizens';
+                    finalOptions.yAxis.labels.format = '{value}';
+                    break;
+                case SCALING_ABSOLUTE:
+                default:
+                    finalOptions.yAxis.title = 'Active cases';
+                    finalOptions.yAxis.labels.format = '{value}';
+                    break;
+            }
 
             const lineData = one.date_list.map((date, index) => {
-                const y = one.values[index];
+                const y = one.values[index] * yRatio;
 
                 let x = null;
                 if (isXAxisRelative) {

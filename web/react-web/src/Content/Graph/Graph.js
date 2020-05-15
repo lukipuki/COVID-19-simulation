@@ -255,7 +255,7 @@ class Graph extends Component {
             });
         });
 
-        finalOptions.xAxis.plotBands = [...predictionEnds].sort().map((value, index) => ({
+        finalOptions.xAxis.plotBands = [...predictionEnds].sort().reverse().map((value, index) => ({
             from: 0,
             to: value,
             color: bandColors[index % bandColors.length]

@@ -134,6 +134,10 @@
   flex: 1;
 }
 
+.App .lightgreen {
+  background-color: rgba(144, 238, 144, 0.4);
+}
+
 .rc-slider-tooltip .rc-slider-tooltip-inner {
   background-color: linen;
   padding: 3px 5px;

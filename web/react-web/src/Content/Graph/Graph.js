@@ -176,7 +176,7 @@ class Graph extends Component {
 
                 predictionEnds.add(predictionXValue);
 
-                name = one.description.replace('%PREDICTION_DATE%', `, ${one.short_name}<br/>${new Date(one.prediction_date).toLocaleDateString()}`);
+                name = one.description.replace(' %PREDICTION_DATE%', `, ${one.short_name}<br/>${new Date(one.prediction_date).toLocaleDateString()}`);
 
                 zones.push({
                     value: predictionXValue,

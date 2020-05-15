@@ -107,8 +107,10 @@ class Sidebar extends Component {
                                     </fieldset>
                                     <h3>Legend</h3>
                                     <ul>
-                                        <li>Triangle marks the culmination of the prediction</li>
-                                        <li>Diamond marks the date when predction was made</li>
+                                        <li>Solid/dotted line is prediction</li>
+                                        <li>Star marks the culmination of the prediction</li>
+                                        <li>Line with bullets is observed number of active cases</li>
+                                        <li>Data available until the date of prediction is in <span className='lightgreen'>light green zone</span></li>
                                     </ul>
                                 </>}
                             {activeTab === 1 &&

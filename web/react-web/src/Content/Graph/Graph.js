@@ -162,8 +162,8 @@ class Graph extends Component {
                     finalOptions.yAxis.labels.format = '{value}%';
                     break;
                 case SCALING_PER_CAPITA:
-                    yRatio = 1.0 / (one.population / 100000.0);
-                    finalOptions.yAxis.title.text = 'Active cases per 100 000 citizens';
+                    yRatio = 1.0 / (one.population / 1000000.0);
+                    finalOptions.yAxis.title.text = 'Active cases per 1 000 000 citizens';
                     finalOptions.yAxis.labels.format = '{value}';
                     break;
                 case SCALING_ABSOLUTE:

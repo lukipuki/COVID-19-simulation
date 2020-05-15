@@ -118,16 +118,6 @@ class Graph extends Component {
 
         const resultSeries = [];
 
-        let maxPeakValue = 0;
-        if (dataScaling === SCALING_SAME_PEAK) {
-            maxPeakValue = series.reduce((currentValue, one) => {
-                if (one.type === 'prediction') {
-                    return Math.max(currentValue, one.max_value);
-                }
-                return currentValue;
-            }, maxPeakValue);
-        }
-
         series.forEach((one, index)=> {
             let maxXValue = null;
             let predictionXValue = null;

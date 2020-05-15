@@ -166,7 +166,7 @@ class Graph extends Component {
                     if (one.type !== 'prediction') {
                         maxValue = Math.max(...one.values);
                     }
-                    yRatio = maxPeakValue / maxValue / maxPeakValue * 100.0;
+                    yRatio = maxValue * 100.0;
 
                     finalOptions.yAxis.title.text = 'Active cases %';
                     finalOptions.yAxis.labels.format = '{value}%';

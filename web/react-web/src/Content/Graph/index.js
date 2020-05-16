@@ -13,7 +13,7 @@ class GraphWrapper extends Component {
                         {seriesContext =>
                             <SelectedSeriesContext.Consumer>
                                 {selectedSeriesContext => {
-                                    const result = [];
+                                    let result = [];
                                     for (let i = 0; i < selectedSeriesContext.data.length; i++) {
                                         const selectedOne = selectedSeriesContext.data[i];
                                         const validItem = seriesContext.data.reduce((res, one) => {
@@ -37,6 +37,8 @@ class GraphWrapper extends Component {
                                             result.push(validItem);
                                         }
                                     }
+
+                                    result = result.sort((a, b) => a.short_name.localeCompare(b.short_name));
 
                                     return <Graph options={graphDetailContext} series={result}/>;
                                 }}

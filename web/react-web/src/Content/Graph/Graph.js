@@ -7,7 +7,7 @@ import {
 } from "../../Commons/sharedObjects";
 import {calculateHash} from "../../Commons/functions";
 
-// taken and modified from Plotly.js sources
+// taken and modified from Plotly.js sources, src/components/drawing/symbol_defs.js
 Highcharts.SVGRenderer.prototype.symbols.star = function (x, y, w, h) {
     const rs = w / 4 * 3;
     const x1 = Math.round(rs * 0.225);

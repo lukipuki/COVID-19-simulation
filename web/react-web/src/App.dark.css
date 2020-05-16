@@ -161,6 +161,24 @@
   font-weight: bold;
 }
 
+.App .rc-slider-rail {
+    background-color: #313639;
+}
+
+.App .rc-slider-track {
+    background-color: orange;
+}
+
+.App .rc-slider-dot {
+    background-color: #313639;
+    border: 1px solid orange;
+}
+
+.App .rc-slider-handle {
+    background-color: orange;
+    border-color: orange;
+}
+
 @media screen
 and (max-width: 599px) {
   .App {

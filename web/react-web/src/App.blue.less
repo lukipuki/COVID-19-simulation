@@ -1,12 +1,33 @@
 /*
-
+Left Blue: #1561ad
+Right Blue- Muted: #1c77ac
+Blue-Green: #1dbab4
+Red-Orange: #fc5226
  */
+
+@color-bg: #1561ad;
+@color-font: white;
+@color-link: #1dbab4;
+@color-button-bg: #1dbab4;
+@color-button-font: white;
+@color-button-hover-bg: #1dbab4;
+@color-button-hover-font: white;
+@color-button-active-bg: #fc5226;
+@color-button-active-font: white;
+@color-button-disabled-bg: transparent;
+@color-button-disabled-font: #1dbab4;
+@color-track: #1561ad;
+@color-rail: #1dbab4;
+@color-handle: #fc5226;
+@color-dot: #1dbab4;
+
 .App {
   display: flex;
   flex-direction: row;
   height: 100%;
   font-family: "Open Sans", verdana, arial, sans-serif;
 }
+
 .App .side_switch {
   position: fixed;
   right: 10px;
@@ -16,85 +37,99 @@
   height: 32px;
   cursor: pointer;
   z-index: 2;
-  fill: black;
+  fill: @color-font;
 }
+
 .App .sidebar {
   flex: 1;
   max-width: 30%;
   min-width: 300px;
   overflow: auto;
   padding: 0 10px;
-  background-color: white;
-  color: black;
-  -webkit-box-shadow: 0 0 20px 5px rgba(0, 0, 0, 0.2);
-  -moz-box-shadow: 0 0 20px 5px rgba(0, 0, 0, 0.2);
-  box-shadow: 0 0 20px 5px rgba(0, 0, 0, 0.2);
+  background-color: @color-bg;
+  color: @color-font;
+  -webkit-box-shadow: 0 0 20px 5px rgba(0,0,0,0.2);
+  -moz-box-shadow: 0 0 20px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 0 20px 5px rgba(0,0,0,0.2);
   z-index: 1;
 }
+
 .App .sidebar a {
-  color: blue;
+  color: @color-link;
 }
+
 .App .content {
   flex: 1;
   height: 100%;
   display: flex;
   flex-direction: column;
 }
+
 .App .graph {
   flex: 1;
 }
+
 .App button {
-  background-color: #eee;
-  color: black;
+  background-color: @color-button-bg;
+  color: @color-button-font;
   padding: 5px 10px;
+  border: none;
   text-align: center;
   transition: all 0.2s;
   cursor: pointer;
   margin: 10px 5px 0;
-  border: none;
 }
+
 .App button:hover {
-  background-color: #eee;
-  color: black;
+  background-color: @color-button-hover-bg;
+  color: @color-button-hover-font;
 }
+
 .App button:disabled,
 .App button:disabled:hover {
-  background-color: white;
-  color: grey;
-  border-color: grey;
+  background-color: @color-button-disabled-bg;
+  color: @color-button-disabled-font;
   cursor: not-allowed;
 }
+
 .App button.active {
-  background-color: #ef553b;
-  color: black;
+  background-color: @color-button-active-bg;
+  color: @color-button-active-font;
   font-weight: bold;
 }
+
 .App .buttons {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: space-around;
 }
+
 .App fieldset {
   border-radius: 10px;
   border: 1px solid lightgrey;
   margin-top: 10px;
   overflow: auto;
 }
+
 .App fieldset table {
   text-align: center;
   width: 100%;
 }
+
 .App fieldset table button {
   margin: 5px 0;
   width: 100%;
 }
+
 .App fieldset table td:first-child {
   text-align: left;
 }
+
 .App fieldset table tbody tr:nth-child(even) {
   background-color: rgba(160, 160, 160, 0.1);
 }
+
 .App .sliderWrapper {
   height: 50px;
   padding: 0 20px;
@@ -102,92 +137,114 @@
   align-items: center;
   margin-bottom: 20px;
 }
+
 .App .sliderWrapper button {
   margin: 0;
   padding: 0;
 }
+
 .App .sliderWrapper button:disabled,
 .App .sliderWrapper button:hover {
   background-color: transparent;
   border: none;
 }
+
 .App .sliderWrapper button div {
   width: 50px;
   height: 30px;
 }
+
 .App .sliderWrapper button,
 .App .sliderWrapper button:hover,
 .App .sliderWrapper button.active {
   border: none;
   background-color: transparent;
 }
+
 .App .sliderWrapper button .play {
   mask: url(assets/play.svg) no-repeat center / contain;
   background-color: black;
 }
+
 .App .sliderWrapper button .pause {
   mask: url(assets/pause.svg) no-repeat center / contain;
   background-color: black;
 }
+
 .App .sliderWrapper button:disabled .play,
 .App .sliderWrapper button:disabled .play {
   background-color: grey;
 }
+
 .App .sliderWrapper button.active .pause,
 .App .sliderWrapper button.active .play {
-  background-color: #ef553b;
+  background-color: @color-button-active-bg;
 }
+
 .App #sliderWrapper {
   margin: 0 20px;
   flex: 1;
 }
+
 .App .lightgreen {
   background-color: #d2f8d2;
   color: black;
 }
+
 .App .rc-slider-tooltip .rc-slider-tooltip-inner {
-  background-color: white;
-  color: black;
+  background-color: @color-bg;
+  color: @color-font;
   padding: 3px 5px;
   font-weight: bold;
 }
+
 .App .rc-slider-rail {
-  background-color: #eee;
+  background-color: @color-rail;
 }
+
 .App .rc-slider-track {
-  background-color: #ef553b;
+  background-color: @color-track;
 }
+
 .App .rc-slider-dot {
-  background-color: #eee;
-  border: 1px solid #ef553b;
+  background-color: @color-rail;
+  border: 1px solid @color-dot;
 }
+
 .App .rc-slider-handle {
-  background-color: #ef553b;
-  border-color: #ef553b;
+  background-color: @color-handle;
 }
-@media screen and (max-width: 599px) {
+
+@media screen
+and (max-width: 599px) {
   .App {
     display: block;
     overflow: auto;
   }
+
   .App.side-hidden .side_switch {
     transform: rotate(90deg);
     fill: grey;
   }
+
   .App.side-hidden .sidebar {
     display: none;
   }
+
   .App button {
     padding: 10px;
   }
+
   .App .side_switch {
     display: block;
     opacity: 0.3;
     transition: all 0.2s;
   }
+
   .App .side_switch:hover {
     opacity: 1;
   }
+
   .App .sidebar {
     max-width: initial;
     min-width: initial;

@@ -13,7 +13,6 @@ import {
 } from "./Commons/sharedObjects";
 import Content from "./Content";
 import {api} from "./Commons/api";
-import {fetchSeries} from "./Commons/functions";
 
 class App extends Component {
 

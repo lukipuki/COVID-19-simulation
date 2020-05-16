@@ -1,7 +1,5 @@
 import React, {Component} from 'react';
 import 'rc-slider/assets/index.css';
-import 'rc-tooltip/assets/bootstrap.css';
-import {api} from "../../Commons/api";
 import {isSetsEqual} from "../../Commons/functions";
 import Slider, {createSliderWithTooltip} from "rc-slider";
 

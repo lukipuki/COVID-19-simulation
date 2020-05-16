@@ -6,11 +6,14 @@ import {
     availablePredictionsInit,
     GraphDetailContext,
     graphDetailsInit,
+    SelectedSeriesContext,
+    selectedSeriesInit,
     SeriesContext,
     seriesInit
 } from "./Commons/sharedObjects";
 import Content from "./Content";
 import {api} from "./Commons/api";
+import {fetchSeries} from "./Commons/functions";
 
 class App extends Component {
 
@@ -18,6 +21,7 @@ class App extends Component {
         seriesContext: seriesInit,
         availablePredictionsContext: availablePredictionsInit,
         graphDetailsContext: graphDetailsInit,
+        selectedSeriesContext: selectedSeriesInit,
         sideBarHidden: false
     };
 
@@ -27,9 +31,57 @@ class App extends Component {
         })
     };
 
-    setSeries = (series) => {
+    pendingRequests = new Set();
+    fetchSeries = (country, prediction) => {
+        const key = `${country}/${prediction}`;
+        if (this.pendingRequests.has(key)) {
+            return;
+        }
+        this.pendingRequests.add(key);
+        if (prediction === null) {
+            api.getCountryData(country)
+                .then(countryData => {
+                    const {
+                        seriesContext,
+                    } = this.state;
+
+                    const result = [...seriesContext, countryData];
+                    this.setState({
+                        seriesContext: result
+                    });
+                })
+                .catch(error => {
+                    //TODO: handle this better
+                    console.log(error);
+                })
+                .finally(() => {
+                    this.pendingRequests.delete(key);
+                });
+        } else {
+            api.getPredictionsByCountry(country)
+                .then(predictions => {
+                    const {
+                        seriesContext,
+                    } = this.state;
+
+                    const result = seriesContext.concat(predictions);
+                    this.setState({
+                        seriesContext: result
+                    });
+                })
+                .catch(error => {
+                    //TODO: handle this better
+                    console.log(error);
+                })
+                .finally(() => {
+                    this.pendingRequests.delete(key);
+                });
+        }
+    };
+
+    setSelectedSeries = (series) => {
         this.setState({
-            seriesContext: series
+            selectedSeriesContext: series
         });
     };
 
@@ -63,17 +115,19 @@ class App extends Component {
 
         return (
             <AvailablePredictionsContext.Provider value={{data: this.state.availablePredictionsContext, setData: this.setAvailablePredictions}}>
-                <SeriesContext.Provider value={{data: this.state.seriesContext, setSeries: this.setSeries}}>
+                <SeriesContext.Provider value={{data: this.state.seriesContext, fetchSeries: this.fetchSeries}}>
                     <GraphDetailContext.Provider value={{options: this.state.graphDetailsContext, setOptions: this.setOptions}}>
-                        <div className={appClassName}>
-                            <div className='sidebar'>
-                                <Sidebar />
+                        <SelectedSeriesContext.Provider value={{data: this.state.selectedSeriesContext, setSelectedSeries: this.setSelectedSeries}}>
+                            <div className={appClassName}>
+                                <div className='sidebar'>
+                                    <Sidebar />
+                                </div>
+                                <div className='content'>
+                                    <Content />
+                                </div>
+                                <img src={require('./assets/Hamburger_icon.svg')} className='side_switch' onClick={this.toggleSidebar} alt='Show/Hide graph'/>
                             </div>
-                            <div className='content'>
-                                <Content />
-                            </div>
-                            <img src={require('./assets/Hamburger_icon.svg')} className='side_switch' onClick={this.toggleSidebar} alt='Show/Hide graph'/>
-                        </div>
+                        </SelectedSeriesContext.Provider>
                     </GraphDetailContext.Provider>
                 </SeriesContext.Provider>
             </AvailablePredictionsContext.Provider>

@@ -6,6 +6,9 @@ export const SeriesContext = React.createContext(seriesInit);
 export const availablePredictionsInit = []; // data from server - list
 export const AvailablePredictionsContext = React.createContext(availablePredictionsInit);
 
+export const selectedSeriesInit = []; // {country, prediction}
+export const SelectedSeriesContext = React.createContext(selectedSeriesInit);
+
 export const AXES_LINEAR = 1;
 export const AXES_LOG = 2;
 export const AXES_LOG_LOG = 3;

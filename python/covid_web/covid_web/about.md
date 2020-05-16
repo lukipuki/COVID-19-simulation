@@ -25,6 +25,6 @@ to differences in implementation details.
 * [Fractal kinetics of COVID-19 pandemic]
   (https://www.medrxiv.org/content/10.1101/2020.02.16.20023820v2.full.pdf)
   by Robert Ziff and Anna Ziff
-* Unpublished manuscript by Katarína Boďová and Richard Kollár
+* [Emerging Polynomial Growth Trends in COVID-19 Pandemic Data and Their Reconciliation with Compartment Based Models](https://arxiv.org/pdf/2005.06933.pdf) by Katarína Boďová and Richard Kollár
 * March 30 predictions: [Facebook post](https://www.facebook.com/permalink.php?story_fbid=10113020662000793&id=2247644)
 * April 12 predictions: Personal communication

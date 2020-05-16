@@ -85,7 +85,7 @@ class DashboardFactory:
             meta_tags=[{"name": "viewport", "content": "width=750"}],
         )
 
-        content = _get_header_content(title=TITLE)
+        content = _get_header_content(title=TITLE, dashboard_type=dashboard_type)
 
         if dashboard_type != DashboardType.SingleCountryAllPredictions:
             content += [html.H1(id="graph-title")]
@@ -304,10 +304,18 @@ class DashboardFactory:
         #         return result
 
 
-def _get_header_content(title: str) -> List[Component]:
+def _get_header_content(title: str, dashboard_type: DashboardType) -> List[Component]:
     about = ""
     with open(CURRENT_DIR / "about.md", "r") as about_file:
         about = about_file.read()
+
+    if dashboard_type == DashboardType.SingleCountryAllPredictions:
+        end_of_data_legend = ["Circle marks the date of prediction"]
+    else:
+        end_of_data_legend = [
+            "Data available until the date of prediction is in ",
+            html.Span("light green zone", style={"background-color": "lightgreen"}),
+        ]
 
     return [
         html.H1(children=title),
@@ -318,12 +326,7 @@ def _get_header_content(title: str) -> List[Component]:
                 html.Li("Solid/dashed line is prediction"),
                 html.Li("Star marks the culmination of the prediction"),
                 html.Li("Red line is observed number of active cases"),
-                html.Li(
-                    children=[
-                        "Data available until the date of prediction is in ",
-                        html.Span("light green zone", style={"background-color": "lightgreen"}),
-                    ]
-                ),
+                html.Li(children=end_of_data_legend),
             ]
         ),
         html.Hr(),

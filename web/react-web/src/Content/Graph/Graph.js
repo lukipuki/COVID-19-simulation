@@ -69,6 +69,16 @@ function xaxis_text(x, isXAxisRelative) {
     }
 }
 
+function generateNumber(value) {
+    let hash = 0, i, chr;
+    for (i = 0; i < value.length; i++) {
+        chr   = value.charCodeAt(i);
+        hash  = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return hash - (1 << 31);
+}
+
 class Graph extends Component {
 
     static defaultProps = {
@@ -210,6 +220,8 @@ class Graph extends Component {
                 };
             });
 
+            const seriesHash = generateNumber(`${one.short_name}/${one.type}`);
+
             resultSeries.push({
                 type: 'line',
                 dashStyle,
@@ -218,7 +230,7 @@ class Graph extends Component {
                     enabled: one.type !== 'prediction'
                 },
                 data: lineData,
-                color: colors[resultSeries.length % colors.length],
+                color: colors[seriesHash % colors.length],
                 zones,
                 zoneAxis: 'x'
             });

@@ -25,7 +25,7 @@ Highcharts.SVGRenderer.prototype.symbols.star = function (x, y, w, h) {
     return ['M', x1 + x, y1 + y, 'H', x2 + x, 'L', x3 + x, y3 + y, 'L', x4 + x, y4 + y, 'L', 0 + x, y5 + y, 'L', -x4 + x, y4 + y, 'L', -x3 + x, y3 + y, 'L', -x2 + x, y1 + y, 'H', -x1 + x, 'L', 0 + x, y0 + y, 'Z'];
 };
 
-const colors = ["rgb(239, 85, 59)", "rgb(0, 121, 177)", "rgb(43, 161, 59)", "rgb(255, 123, 37)", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"];
+const colors = ["rgb(43, 161, 59)", "rgb(255, 123, 37)", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "rgb(0, 121, 177)", "#2b908f", "#f45b5b", "#91e8e1", "rgb(239, 85, 59)"];
 const bandColors = ["rgba(144, 238, 144, 0.4)", "rgba(238, 144, 144, 0.4)", "rgba(144, 144, 238, 0.4)", "rgba(238, 238, 144, 0.4)", "rgba(238, 144, 238, 0.4)", "rgba(144, 238, 238, 0.4)"];
 
 const predefinedOptions = {

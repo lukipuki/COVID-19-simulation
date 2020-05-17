@@ -4,6 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN echo 'APT::Get::Assume-Yes "true";' >> /etc/apt/apt.conf
 RUN apt update \
     && apt install -y python3-pip python3-numpy python3-pandas python3-flask python3-click \
+    && apt install -y python3-xarray python3-requests \
     && rm -rf /tmp/* /var/lib/apt/lists/* /root/.cache/*
 
 RUN pip3 install uwsgi

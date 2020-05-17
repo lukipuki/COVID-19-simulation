@@ -6,7 +6,7 @@ setup(
     name="covid_web",
     version="1.0",
     description="COVID-19 web apps",
-    install_requires=["click", "click_pathlib", "covid_graphs", "dash", "Flask"],
+    install_requires=["click", "click_pathlib", "covid_graphs", "dash", "Flask", "requests"],
     dependency_links=[],
     python_requires=">=3.7",
     packages=find_packages(),

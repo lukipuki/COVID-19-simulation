@@ -1,8 +1,10 @@
+import os
 from pathlib import Path
 
 import click
 import click_pathlib
-from flask import Flask, redirect, render_template, url_for
+import requests
+from flask import Flask, redirect, render_template, request, url_for
 
 from covid_graphs.heat_map import create_heat_map_dashboard
 from covid_graphs.simulation_report import GrowthType
@@ -30,6 +32,24 @@ CURRENT_DIR = Path(__file__).parent
 def run_server(data_dir: Path, prediction_dir: Path) -> None:
     server = setup_server(data_dir, prediction_dir)
     server.run(host="0.0.0.0", port=8081)
+
+
+GA_TRACKING_ID = os.environ["GA_TRACKING_ID"]
+
+
+def track_pageview(path):
+    data = {
+        "v": "1",
+        "tid": GA_TRACKING_ID,  # Tracking ID / Property ID.
+        "cid": 47,
+        "t": "pageview",
+        "dp": f"/covid19/{path}",
+        "dh": "graphs.lukipuki.sk",
+        "ua": request.headers.get("User-Agent"),
+    }
+
+    response = requests.post("https://www.google-analytics.com/collect", data=data)
+    response.raise_for_status()
 
 
 def setup_server(data_dir: Path, prediction_dir: Path) -> Flask:
@@ -67,14 +87,17 @@ def _create_prediction_apps(server: Flask, data_dir: Path, prediction_dir: Path)
 
     @server.route("/covid19/predictions/single/")
     def covid19_single_predictions():
+        track_pageview("predictions/single/")
         return single_prediction_app.index()
 
     @server.route("/covid19/predictions/daily/")
     def covid19_single_country_all_predictions():
+        track_pageview("predictions/daily/")
         return single_country_all_predictions_app.index()
 
     @server.route("/covid19/predictions/all/")
     def covid19_all_predictions():
+        track_pageview("predictions/all/")
         return all_predictions_app.index()
 
 
@@ -90,8 +113,10 @@ def _create_simulation_apps(server: Flask, data_dir: Path):
 
     @server.route("/covid19/heatmap/polynomial/")
     def covid19_heatmap_polynomial():
+        track_pageview("heatmap/polynomial/")
         return covid19_heatmap_polynomial_app.index()
 
     @server.route("/covid19/heatmap/exponential/")
     def covid19_heatmap_exponential():
+        track_pageview("heatmap/exponential/")
         return covid19_heatmap_exponential_app.index()

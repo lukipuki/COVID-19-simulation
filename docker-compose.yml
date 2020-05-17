@@ -19,6 +19,7 @@ services:
     environment:
       DATA_PATH: "/covid19/data/"
       STATIC_REST_PATH: "/covid19/rest/"
+      GA_TRACKING_ID: "UA-676869-6"
     restart: always
     command: "flask_server.sh"
   react-web-deploy:

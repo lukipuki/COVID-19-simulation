@@ -18,7 +18,7 @@ from covid_graphs.predictions import BK_20200329, BK_20200411, PredictionDb, Pre
 
 class DashboardType(Enum):
     SingleCountry = "single"
-    SingleCountryAllPredictions = "country"
+    SingleCountryAllPredictions = "daily"
     AllCountries = "all"
 
     def __str__(self):
@@ -77,7 +77,10 @@ class DashboardFactory:
 
         app = dash.Dash(
             name="COVID-19 predictions",
-            url_base_pathname=f"/covid19/predictions/{dashboard_type}/",
+            # TODO(lukas): Dash registers the pathname with Flask, however we would like to execute
+            # some code before the Dash app loads, so we append '-dash'.
+            # See also https://github.com/plotly/dash/issues/214
+            url_base_pathname=f"/covid19/predictions/{dashboard_type}-dash/",
             server=server,
             external_scripts=[
                 "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"

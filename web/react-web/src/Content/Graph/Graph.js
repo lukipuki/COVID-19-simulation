@@ -5,6 +5,7 @@ import {
     AXES_LINEAR, AXES_LOG, AXES_LOG_LOG, SCALING_ABSOLUTE, SCALING_PER_CAPITA,
     SCALING_SAME_PEAK
 } from "../../Commons/sharedObjects";
+import {calculateHash} from "../../Commons/functions";
 
 const colors = ["#7cb5ec", "#434348", "#90ed7d", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"];
 
@@ -67,16 +68,6 @@ function xaxis_text(x, isXAxisRelative) {
     } else {
         return new Date(x).toLocaleDateString();
     }
-}
-
-function generateNumber(value) {
-    let hash = 0, i, chr;
-    for (i = 0; i < value.length; i++) {
-        chr   = value.charCodeAt(i);
-        hash  = ((hash << 5) - hash) + chr;
-        hash |= 0; // Convert to 32bit integer
-    }
-    return hash - (1 << 31);
 }
 
 class Graph extends Component {
@@ -220,7 +211,7 @@ class Graph extends Component {
                 };
             });
 
-            const seriesHash = generateNumber(`${one.short_name}/${one.type}`);
+            const seriesHash = calculateHash(`${one.short_name}/${one.type}`);
 
             resultSeries.push({
                 type: 'line',

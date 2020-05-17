@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import 'rc-slider/assets/index.css';
-import {isSetsEqual} from "../../Commons/functions";
+import {areSetsEqual} from "../../Commons/functions";
 import Slider, {createSliderWithTooltip} from "rc-slider";
 
 const optionsAxis = { month: 'numeric', day: 'numeric' };
@@ -54,7 +54,7 @@ class PredictionChanger extends Component {
             if (selectedSeries !== oldSelectedSeries) {
                 const oldCountries = this.getUsedCountries(oldSelectedSeries.data);
                 const countries = this.getUsedCountries(selectedSeries.data);
-                if (!isSetsEqual(oldCountries, countries)) {
+                if (!areSetsEqual(oldCountries, countries)) {
                     this.updateMarks();
                     if (value !== null) {
                         //if we added country, we need to also add prediction

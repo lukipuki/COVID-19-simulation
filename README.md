@@ -6,9 +6,9 @@ This repository has two main parts, prediction graphs and simulation of the init
 
 # Prediction graphs
 
-The graphs show [COVID-19 predictions by mathematicians Katarína Boďová and Richard Kollár](https://graphs.lukipuki.sk/covid19/normal/). This part is in the [python directory](./python) and has its own [README](./python/README.md).
+The graphs show COVID-19 predictions of active cases by mathematicians [Katarína Boďová and Richard Kollár](https://arxiv.org/abs/2005.06933). This part is in the [python directory](./python) and has its own [README](./python/README.md).
 
-![Graph of active cases in Germany](./content/germany-apr11.png)
+![Graph of active cases in Germany](./content/germany-apr29.png)
 
 
 # Simulation of the initial phase in Slovakia

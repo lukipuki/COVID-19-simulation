@@ -30,6 +30,7 @@ For quick development or data examination, running standalone graphs can be usef
 covid_graphs.show_country_plot ../data/Spain.data
 covid_graphs.show_scatter_plot ../simulation/Slovakia.data polynomial.sim
 covid_graphs.show_heat_map exponential.sim
+covid_graphs.calculate_posterior ../data/Germany.data 5
 ```
 
 To create static data used for our REST service:

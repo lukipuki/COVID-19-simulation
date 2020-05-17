@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {AvailablePredictionsContext, SeriesContext} from "../Commons/sharedObjects";
+import {AvailablePredictionsContext, SelectedSeriesContext} from "../Commons/sharedObjects";
 import Countries from "./Countries";
 
 class CountriesWrapper extends Component {
@@ -8,9 +8,11 @@ class CountriesWrapper extends Component {
         return (
             <AvailablePredictionsContext.Consumer>
                 {predictionsContext =>
-                    <SeriesContext.Consumer>
-                        {seriesContext => <div className='countries'><Countries predictions={predictionsContext} series={seriesContext}/></div>}
-                    </SeriesContext.Consumer>
+                    <SelectedSeriesContext.Consumer>
+                        {selectedSeriesContext =>
+                            <div className='countries'><Countries predictions={predictionsContext} selectedSeries={selectedSeriesContext}/></div>
+                        }
+                    </SelectedSeriesContext.Consumer>
                 }
             </AvailablePredictionsContext.Consumer>
         );

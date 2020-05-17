@@ -1,11 +1,10 @@
 import React, {Component} from 'react';
-import {api} from "../Commons/api";
 
 class Countries extends Component {
 
     static defaultProps = {
         predictions: {},
-        series: {}
+        selectedSeries: {}
     };
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -17,7 +16,7 @@ class Countries extends Component {
             data
         } = this.props.predictions;
 
-        if (data !== oldData && data.length > 0 && this.props.series.data.length === 0) {
+        if (data !== oldData && data.length > 0 && this.props.selectedSeries.data.length === 0) {
             //no series selected? Autoselect Slovakia or first country
             const country = data.reduce((currentValue, prediction) => {
                 if (prediction.country === 'Slovakia') {
@@ -25,50 +24,50 @@ class Countries extends Component {
                 }
                 return currentValue;
             }, data[0].country);
-            this.toggleItem(country)();
+            this.turnOnCountry(country)();
         }
     }
 
     isCountryUsed = (country) => {
         const {
             data
-        } = this.props.series;
+        } = this.props.selectedSeries;
         for (let i = 0; i < data.length; i++) {
-            if (data[i].short_name === country) {
+            if (data[i].country === country) {
                 return true;
             }
         }
         return false;
     };
 
-    toggleItem = (country) => () => {
-        const isUsed = this.isCountryUsed(country);
+    turnOnCountry = (country) => () => {
         const {
             data,
-            setSeries
-        } = this.props.series;
+            setSelectedSeries
+        } = this.props.selectedSeries;
 
-        if (isUsed) {
-            const result = data.filter(one => one.short_name !== country);
-            setSeries(result);
-        } else {
-            api.getCountryData(country)
-                .then(countryData => {
-                    const {
-                        data,
-                        setSeries
-                    } = this.props.series;
-
-                    const result = [...data, countryData];
-                    setSeries(result);
-                })
-                .catch(error => {
-                    //TODO: handle this better
-                    console.log(error);
-                });
-            //prefetch all predictions to cache
-            api.getPredictionsByCountry(country);
+        for (let i = 0; i < data.length; i++) {
+            const item = data[i];
+            if (item.country === country && item.prediction === null) {
+                return;
+            }
         }
+        const result = [...data];
+        result.push({
+            country,
+            prediction: null
+        });
+        setSelectedSeries(result);
+    };
+
+    turnOffCountry = (country) => () => {
+        const {
+            data,
+            setSelectedSeries
+        } = this.props.selectedSeries;
+
+        const result = data.filter((item) => item.country !== country);
+        setSelectedSeries(result);
     };
 
     render() {
@@ -82,9 +81,11 @@ class Countries extends Component {
         });
         countries = [...countries].sort();
         countries = countries.map((country) => {
-            const className = this.isCountryUsed(country) ? 'active' : '';
+            const isActive = this.isCountryUsed(country);
+            const className = isActive ? 'active' : '';
+            const onClick = isActive ? this.turnOffCountry(country) : this.turnOnCountry(country);
             return (
-                <button key={country} className={className} onClick={this.toggleItem(country)}>
+                <button key={country} className={className} onClick={onClick}>
                     {country}
                 </button>
             );

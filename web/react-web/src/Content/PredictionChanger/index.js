@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {AvailablePredictionsContext, SeriesContext} from "../../Commons/sharedObjects";
+import {AvailablePredictionsContext, SelectedSeriesContext} from "../../Commons/sharedObjects";
 import PredictionChanger from "./PredictionChanger";
 
 
@@ -9,12 +9,12 @@ class PredictionChangerWrapper extends Component {
         return (
             <AvailablePredictionsContext.Consumer>
                 {predictions =>
-                    <SeriesContext.Consumer>
-                        {seriesContext => {
-                            return <PredictionChanger series={seriesContext}
+                    <SelectedSeriesContext.Consumer>
+                        {selectedSeriesContext => {
+                            return <PredictionChanger selectedSeries={selectedSeriesContext}
                                                       predictions={predictions} />
                         }}
-                    </SeriesContext.Consumer>
+                    </SelectedSeriesContext.Consumer>
                 }
             </AvailablePredictionsContext.Consumer>
         )

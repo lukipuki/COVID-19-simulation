@@ -5,6 +5,7 @@ import {
     AXES_LINEAR, AXES_LOG, AXES_LOG_LOG, SCALING_ABSOLUTE, SCALING_PER_CAPITA,
     SCALING_SAME_PEAK
 } from "../../Commons/sharedObjects";
+import {calculateHash} from "../../Commons/functions";
 
 const colors = ["#7cb5ec", "#434348", "#90ed7d", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"];
 
@@ -210,6 +211,8 @@ class Graph extends Component {
                 };
             });
 
+            const seriesHash = calculateHash(`${one.short_name}/${one.type}`);
+
             resultSeries.push({
                 type: 'line',
                 dashStyle,
@@ -218,7 +221,7 @@ class Graph extends Component {
                     enabled: one.type !== 'prediction'
                 },
                 data: lineData,
-                color: colors[resultSeries.length % colors.length],
+                color: colors[seriesHash % colors.length],
                 zones,
                 zoneAxis: 'x'
             });

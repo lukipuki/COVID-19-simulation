@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
 import 'rc-slider/assets/index.css';
-import 'rc-tooltip/assets/bootstrap.css';
-import {api} from "../../Commons/api";
-import {isSetsEqual} from "../../Commons/functions";
+import {areSetsEqual} from "../../Commons/functions";
 import Slider, {createSliderWithTooltip} from "rc-slider";
 
 const optionsAxis = { month: 'numeric', day: 'numeric' };
@@ -19,7 +17,7 @@ const MIN_MARK_WIDTH = 30;
 class PredictionChanger extends Component {
 
     static defaultProps = {
-        series: null,
+        selectedSeries: null,
         predictions: null
     };
 
@@ -35,11 +33,11 @@ class PredictionChanger extends Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         const {
-            series,
+            selectedSeries,
         } = this.props;
 
         const {
-            series: oldSeries,
+            selectedSeries: oldSelectedSeries,
         } = prevProps;
 
         const {
@@ -53,10 +51,10 @@ class PredictionChanger extends Component {
         let updatePredictions = value !== oldValue;
 
         if (!updatePredictions) {
-            if (series !== oldSeries) {
-                const oldCountries = this.getUsedCountries(oldSeries.data);
-                const countries = this.getUsedCountries(series.data);
-                if (!isSetsEqual(oldCountries, countries)) {
+            if (selectedSeries !== oldSelectedSeries) {
+                const oldCountries = this.getUsedCountries(oldSelectedSeries.data);
+                const countries = this.getUsedCountries(selectedSeries.data);
+                if (!areSetsEqual(oldCountries, countries)) {
                     this.updateMarks();
                     if (value !== null) {
                         //if we added country, we need to also add prediction
@@ -75,7 +73,7 @@ class PredictionChanger extends Component {
         const usedCountries = new Set();
         //compute range and used countries for prediction selection
         series.forEach((one) => {
-            usedCountries.add(one.short_name);
+            usedCountries.add(one.country);
         });
 
         return usedCountries;
@@ -84,7 +82,7 @@ class PredictionChanger extends Component {
     updatePredictions = () => {
         const {
             predictions,
-            series
+            selectedSeries
         } = this.props;
 
         const {
@@ -92,53 +90,31 @@ class PredictionChanger extends Component {
         } = this.state;
 
         //remove old predictions
-        const resultSeries = series.data.filter((one) => one.type !== 'prediction');
-
-        series.setSeries(resultSeries);
-        const usedCountries = this.getUsedCountries(series.data);
+        const resultSeries = selectedSeries.data.filter((one) => one.prediction === null);
+        const usedCountries = this.getUsedCountries(selectedSeries.data);
 
         //add new predictions
-        const promises = [];
         predictions.data.forEach((prediction) => {
             const predictionDate = Date.parse(prediction.prediction_date);
             if (predictionDate === value &&
                 usedCountries.has(prediction.country)) {
-                promises.push(api.getPrediction(prediction.prediction, prediction.country)
-                    .then((prediction) => {
-                        const {
-                            data,
-                            setSeries
-                        } = this.props.series;
-
-                        const result = [...data, prediction];
-                        setSeries(result);
-                    })
-                    .catch(error => {
-                        //TODO: handle this better
-                        console.log('error', error);
-                    }));
+                resultSeries.push({
+                    country: prediction.country,
+                    prediction: prediction.prediction
+                });
             }
         });
-
-        Promise.all(promises).finally(this.scheduleNextPrediction);
+        selectedSeries.setSelectedSeries(resultSeries);
+        this.scheduleNextPrediction();
     };
 
     updateMarks = () => {
         const {
-            series,
+            selectedSeries,
             predictions
         } = this.props;
 
-        // let xValues = new Set();
-        // //compute range and used countries for prediction selection
-        // series.data.forEach((one) => {
-        //     one.date_list.forEach(date => {
-        //         xValues.add(Date.parse(date));
-        //     });
-        // });
-        // xValues = [...xValues].sort();
-
-        const usedCountries = this.getUsedCountries(series.data);
+        const usedCountries = this.getUsedCountries(selectedSeries.data);
 
         const marks = {};
         let minMark = null;
@@ -164,6 +140,7 @@ class PredictionChanger extends Component {
             }
         });
 
+        // we need to remove labels that will overlap previous ones. Component do not have this feature.
         let lastRightOffset = -MIN_MARK_WIDTH;
         const element = document.getElementById('sliderWrapper');
         const marksCount = Object.keys(marks).length;

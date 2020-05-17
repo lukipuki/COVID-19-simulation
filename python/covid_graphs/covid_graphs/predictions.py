@@ -63,9 +63,6 @@ _prediction_database = [
         prediction_event=BK_20200329, country="Germany", formula=AtgFormula(6.7, 3773, 6.23, 200),
     ),
     CountryPrediction(
-        prediction_event=BK_20200329, country="UK", formula=AtgFormula(7.2, 2719, 6.23, 200),
-    ),
-    CountryPrediction(
         prediction_event=BK_20200329, country="France", formula=AtgFormula(6.5, 1961, 6.23, 200),
     ),
     CountryPrediction(
@@ -160,11 +157,6 @@ _prediction_database = [
         prediction_event=BK_20200411,
         country="Netherlands",
         formula=AtgFormula(16.7206, 157176.2658, 3.7562, 57),
-    ),
-    CountryPrediction(
-        prediction_event=BK_20200411,
-        country="Norway",
-        formula=AtgFormula(15.5411, 48762.3895, 3.4325, 18),
     ),
     CountryPrediction(
         prediction_event=BK_20200411,

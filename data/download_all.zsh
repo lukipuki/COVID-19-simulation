@@ -41,7 +41,6 @@ countries=(
   Morocco
   Netherlands
   "New Zealand"
-  Norway
   Poland
   Portugal
   Romania
@@ -57,7 +56,6 @@ countries=(
   Tunisia
   Turkey
   Ukraine
-  "United Kingdom"
   "United States"
 )
 

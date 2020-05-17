@@ -7,12 +7,35 @@ import {
 } from "../../Commons/sharedObjects";
 import {calculateHash} from "../../Commons/functions";
 
-const colors = ["#7cb5ec", "#434348", "#90ed7d", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"];
+// taken and modified from Plotly.js sources, src/components/drawing/symbol_defs.js
+Highcharts.SVGRenderer.prototype.symbols.star = function (x, y, w, h) {
+    const rs = w / 4 * 3;
+    const x1 = Math.round(rs * 0.225);
+    const x2 = Math.round(rs * 0.951);
+    const x3 = Math.round(rs * 0.363);
+    const x4 = Math.round(rs * 0.588);
+    const y0 = Math.round(-rs);
+    const y1 = Math.round(rs * -0.309);
+    const y3 = Math.round(rs * 0.118);
+    const y4 = Math.round(rs * 0.809);
+    const y5 = Math.round(rs * 0.382);
+    x += w / 2;
+    y += h / 2;
+
+    return ['M', x1 + x, y1 + y, 'H', x2 + x, 'L', x3 + x, y3 + y, 'L', x4 + x, y4 + y, 'L', 0 + x, y5 + y, 'L', -x4 + x, y4 + y, 'L', -x3 + x, y3 + y, 'L', -x2 + x, y1 + y, 'H', -x1 + x, 'L', 0 + x, y0 + y, 'Z'];
+};
+
+const colors = ["rgb(43, 161, 59)", "rgb(255, 123, 37)", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "rgb(0, 121, 177)", "#2b908f", "#f45b5b", "#91e8e1", "rgb(239, 85, 59)"];
+const bandColors = ["rgba(144, 238, 144, 0.4)", "rgba(238, 144, 144, 0.4)", "rgba(144, 144, 238, 0.4)", "rgba(238, 238, 144, 0.4)", "rgba(238, 144, 238, 0.4)", "rgba(144, 238, 238, 0.4)"];
 
 const predefinedOptions = {
     chart: {
         zoomType: 'x',
         colors,
+        style: {
+            fontFamily: "Open Sans, verdana, arial, sans-serif",
+            fontSize: "16px"
+        }
     },
     title: {
         text: ''
@@ -27,12 +50,16 @@ const predefinedOptions = {
     },
     xAxis: {
         type: 'linear',
-        labels: {},
+        labels: {
+            style: {
+                fontSize: "16px"
+            }
+        },
         title: {},
         crosshair: {
             width: 10,
             color: 'rgba(0, 0, 0, 0.1)'
-        }
+        },
     },
     yAxis: {
         type: 'linear',
@@ -40,17 +67,24 @@ const predefinedOptions = {
             text: 'Active cases'
         },
         labels: {
-            format: '{value}'
-        }
+            format: '{value}',
+            style: {
+                fontSize: "16px"
+            }
+        },
+        gridLineColor: "#d3d3d3"
     },
     legend: {
         enabled: true,
         useHTML: true,
-        itemWidth: 300
+        itemStyle: {
+            fontSize: "16px",
+            fontWeight: "normal"
+        }
     },
     plotOptions: {
         series: {
-            animation: false
+            animation: false,
         },
         line: {
             marker: {
@@ -118,6 +152,7 @@ class Graph extends Component {
         countries = [...countries].sort();
 
         const resultSeries = [];
+        const predictionEnds = new Set();
 
         series.forEach((one, index)=> {
             let maxXValue = null;
@@ -139,13 +174,15 @@ class Graph extends Component {
                     predictionXValue = Date.parse(one.prediction_date);
                 }
 
-                name = one.description.replace('%PREDICTION_DATE%', `, ${one.short_name}<br/>${new Date(one.prediction_date).toLocaleDateString()}`);
+                predictionEnds.add(predictionXValue);
+
+                name = one.description.replace(' %PREDICTION_DATE%', `, ${one.short_name}<br/>${new Date(one.prediction_date).toLocaleDateString()}`);
 
                 zones.push({
                     value: predictionXValue,
                     dashStyle: 'line'
                 });
-                dashStyle = 'dash';
+                dashStyle = 'dot';
             } else {
                 name = `Active cases for ${one.long_name}`;
             }
@@ -191,16 +228,7 @@ class Graph extends Component {
                 if (x === maxXValue) {
                     enabled = true;
                     marker = {
-                        symbol: 'triangle-down',
-                            enabled: true,
-                            radius: 8
-                    };
-                }
-
-                if (x === predictionXValue) {
-                    enabled = true;
-                    marker = {
-                        symbol: 'diamond',
+                        symbol: 'star',
                         enabled: true,
                         radius: 8
                     };
@@ -226,6 +254,12 @@ class Graph extends Component {
                 zoneAxis: 'x'
             });
         });
+
+        finalOptions.xAxis.plotBands = [...predictionEnds].sort().reverse().map((value, index) => ({
+            from: 0,
+            to: value,
+            color: bandColors[index % bandColors.length]
+        }));
 
         finalOptions.title = {
             text: `Active cases and prediction for ${countries.join(', ')}`

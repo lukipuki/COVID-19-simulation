@@ -13,6 +13,7 @@ import {
 } from "./Commons/sharedObjects";
 import Content from "./Content";
 import {api} from "./Commons/api";
+import {ReactComponent as HamburgerIcon} from './assets/Hamburger_icon.svg';
 
 class App extends Component {
 
@@ -124,7 +125,7 @@ class App extends Component {
                                 <div className='content'>
                                     <Content />
                                 </div>
-                                <img src={require('./assets/Hamburger_icon.svg')} className='side_switch' onClick={this.toggleSidebar} alt='Show/Hide graph'/>
+                                <HamburgerIcon className='side_switch' onClick={this.toggleSidebar} title='Show/Hide graph'/>
                             </div>
                         </SelectedSeriesContext.Provider>
                     </GraphDetailContext.Provider>

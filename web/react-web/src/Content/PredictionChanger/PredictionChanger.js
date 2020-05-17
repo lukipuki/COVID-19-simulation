@@ -242,11 +242,6 @@ class PredictionChanger extends Component {
                         min={min}
                         max={max}
                         className='slider'
-                        trackStyle={{ backgroundColor: 'orange' }}
-                        dotStyle={{ borderColor: 'linen' }}
-                        activeDotStyle={{ borderColor: 'orange' }}
-                        handleStyle={{ backgroundColor: 'linen', borderColor: 'orange' }}
-                        railStyle={{ backgroundColor: 'linen' }}
                     />
                 </div>
             </div>

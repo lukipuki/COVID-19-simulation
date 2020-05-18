@@ -43,6 +43,7 @@ class DashboardFactory:
             prediction_events[-8],
             prediction_events[-15],
             prediction_events[-22],
+            prediction_events[-29],
             BK_20200411,
             BK_20200329,
         ]
@@ -215,6 +216,7 @@ class DashboardFactory:
                     report.dates[-8],
                     report.dates[-15],
                     report.dates[-22],
+                    report.dates[-29],
                 ],
             )
             if len(country_predictions) > 0:

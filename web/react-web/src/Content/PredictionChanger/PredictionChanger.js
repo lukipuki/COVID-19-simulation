@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import 'rc-slider/assets/index.css';
 import {areSetsEqual} from "../../Commons/functions";
-import Slider, {createSliderWithTooltip} from "rc-slider";
+import Slider from "rc-slider";
 
 const optionsAxis = { month: 'numeric', day: 'numeric' };
 const optionsLabel = { weekday: 'short', month: 'numeric', day: 'numeric' };
@@ -10,9 +10,20 @@ function tooltipFormatter(value) {
     return new Date(value).toLocaleDateString(undefined, optionsLabel);
 }
 
-const SliderWithTooltip = createSliderWithTooltip(Slider);
-
 const MIN_MARK_WIDTH = 30;
+
+const Handle = Slider.Handle;
+const handle = (props) => {
+    const { value, dragging, index, ...restProps } = props;
+    return (
+        <Handle value={value} {...restProps}>
+            <div className={`tooltip${dragging ? ' active' : ''}`}>
+                <div className='arrow'/>
+                {tooltipFormatter(value)}
+            </div>
+        </Handle>
+    );
+};
 
 class PredictionChanger extends Component {
 
@@ -165,15 +176,18 @@ class PredictionChanger extends Component {
             marks,
             min: minMark,
             max: maxMark,
-            //autoselect first mark (prediction)
-            value: !valueExist ? minMark : this.state.value
+            //autoselect latest (prediction)
+            value: !valueExist ? maxMark : this.state.value
         });
     };
 
     onChange = (value) => {
-        this.setState({
-            value
-        });
+        // workaround rc-slider bug when navigating by keyboard
+        if (this.state.marks[value]) {
+            this.setState({
+                value: value
+            });
+        }
     };
 
     scheduleNextPrediction = () => {
@@ -230,14 +244,13 @@ class PredictionChanger extends Component {
             <div className='sliderWrapper'>
                 <button onClick={this.toggleAnimation} disabled={buttonDisabled} className={buttonClassName}>{buttonText}</button>
                 <div id='sliderWrapper'>
-                    <SliderWithTooltip
+                    <Slider
                         id='slider'
-                        tipProps={{visible: Object.keys(marks).length !== 0}}
-                        tipFormatter={tooltipFormatter}
+                        handle={handle}
                         marks={marks}
                         step={null}
                         onChange={this.onChange}
-                        defaultValue={min}
+                        defaultValue={max}
                         value={value}
                         min={min}
                         max={max}

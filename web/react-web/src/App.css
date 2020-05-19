@@ -147,6 +147,33 @@
 .App #sliderWrapper {
   margin: 0 20px;
   flex: 1;
+  user-select: none;
+}
+
+.App #sliderWrapper .tooltip {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -150%);
+  z-index: 10;
+  opacity: 0.9;
+  background-color: #313639;
+  color: #f4f4f4;
+  padding: 5px;
+  font-weight: bold;
+  font-size: 12px;
+  white-space: nowrap;
+  border-radius: 5px;
+}
+
+.App #sliderWrapper .tooltip .arrow {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translate(-50%, 0);
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #313639;
 }
 
 .App .lightgreen {
@@ -154,29 +181,31 @@
   color: black;
 }
 
-.rc-slider-tooltip .rc-slider-tooltip-inner {
-  background-color: #313639;
-  padding: 3px 5px;
-  color: #f4f4f4;
-  font-weight: bold;
-}
-
 .App .rc-slider-rail {
-    background-color: #313639;
+  background-color: #313639;
 }
 
 .App .rc-slider-track {
-    background-color: orange;
+  background-color: orange;
 }
 
 .App .rc-slider-dot {
-    background-color: #313639;
-    border: 1px solid orange;
+  background-color: #313639;
+  border: 1px solid orange;
 }
 
-.App .rc-slider-handle {
-    background-color: orange;
-    border-color: orange;
+.App .rc-slider-handle,
+.App .rc-slider-handle:hover,
+.App .rc-slider-handle:focus,
+.App .rc-slider-handle:active {
+  background-color: orange;
+  border-color: orange;
+}
+
+.App .rc-slider-handle:hover,
+.App .rc-slider-handle:focus,
+.App .rc-slider-handle:active {
+  box-shadow: 0 0 5px orange;
 }
 
 @media screen

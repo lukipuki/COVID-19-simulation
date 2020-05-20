@@ -159,7 +159,7 @@ class PredictionChanger extends Component {
         if (element && marksCount > 2) {
             const markWidth = element.offsetWidth / (marksCount - 1);
             if (markWidth < MIN_MARK_WIDTH) {
-                Object.keys(marks).sort().forEach((key) => {
+                Object.keys(marks).sort((a, b) => a - b).forEach((key) => {
                     //avoid overlapping labels
                     const {time} = marks[key];
                     const leftOffset = (time - minMark) / (24 * 3600 * 1000) * markWidth - markWidth / 2;
@@ -199,7 +199,7 @@ class PredictionChanger extends Component {
         if (playing && !this.timeout) {
             this.timeout = setTimeout(() => {
                 this.timeout = null;
-                const values = Object.keys(this.state.marks).sort();
+                const values = Object.keys(this.state.marks).sort((a, b) => a - b);
                 const valueIdx = values.indexOf(`${this.state.value}`);
                 if (valueIdx > -1 && valueIdx < values.length - 1) {
                     this.onChange(parseInt(values[valueIdx + 1]));

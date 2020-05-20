@@ -36,9 +36,19 @@ class Rest:
     @staticmethod
     def _create_available_predictions(prediction_db: PredictionDb) -> List[Dict]:
         return [
-            {"prediction": x.name, "prediction_date": x.prediction_date, "country": p.country}
-            for x in prediction_db.get_prediction_events()
-            for p in prediction_db.predictions_for_event(x)
+            {
+                "prediction": x.prediction_event.name,
+                "prediction_date": x.prediction_event.prediction_date,
+                "country": c,
+            }
+            for c in prediction_db.get_countries()
+            for x in prediction_db.select_predictions(
+                country=c,
+                last_data_dates=[
+                    prediction.prediction_event.last_data_date
+                    for prediction in prediction_db.predictions_for_country(c)
+                ],
+            )
         ]
 
     @staticmethod
@@ -61,13 +71,17 @@ class Rest:
             country_predictions = prediction_db.predictions_for_country(country)
             country_report = country_reports[country]
             graph = CountryGraph(report=country_report, country_predictions=country_predictions)
+            max_value_idx = graph.cropped_cumulative_active.argmax()
+            cropped_cumulative_active = graph.cropped_cumulative_active.tolist()
             country_reports_active[country] = {
                 "type": "cumulative_active",
                 "date_list": graph.cropped_dates,
-                "values": graph.cropped_cumulative_active.tolist(),
+                "values": cropped_cumulative_active,
                 "short_name": country_report.short_name,
                 "long_name": country_report.long_name,
                 "population": country_report.population,
+                "max_value_date": graph.cropped_dates[max_value_idx],
+                "max_value": cropped_cumulative_active[max_value_idx],
             }
             for event, trace in graph.trace_by_event.items():
                 result_predictions.append(

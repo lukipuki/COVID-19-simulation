@@ -208,6 +208,10 @@
   box-shadow: 0 0 5px orange;
 }
 
+.App .rc-slider-mark-text {
+  white-space: nowrap;
+}
+
 @media screen
 and (max-width: 599px) {
   .App {

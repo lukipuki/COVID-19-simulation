@@ -3,9 +3,9 @@ from pathlib import Path
 
 import click
 import click_pathlib
-import requests
 from flask import Flask, redirect, render_template, request, url_for
 
+import requests
 from covid_graphs.heat_map import create_heat_map_dashboard
 from covid_graphs.simulation_report import GrowthType
 

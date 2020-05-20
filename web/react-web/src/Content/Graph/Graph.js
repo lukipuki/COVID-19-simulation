@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
 import {
-    AXES_LINEAR, AXES_LOG, AXES_LOG_LOG, SCALING_ABSOLUTE, SCALING_PER_CAPITA,
+    AXES_LINEAR, AXES_LOG, AXES_LOG_LOG, locale, SCALING_ABSOLUTE, SCALING_PER_CAPITA,
     SCALING_SAME_PEAK
 } from "../../Commons/sharedObjects";
 import {calculateHash} from "../../Commons/functions";
@@ -100,7 +100,7 @@ function xaxis_text(x, isXAxisRelative) {
     if (isXAxisRelative) {
         return `Day ${x}`;
     } else {
-        return new Date(x).toLocaleDateString();
+        return new Date(x).toLocaleDateString(locale);
     }
 }
 
@@ -176,7 +176,7 @@ class Graph extends Component {
 
                 predictionEnds.add(predictionXValue);
 
-                name = one.description.replace(' %PREDICTION_DATE%', `, ${one.short_name}<br/>${new Date(one.prediction_date).toLocaleDateString()}`);
+                name = one.description.replace(' %PREDICTION_DATE%', `, ${one.short_name}<br/>${new Date(one.prediction_date).toLocaleDateString(locale)}`);
 
                 zones.push({
                     value: predictionXValue,
@@ -192,7 +192,14 @@ class Graph extends Component {
                 case SCALING_SAME_PEAK:
                     let maxValue = one.max_value;
                     if (one.type !== 'prediction') {
-                        maxValue = Math.max(...one.values);
+                        // scale data according to our prediction
+                        maxValue = series.reduce((currentResult, lookingOne) => {
+                            if (lookingOne.short_name === one.short_name &&
+                                lookingOne.type === 'prediction') {
+                                return lookingOne.max_value;
+                            }
+                            return currentResult;
+                        }, maxValue);
                     }
                     yRatio = 1.0 / maxValue * 100.0;
 

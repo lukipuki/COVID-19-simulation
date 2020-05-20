@@ -2,15 +2,16 @@ import React, {Component} from 'react';
 import 'rc-slider/assets/index.css';
 import {areSetsEqual} from "../../Commons/functions";
 import Slider from "rc-slider";
+import {locale} from "../../Commons/sharedObjects";
 
 const optionsAxis = { month: 'numeric', day: 'numeric' };
 const optionsLabel = { weekday: 'short', month: 'numeric', day: 'numeric' };
 
 function tooltipFormatter(value) {
-    return new Date(value).toLocaleDateString(undefined, optionsLabel);
+    return new Date(value).toLocaleDateString(locale, optionsLabel);
 }
 
-const MIN_MARK_WIDTH = 30;
+const MIN_MARK_WIDTH = 35;
 
 const Handle = Slider.Handle;
 const handle = (props) => {
@@ -134,7 +135,7 @@ class PredictionChanger extends Component {
         predictions.data.forEach((prediction) => {
             if (usedCountries.has(prediction.country)) {
                 const date = new Date(prediction.prediction_date);
-                let label = date.toLocaleDateString(undefined, optionsAxis);
+                let label = date.toLocaleDateString(locale, optionsAxis);
                 const time = date.getTime();
 
                 minMark = minMark === null ? time : Math.min(minMark, time);

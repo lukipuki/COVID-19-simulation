@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 import 'rc-slider/assets/index.css';
 import {areSetsEqual} from "../../Commons/functions";
 import Slider from "rc-slider";
@@ -26,7 +26,7 @@ const handle = (props) => {
     );
 };
 
-class PredictionChanger extends Component {
+class PredictionChanger extends PureComponent {
 
     static defaultProps = {
         selectedSeries: null,

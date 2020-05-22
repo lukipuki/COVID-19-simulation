@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 
-class Countries extends Component {
+class Countries extends PureComponent {
 
     static defaultProps = {
         predictions: {},

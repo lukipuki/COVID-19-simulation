@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 import './App.css';
 import Sidebar from './Sidebar';
 import {
@@ -15,7 +15,7 @@ import Content from "./Content";
 import {api} from "./Commons/api";
 import {ReactComponent as HamburgerIcon} from './assets/Hamburger_icon.svg';
 
-class App extends Component {
+class App extends PureComponent {
 
     state = {
         seriesContext: seriesInit,

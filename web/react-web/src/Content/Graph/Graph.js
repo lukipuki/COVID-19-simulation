@@ -191,11 +191,25 @@ class Graph extends PureComponent {
                 // calc solid and dashed part of prediction line
                 if (isXAxisRelative) {
                     relativeShift = Graph.getRelativeShift(series, one);
+                    //if prediction start sooner than data, trim it from beginning
+                    if (relativeShift < 0) {
+                        one = {...one};
+                        one.date_list = one.date_list.slice(-relativeShift);
+                        one.values = one.values.slice(-relativeShift);
+                        relativeShift = 0;
+                    }
+
                     maxXValue = one.date_list.indexOf(one.max_value_date) + relativeShift;
                     predictionXValue = one.date_list.indexOf(one.prediction_date) + relativeShift;
                 } else {
                     maxXValue = Date.parse(one.max_value_date);
                     predictionXValue = Date.parse(one.prediction_date);
+                }
+
+                if (axesType === AXES_LOG_LOG) {
+                    relativeShift += 1;
+                    maxXValue += 1;
+                    predictionXValue += 1;
                 }
 
                 predictionEnds.add(predictionXValue);
@@ -209,6 +223,9 @@ class Graph extends PureComponent {
                 dashStyle = 'dot';
             } else {
                 name = `Active cases for ${one.long_name}`;
+                if (axesType === AXES_LOG_LOG) {
+                    relativeShift += 1;
+                }
             }
 
             let yRatio = 1.0;
@@ -247,7 +264,6 @@ class Graph extends PureComponent {
 
                 let x = null;
                 if (isXAxisRelative) {
-                    // relativeShift is 0 for non-predictions
                     x = index + relativeShift;
                 } else {
                     x = Date.parse(date);
@@ -316,14 +332,12 @@ class Graph extends PureComponent {
 
         if (isXAxisRelative) {
             finalOptions.xAxis.title.text = 'Day since 100 active cases';
-            finalOptions.xAxis.min = 0;
 
             finalOptions.xAxis.labels.formatter = function() {
                 return this.value;
             };
         } else {
             finalOptions.xAxis.title.text = 'Date';
-            finalOptions.xAxis.min = null;
 
             finalOptions.xAxis.labels.formatter = function() {
                 return Highcharts.dateFormat('%e %b', this.value);

@@ -220,7 +220,9 @@ class Graph extends PureComponent {
                     value: predictionXValue,
                     dashStyle: 'line'
                 });
-                dashStyle = 'dot';
+                zones.push({
+                    dashStyle: 'dot'
+                });
             } else {
                 name = `Active cases for ${one.long_name}`;
                 if (axesType === AXES_LOG_LOG) {
@@ -331,7 +333,7 @@ class Graph extends PureComponent {
         }
 
         if (isXAxisRelative) {
-            finalOptions.xAxis.title.text = 'Day since 100 active cases';
+            finalOptions.xAxis.title.text = 'Days since 100 active cases';
 
             finalOptions.xAxis.labels.formatter = function() {
                 return this.value;

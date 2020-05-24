@@ -190,6 +190,7 @@
 }
 
 .App .rc-slider-dot {
+  color: #ef553b;
   background-color: #313639;
   border: 1px solid orange;
 }

@@ -206,7 +206,7 @@ class Graph extends PureComponent {
                     predictionXValue = Date.parse(one.prediction_date);
                 }
 
-                if (axesType === AXES_LOG_LOG) {
+                if (isXAxisRelative) {
                     relativeShift += 1;
                     maxXValue += 1;
                     predictionXValue += 1;
@@ -225,7 +225,7 @@ class Graph extends PureComponent {
                 });
             } else {
                 name = `Active cases for ${one.long_name}`;
-                if (axesType === AXES_LOG_LOG) {
+                if (isXAxisRelative) {
                     relativeShift += 1;
                 }
             }
@@ -334,12 +334,14 @@ class Graph extends PureComponent {
 
         if (isXAxisRelative) {
             finalOptions.xAxis.title.text = 'Days since 100 active cases';
+            finalOptions.xAxis.min = 1;
 
             finalOptions.xAxis.labels.formatter = function() {
                 return this.value;
             };
         } else {
             finalOptions.xAxis.title.text = 'Date';
+            finalOptions.xAxis.min = null;
 
             finalOptions.xAxis.labels.formatter = function() {
                 return Highcharts.dateFormat('%e %b', this.value);

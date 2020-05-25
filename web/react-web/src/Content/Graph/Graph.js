@@ -166,15 +166,11 @@ class Graph extends PureComponent {
             // cut data series, so first case is from 100 active cases
             series = series.map((one) => {
                 if (one.type !== 'prediction') {
-                    for (let i = 0; i < one.values.length; i++) {
-                        if (one.values[i] >= 100) {
-                            if (i > 0) {
-                                one = {...one};
-                                one.values = one.values.slice(i);
-                                one.date_list = one.date_list.slice(i);
-                            }
-                            break;
-                        }
+                    const i = one.values.findIndex((value) => value >= 100);
+                    if (i > 0) {
+                        one = {...one};
+                        one.values = one.values.slice(i);
+                        one.date_list = one.date_list.slice(i);
                     }
                 }
                 return one;

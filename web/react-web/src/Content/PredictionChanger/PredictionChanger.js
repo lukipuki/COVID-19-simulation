@@ -1,16 +1,17 @@
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 import 'rc-slider/assets/index.css';
 import {areSetsEqual} from "../../Commons/functions";
 import Slider from "rc-slider";
+import {locale} from "../../Commons/sharedObjects";
 
 const optionsAxis = { month: 'numeric', day: 'numeric' };
 const optionsLabel = { weekday: 'short', month: 'numeric', day: 'numeric' };
 
 function tooltipFormatter(value) {
-    return new Date(value).toLocaleDateString(undefined, optionsLabel);
+    return new Date(value).toLocaleDateString(locale, optionsLabel);
 }
 
-const MIN_MARK_WIDTH = 30;
+const MIN_MARK_WIDTH = 35;
 
 const Handle = Slider.Handle;
 const handle = (props) => {
@@ -25,7 +26,7 @@ const handle = (props) => {
     );
 };
 
-class PredictionChanger extends Component {
+class PredictionChanger extends PureComponent {
 
     static defaultProps = {
         selectedSeries: null,
@@ -134,7 +135,7 @@ class PredictionChanger extends Component {
         predictions.data.forEach((prediction) => {
             if (usedCountries.has(prediction.country)) {
                 const date = new Date(prediction.prediction_date);
-                let label = date.toLocaleDateString(undefined, optionsAxis);
+                let label = date.toLocaleDateString(locale, optionsAxis);
                 const time = date.getTime();
 
                 minMark = minMark === null ? time : Math.min(minMark, time);
@@ -158,7 +159,7 @@ class PredictionChanger extends Component {
         if (element && marksCount > 2) {
             const markWidth = element.offsetWidth / (marksCount - 1);
             if (markWidth < MIN_MARK_WIDTH) {
-                Object.keys(marks).sort().forEach((key) => {
+                Object.keys(marks).sort((a, b) => a - b).forEach((key) => {
                     //avoid overlapping labels
                     const {time} = marks[key];
                     const leftOffset = (time - minMark) / (24 * 3600 * 1000) * markWidth - markWidth / 2;
@@ -198,7 +199,7 @@ class PredictionChanger extends Component {
         if (playing && !this.timeout) {
             this.timeout = setTimeout(() => {
                 this.timeout = null;
-                const values = Object.keys(this.state.marks).sort();
+                const values = Object.keys(this.state.marks).sort((a, b) => a - b);
                 const valueIdx = values.indexOf(`${this.state.value}`);
                 if (valueIdx > -1 && valueIdx < values.length - 1) {
                     this.onChange(parseInt(values[valueIdx + 1]));

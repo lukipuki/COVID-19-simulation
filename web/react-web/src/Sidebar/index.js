@@ -1,13 +1,18 @@
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 import {
-    GraphDetailContext, AXES_LINEAR, AXES_LOG, AXES_LOG_LOG, SCALING_PER_CAPITA,
-    SCALING_ABSOLUTE, SCALING_SAME_PEAK
+    AXES_LINEAR,
+    AXES_LOG,
+    AXES_LOG_LOG,
+    GraphDetailContext,
+    SCALING_ABSOLUTE,
+    SCALING_PER_CAPITA,
+    SCALING_SAME_PEAK
 } from "../Commons/sharedObjects";
 import CountriesWrapper from "./CountriesWrapper";
 import ReactMarkdown from "react-markdown/with-html";
 import {api} from "../Commons/api";
 
-class Sidebar extends Component {
+class Sidebar extends PureComponent {
     state = {
         activeTab: 0,
         aboutMarkdown: ''
@@ -56,7 +61,7 @@ class Sidebar extends Component {
                                     <fieldset>
                                         <legend>Show by:</legend>
                                         <div className='buttons'>
-                                            <button onClick={this.changeGraphDetail(axesType, true, dataScaling)} className={isXAxisRelative ? 'active' : ''}>Day</button>
+                                            <button onClick={this.changeGraphDetail(axesType, true, dataScaling)} className={isXAxisRelative ? 'active' : ''}>Day, &ge; 100 cases</button>
                                             <button onClick={this.changeGraphDetail(axesType, false, dataScaling)} className={!isXAxisRelative ? 'active' : ''}>Date</button>
                                         </div>
                                     </fieldset>

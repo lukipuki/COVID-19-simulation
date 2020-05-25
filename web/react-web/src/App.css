@@ -190,6 +190,7 @@
 }
 
 .App .rc-slider-dot {
+  color: #ef553b;
   background-color: #313639;
   border: 1px solid orange;
 }
@@ -206,6 +207,10 @@
 .App .rc-slider-handle:focus,
 .App .rc-slider-handle:active {
   box-shadow: 0 0 5px orange;
+}
+
+.App .rc-slider-mark-text {
+  white-space: nowrap;
 }
 
 @media screen

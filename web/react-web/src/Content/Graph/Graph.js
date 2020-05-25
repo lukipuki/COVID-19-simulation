@@ -1,8 +1,13 @@
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
 import {
-    AXES_LINEAR, AXES_LOG, AXES_LOG_LOG, SCALING_ABSOLUTE, SCALING_PER_CAPITA,
+    AXES_LINEAR,
+    AXES_LOG,
+    AXES_LOG_LOG,
+    locale,
+    SCALING_ABSOLUTE,
+    SCALING_PER_CAPITA,
     SCALING_SAME_PEAK
 } from "../../Commons/sharedObjects";
 import {calculateHash} from "../../Commons/functions";
@@ -25,7 +30,19 @@ Highcharts.SVGRenderer.prototype.symbols.star = function (x, y, w, h) {
     return ['M', x1 + x, y1 + y, 'H', x2 + x, 'L', x3 + x, y3 + y, 'L', x4 + x, y4 + y, 'L', 0 + x, y5 + y, 'L', -x4 + x, y4 + y, 'L', -x3 + x, y3 + y, 'L', -x2 + x, y1 + y, 'H', -x1 + x, 'L', 0 + x, y0 + y, 'Z'];
 };
 
-const colors = ["rgb(43, 161, 59)", "rgb(255, 123, 37)", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "rgb(0, 121, 177)", "#2b908f", "#f45b5b", "#91e8e1", "rgb(239, 85, 59)"];
+const colors = [
+    "#ff7b25",
+    "#91e8e1",
+    "#f15c80",
+    "#2b908f",
+    "#e4d354",
+    "#000000",
+    "#f7a35c",
+    "#8085e9",
+    "#ef553b",
+    "#0079b1",
+    "#2ba13b",
+];
 const bandColors = ["rgba(144, 238, 144, 0.4)", "rgba(238, 144, 144, 0.4)", "rgba(144, 144, 238, 0.4)", "rgba(238, 238, 144, 0.4)", "rgba(238, 144, 238, 0.4)", "rgba(144, 238, 238, 0.4)"];
 
 const predefinedOptions = {
@@ -100,28 +117,29 @@ function xaxis_text(x, isXAxisRelative) {
     if (isXAxisRelative) {
         return `Day ${x}`;
     } else {
-        return new Date(x).toLocaleDateString();
+        return new Date(x).toLocaleDateString(locale);
     }
 }
 
-class Graph extends Component {
+class Graph extends PureComponent {
 
     static defaultProps = {
         options: {},
         series: []
     };
 
-    getRelativeShift = (date, country) => {
-        const {
-            series
-        } = this.props;
+    static getRelativeShift = (series, prediction) => {
         for (let i = 0; i < series.length; i++) {
             const one = series[i];
             if (
                 one.type !== 'prediction' &&
-                one.short_name === country
+                one.short_name === prediction.short_name
             ) {
-                const index = one.date_list.indexOf(date);
+                let index = one.date_list.indexOf(prediction.date_list[0]);
+                if (index === -1) {
+                    index = prediction.date_list.indexOf(one.date_list[0]);
+                    return -Math.max(0, index);
+                }
                 return Math.max(0, index);
             }
         }
@@ -129,7 +147,7 @@ class Graph extends Component {
     };
 
     render() {
-        const {
+        let {
             series,
             options
         } = this.props;
@@ -144,8 +162,22 @@ class Graph extends Component {
             ...predefinedOptions
         };
 
-        let countries = new Set();
+        if (isXAxisRelative) {
+            // cut data series, so first case is from 100 active cases
+            series = series.map((one) => {
+                if (one.type !== 'prediction') {
+                    const i = one.values.findIndex((value) => value >= 100);
+                    if (i > 0) {
+                        one = {...one};
+                        one.values = one.values.slice(i);
+                        one.date_list = one.date_list.slice(i);
+                    }
+                }
+                return one;
+            });
+        }
 
+        let countries = new Set();
         series.forEach(data => {
             countries.add(data.long_name);
         });
@@ -154,7 +186,7 @@ class Graph extends Component {
         const resultSeries = [];
         const predictionEnds = new Set();
 
-        series.forEach((one, index)=> {
+        series.forEach((one)=> {
             let maxXValue = null;
             let predictionXValue = null;
             let name = '';
@@ -166,25 +198,44 @@ class Graph extends Component {
             if (one.type === 'prediction') {
                 // calc solid and dashed part of prediction line
                 if (isXAxisRelative) {
-                    relativeShift = this.getRelativeShift(one.date_list[0], one.short_name);
-                    maxXValue = one.date_list.indexOf(one.max_value_date) + 1 + relativeShift;
-                    predictionXValue = one.date_list.indexOf(one.prediction_date) + 1 + relativeShift;
+                    relativeShift = Graph.getRelativeShift(series, one);
+                    //if prediction start sooner than data, trim it from beginning
+                    if (relativeShift < 0) {
+                        one = {...one};
+                        one.date_list = one.date_list.slice(-relativeShift);
+                        one.values = one.values.slice(-relativeShift);
+                        relativeShift = 0;
+                    }
+
+                    maxXValue = one.date_list.indexOf(one.max_value_date) + relativeShift;
+                    predictionXValue = one.date_list.indexOf(one.prediction_date) + relativeShift;
                 } else {
                     maxXValue = Date.parse(one.max_value_date);
                     predictionXValue = Date.parse(one.prediction_date);
                 }
 
+                if (isXAxisRelative) {
+                    relativeShift += 1;
+                    maxXValue += 1;
+                    predictionXValue += 1;
+                }
+
                 predictionEnds.add(predictionXValue);
 
-                name = one.description.replace(' %PREDICTION_DATE%', `, ${one.short_name}<br/>${new Date(one.prediction_date).toLocaleDateString()}`);
+                name = one.description.replace(' %PREDICTION_DATE%', `, ${one.short_name}<br/>${new Date(one.prediction_date).toLocaleDateString(locale)}`);
 
                 zones.push({
                     value: predictionXValue,
                     dashStyle: 'line'
                 });
-                dashStyle = 'dot';
+                zones.push({
+                    dashStyle: 'dot'
+                });
             } else {
                 name = `Active cases for ${one.long_name}`;
+                if (isXAxisRelative) {
+                    relativeShift += 1;
+                }
             }
 
             let yRatio = 1.0;
@@ -192,7 +243,14 @@ class Graph extends Component {
                 case SCALING_SAME_PEAK:
                     let maxValue = one.max_value;
                     if (one.type !== 'prediction') {
-                        maxValue = Math.max(...one.values);
+                        // scale data according to our prediction
+                        maxValue = series.reduce((currentResult, lookingOne) => {
+                            if (lookingOne.short_name === one.short_name &&
+                                lookingOne.type === 'prediction') {
+                                return lookingOne.max_value;
+                            }
+                            return currentResult;
+                        }, maxValue);
                     }
                     yRatio = 1.0 / maxValue * 100.0;
 
@@ -216,8 +274,7 @@ class Graph extends Component {
 
                 let x = null;
                 if (isXAxisRelative) {
-                    // relativeShift is 0 for non-predictions
-                    x = index + 1 + relativeShift;
+                    x = index + relativeShift;
                 } else {
                     x = Date.parse(date);
                 }
@@ -239,7 +296,7 @@ class Graph extends Component {
                 };
             });
 
-            const seriesHash = calculateHash(`${one.short_name}/${one.type}`);
+            const seriesHash = calculateHash(`${one.short_name}`) + (one.type === 'prediction' ? 1 : 0);
 
             resultSeries.push({
                 type: 'line',
@@ -255,7 +312,7 @@ class Graph extends Component {
             });
         });
 
-        finalOptions.xAxis.plotBands = [...predictionEnds].sort().reverse().map((value, index) => ({
+        finalOptions.xAxis.plotBands = [...predictionEnds].sort((a, b) => b - a).map((value, index) => ({
             from: 0,
             to: value,
             color: bandColors[index % bandColors.length]
@@ -284,13 +341,15 @@ class Graph extends Component {
         }
 
         if (isXAxisRelative) {
-            finalOptions.xAxis.title.text = 'Day since relevant number of cases';
+            finalOptions.xAxis.title.text = 'Days since 100 active cases';
+            finalOptions.xAxis.min = 1;
 
             finalOptions.xAxis.labels.formatter = function() {
                 return this.value;
             };
         } else {
             finalOptions.xAxis.title.text = 'Date';
+            finalOptions.xAxis.min = null;
 
             finalOptions.xAxis.labels.formatter = function() {
                 return Highcharts.dateFormat('%e %b', this.value);

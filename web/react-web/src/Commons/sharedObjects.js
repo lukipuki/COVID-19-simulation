@@ -23,3 +23,5 @@ export const graphDetailsInit = { //options for graph
     isXAxisRelative: false
 };
 export const GraphDetailContext = React.createContext(graphDetailsInit);
+
+export const locale = navigator.language;

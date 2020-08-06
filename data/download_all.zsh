@@ -33,7 +33,6 @@ countries=(
   Israel
   Italy
   Japan
-  Jordan
   Latvia
   Lithuania
   Malaysia

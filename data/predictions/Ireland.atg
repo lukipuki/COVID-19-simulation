@@ -1,213 +1,5 @@
 parameters {
   last_data_date {
-    day: 9
-    month: 4
-    year: 2020
-  }
-  alpha: 2.6467965647043106
-  tg: 36.02495300146903
-  a: 822484.1925235974
-  offset: 0.6809041161002582
-  start_date {
-    day: 9
-    month: 3
-    year: 2020
-  }
-}
-parameters {
-  last_data_date {
-    day: 10
-    month: 4
-    year: 2020
-  }
-  alpha: 2.355411867044343
-  tg: 224.50502111944718
-  a: 176276726.88536853
-  offset: 0.6994344389146008
-  start_date {
-    day: 8
-    month: 3
-    year: 2020
-  }
-}
-parameters {
-  last_data_date {
-    day: 11
-    month: 4
-    year: 2020
-  }
-  alpha: 3.167436799320184
-  tg: 152.25517442219942
-  a: 115058891.06511065
-  offset: 0.7789374035794268
-  start_date {
-    day: 2
-    month: 3
-    year: 2020
-  }
-}
-parameters {
-  last_data_date {
-    day: 12
-    month: 4
-    year: 2020
-  }
-  alpha: 4.454658247972333
-  tg: 72.00059004006127
-  a: 7248403.280736968
-  offset: 0.4451005183437289
-  start_date {
-    day: 23
-    month: 2
-    year: 2020
-  }
-}
-parameters {
-  last_data_date {
-    day: 13
-    month: 4
-    year: 2020
-  }
-  alpha: 5.762051425606602
-  tg: 60.612995383945005
-  a: 1866331.8124331494
-  offset: 0.1060588592313998
-  start_date {
-    day: 14
-    month: 2
-    year: 2020
-  }
-}
-parameters {
-  last_data_date {
-    day: 14
-    month: 4
-    year: 2020
-  }
-  alpha: 6.545514422722524
-  tg: 56.7376613234852
-  a: 758180.1047874825
-  offset: 0.4258865823371316
-  start_date {
-    day: 8
-    month: 2
-    year: 2020
-  }
-}
-parameters {
-  last_data_date {
-    day: 15
-    month: 4
-    year: 2020
-  }
-  alpha: 7.043477404422131
-  tg: 57.04717214391566
-  a: 523400.1958007023
-  offset: 0.4625805636786122
-  start_date {
-    day: 4
-    month: 2
-    year: 2020
-  }
-}
-parameters {
-  last_data_date {
-    day: 16
-    month: 4
-    year: 2020
-  }
-  alpha: 6.883897446566074
-  tg: 52.82993352603682
-  a: 377024.3316389085
-  offset: 0.3372249884628058
-  start_date {
-    day: 6
-    month: 2
-    year: 2020
-  }
-}
-parameters {
-  last_data_date {
-    day: 17
-    month: 4
-    year: 2020
-  }
-  alpha: 6.388767805166861
-  tg: 47.963120793372234
-  a: 339192.86089223466
-  offset: 0.05955867374290236
-  start_date {
-    day: 11
-    month: 2
-    year: 2020
-  }
-}
-parameters {
-  last_data_date {
-    day: 18
-    month: 4
-    year: 2020
-  }
-  alpha: 6.103223711527027
-  tg: 40.672672133662395
-  a: 188472.0800037197
-  offset: 0.7403651568063836
-  start_date {
-    day: 14
-    month: 2
-    year: 2020
-  }
-}
-parameters {
-  last_data_date {
-    day: 19
-    month: 4
-    year: 2020
-  }
-  alpha: 7.34894535391783
-  tg: 21.657757671818004
-  a: 1983.3570697693476
-  offset: 0.4750905269026511
-  start_date {
-    day: 13
-    month: 2
-    year: 2020
-  }
-}
-parameters {
-  last_data_date {
-    day: 20
-    month: 4
-    year: 2020
-  }
-  alpha: 7.81098496259276
-  tg: 16.01074968837162
-  a: 269.5897109270008
-  offset: 0.7925298269749703
-  start_date {
-    day: 15
-    month: 2
-    year: 2020
-  }
-}
-parameters {
-  last_data_date {
-    day: 21
-    month: 4
-    year: 2020
-  }
-  alpha: 12.738146984763242
-  tg: 4.698478611986975
-  a: 0.0001784561673904457
-  offset: 0.9831985802381027
-  start_date {
-    day: 24
-    month: 2
-    year: 2020
-  }
-}
-parameters {
-  last_data_date {
     day: 22
     month: 4
     year: 2020
@@ -555,6 +347,774 @@ parameters {
   start_date {
     day: 28
     month: 2
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 14
+    month: 5
+    year: 2020
+  }
+  alpha: 15.04061498326921
+  tg: 3.309185334403822
+  a: 2.3928489595267334e-07
+  offset: 0.46191988089998404
+  start_date {
+    day: 28
+    month: 2
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 15
+    month: 5
+    year: 2020
+  }
+  alpha: 14.651692011861153
+  tg: 3.3708131142956206
+  a: 6.946821685577534e-07
+  offset: 0.8633473651549366
+  start_date {
+    day: 28
+    month: 2
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 16
+    month: 5
+    year: 2020
+  }
+  alpha: 12.375988960293775
+  tg: 3.6936404476373785
+  a: 0.00028327472784227145
+  offset: 0.4643331028915938
+  start_date {
+    day: 3
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 17
+    month: 5
+    year: 2020
+  }
+  alpha: 12.183165647900907
+  tg: 3.7497855954037305
+  a: 0.00046546685703067624
+  offset: 0.5262117331752023
+  start_date {
+    day: 3
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 18
+    month: 5
+    year: 2020
+  }
+  alpha: 11.796834792717396
+  tg: 3.8419112673934617
+  a: 0.0012419046512972005
+  offset: 0.9143235649153425
+  start_date {
+    day: 3
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 19
+    month: 5
+    year: 2020
+  }
+  alpha: 10.888775742501148
+  tg: 4.033803566760774
+  a: 0.011791204074645475
+  offset: 0.3041885219199614
+  start_date {
+    day: 5
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 20
+    month: 5
+    year: 2020
+  }
+  alpha: 10.776986075556566
+  tg: 4.0580666910766245
+  a: 0.015477355039886051
+  offset: 0.49042504011974586
+  start_date {
+    day: 5
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 21
+    month: 5
+    year: 2020
+  }
+  alpha: 10.546512867808026
+  tg: 4.1092993660741275
+  a: 0.02702319374148897
+  offset: 0.8781497858053768
+  start_date {
+    day: 5
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 22
+    month: 5
+    year: 2020
+  }
+  alpha: 10.203025788651138
+  tg: 4.1887780834159045
+  a: 0.061457995821134356
+  offset: 0.4665871184587971
+  start_date {
+    day: 6
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 23
+    month: 5
+    year: 2020
+  }
+  alpha: 9.806446578604818
+  tg: 4.285957548208015
+  a: 0.15654779975287306
+  offset: 0.15925958786034755
+  start_date {
+    day: 7
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 24
+    month: 5
+    year: 2020
+  }
+  alpha: 9.381535090644888
+  tg: 4.397182329412288
+  a: 0.41918776447473527
+  offset: 0.9183995468764721
+  start_date {
+    day: 7
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 25
+    month: 5
+    year: 2020
+  }
+  alpha: 8.936411550029785
+  tg: 4.5224296310920185
+  a: 1.1535879115382457
+  offset: 0.7345378866068017
+  start_date {
+    day: 8
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 26
+    month: 5
+    year: 2020
+  }
+  alpha: 8.510786165200857
+  tg: 4.652375899873247
+  a: 2.9785813500485028
+  offset: 0.5307270280827794
+  start_date {
+    day: 9
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 27
+    month: 5
+    year: 2020
+  }
+  alpha: 8.430069741485543
+  tg: 4.67821947239229
+  a: 3.557713420219781
+  offset: 0.6837762332547612
+  start_date {
+    day: 9
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 28
+    month: 5
+    year: 2020
+  }
+  alpha: 8.315323463161056
+  tg: 4.71525758651625
+  a: 4.574023152554823
+  offset: 0.9054012435595453
+  start_date {
+    day: 9
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 29
+    month: 5
+    year: 2020
+  }
+  alpha: 8.185887003188244
+  tg: 4.7582832756648
+  a: 6.062317913366159
+  offset: 0.155297710919875
+  start_date {
+    day: 10
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 30
+    month: 5
+    year: 2020
+  }
+  alpha: 8.03268797246937
+  tg: 4.810310604612823
+  a: 8.44007112975293
+  offset: 0.45581139080272237
+  start_date {
+    day: 10
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 31
+    month: 5
+    year: 2020
+  }
+  alpha: 7.862841209208955
+  tg: 4.869809684080335
+  a: 12.141748568001946
+  offset: 0.7927665462931373
+  start_date {
+    day: 10
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 1
+    month: 6
+    year: 2020
+  }
+  alpha: 7.677759042844194
+  tg: 4.936949747909134
+  a: 17.975756340619217
+  offset: 0.16447962162400387
+  start_date {
+    day: 11
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 2
+    month: 6
+    year: 2020
+  }
+  alpha: 7.498749136726624
+  tg: 5.004324419776804
+  a: 26.16886873306625
+  offset: 0.5285785861946266
+  start_date {
+    day: 11
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 3
+    month: 6
+    year: 2020
+  }
+  alpha: 7.435059792167217
+  tg: 5.028799873219542
+  a: 29.8803704688094
+  offset: 0.6599780151625012
+  start_date {
+    day: 11
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 4
+    month: 6
+    year: 2020
+  }
+  alpha: 7.365671903928478
+  tg: 5.055967645925672
+  a: 34.507227822877546
+  offset: 0.8027847090111706
+  start_date {
+    day: 11
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 5
+    month: 6
+    year: 2020
+  }
+  alpha: 7.290781758283167
+  tg: 5.085584687540919
+  a: 40.279199564976366
+  offset: 0.958769059237774
+  start_date {
+    day: 11
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 6
+    month: 6
+    year: 2020
+  }
+  alpha: 7.21397155721887
+  tg: 5.116440320867666
+  a: 47.168443891090824
+  offset: 0.11963437306241076
+  start_date {
+    day: 12
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 7
+    month: 6
+    year: 2020
+  }
+  alpha: 7.136273212045252
+  tg: 5.148130565155867
+  a: 55.29235837564349
+  offset: 0.28374145832332687
+  start_date {
+    day: 12
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 8
+    month: 6
+    year: 2020
+  }
+  alpha: 7.059619326093742
+  tg: 5.17988301411375
+  a: 64.62943545534738
+  offset: 0.44663019809136273
+  start_date {
+    day: 12
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 9
+    month: 6
+    year: 2020
+  }
+  alpha: 6.985494484425789
+  tg: 5.2111058608237375
+  a: 75.10061281902483
+  offset: 0.6048970652081636
+  start_date {
+    day: 12
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 10
+    month: 6
+    year: 2020
+  }
+  alpha: 6.9126366855003
+  tg: 5.2422339609105535
+  a: 86.98099699573733
+  offset: 0.7617860622015513
+  start_date {
+    day: 12
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 11
+    month: 6
+    year: 2020
+  }
+  alpha: 6.843078609440535
+  tg: 5.272417175200763
+  a: 100.0063870922894
+  offset: 0.9124198319076697
+  start_date {
+    day: 12
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 12
+    month: 6
+    year: 2020
+  }
+  alpha: 6.7762678989081575
+  tg: 5.301817128433004
+  a: 114.27617091138532
+  offset: 0.05829602641675535
+  start_date {
+    day: 13
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 13
+    month: 6
+    year: 2020
+  }
+  alpha: 6.70833649185469
+  tg: 5.3322033253506005
+  a: 130.8006542907247
+  offset: 0.20687446055677583
+  start_date {
+    day: 13
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 14
+    month: 6
+    year: 2020
+  }
+  alpha: 6.643368863988864
+  tg: 5.361650573851345
+  a: 148.741971766867
+  offset: 0.3501497992142646
+  start_date {
+    day: 13
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 15
+    month: 6
+    year: 2020
+  }
+  alpha: 6.581077839917772
+  tg: 5.390306949249143
+  a: 168.1580393336325
+  offset: 0.488222348386806
+  start_date {
+    day: 13
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 16
+    month: 6
+    year: 2020
+  }
+  alpha: 6.521750600527367
+  tg: 5.417960147727117
+  a: 188.90592530712678
+  offset: 0.6205357076940672
+  start_date {
+    day: 13
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 17
+    month: 6
+    year: 2020
+  }
+  alpha: 6.465989999791526
+  tg: 5.444319889128351
+  a: 210.639288650888
+  offset: 0.7453846580284136
+  start_date {
+    day: 13
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 18
+    month: 6
+    year: 2020
+  }
+  alpha: 6.412731465431419
+  tg: 5.469766465002885
+  a: 233.63022577533553
+  offset: 0.86545704696249
+  start_date {
+    day: 13
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 19
+    month: 6
+    year: 2020
+  }
+  alpha: 6.3626991903270955
+  tg: 5.493995472970167
+  a: 257.4147198623008
+  offset: 0.9786018786567965
+  start_date {
+    day: 13
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 20
+    month: 6
+    year: 2020
+  }
+  alpha: 6.315903558973653
+  tg: 5.516911888812632
+  a: 281.7544951230328
+  offset: 0.08492497571351976
+  start_date {
+    day: 14
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 21
+    month: 6
+    year: 2020
+  }
+  alpha: 6.271909000993672
+  tg: 5.5386762402556675
+  a: 306.64296681122437
+  offset: 0.18531839264843342
+  start_date {
+    day: 14
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 22
+    month: 6
+    year: 2020
+  }
+  alpha: 6.2309914660994
+  tg: 5.55911151686214
+  a: 331.67464945101233
+  offset: 0.27915040720319695
+  start_date {
+    day: 14
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 23
+    month: 6
+    year: 2020
+  }
+  alpha: 6.192762842728571
+  tg: 5.578372020882127
+  a: 356.8242296393199
+  offset: 0.3672040433567574
+  start_date {
+    day: 14
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 24
+    month: 6
+    year: 2020
+  }
+  alpha: 6.182968778655428
+  tg: 5.583346175834551
+  a: 363.5568451619357
+  offset: 0.3897075166372943
+  start_date {
+    day: 14
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 25
+    month: 6
+    year: 2020
+  }
+  alpha: 6.173652854436867
+  tg: 5.588088968829617
+  a: 370.07329555471034
+  offset: 0.41116344265715554
+  start_date {
+    day: 14
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 26
+    month: 6
+    year: 2020
+  }
+  alpha: 6.164535314683595
+  tg: 5.592713693993414
+  a: 376.5584734423745
+  offset: 0.4323151851607605
+  start_date {
+    day: 14
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 27
+    month: 6
+    year: 2020
+  }
+  alpha: 6.155579717672012
+  tg: 5.597258576248821
+  a: 383.03282047623185
+  offset: 0.45323030963282207
+  start_date {
+    day: 14
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 28
+    month: 6
+    year: 2020
+  }
+  alpha: 6.147478208126503
+  tg: 5.601406838592034
+  a: 388.9848937915494
+  offset: 0.47188942690858227
+  start_date {
+    day: 14
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 29
+    month: 6
+    year: 2020
+  }
+  alpha: 6.139260109898206
+  tg: 5.605585941229129
+  a: 395.1100720255687
+  offset: 0.4911219587621787
+  start_date {
+    day: 14
+    month: 3
+    year: 2020
+  }
+}
+parameters {
+  last_data_date {
+    day: 30
+    month: 6
+    year: 2020
+  }
+  alpha: 6.1313591620043475
+  tg: 5.609621549054834
+  a: 401.08738642396554
+  offset: 0.5094965208679127
+  start_date {
+    day: 14
+    month: 3
     year: 2020
   }
 }

@@ -12,7 +12,7 @@ from .formula import FittedFormula
 from .pb.atg_prediction_pb2 import CountryAtgParameters
 
 # Five weeks
-PREDICTION_DAYS = 7 * 5
+PREDICTION_DAYS = 7 * 10
 
 
 def create_fitted_formulas(

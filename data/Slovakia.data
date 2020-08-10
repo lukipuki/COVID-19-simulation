@@ -917,5 +917,421 @@ stats {
     year: 2020
   }
 }
+stats {
+  positive: 8
+  recovered: 52
+  date {
+    day: 14
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 3
+  recovered: 19
+  date {
+    day: 15
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 13
+  recovered: 20
+  date {
+    day: 16
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 1
+  recovered: 12
+  date {
+    day: 17
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 1
+  recovered: 22
+  date {
+    day: 18
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  recovered: 7
+  date {
+    day: 19
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 1
+  recovered: 39
+  date {
+    day: 20
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 6
+  recovered: 14
+  date {
+    day: 21
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 1
+  recovered: 11
+  date {
+    day: 22
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 1
+  recovered: 24
+  date {
+    day: 23
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 5
+  recovered: 21
+  date {
+    day: 24
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 2
+  recovered: 6
+  date {
+    day: 25
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 2
+  recovered: 15
+  date {
+    day: 26
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 2
+  recovered: 5
+  date {
+    day: 27
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 5
+  recovered: 5
+  date {
+    day: 28
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  recovered: 6
+  date {
+    day: 29
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 1
+  recovered: 18
+  date {
+    day: 30
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  recovered: 10
+  date {
+    day: 31
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 1
+  recovered: 2
+  date {
+    day: 1
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  recovered: 4
+  date {
+    day: 2
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 3
+  recovered: 3
+  date {
+    day: 3
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 1
+  recovered: 1
+  date {
+    day: 4
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  recovered: 3
+  date {
+    day: 5
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 2
+  date {
+    day: 6
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  recovered: 10
+  date {
+    day: 7
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 2
+  recovered: 7
+  date {
+    day: 8
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 1
+  recovered: 6
+  date {
+    day: 9
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 2
+  recovered: 2
+  date {
+    day: 10
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 8
+  recovered: 5
+  date {
+    day: 11
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 1
+  date {
+    day: 12
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 3
+  recovered: 1
+  date {
+    day: 13
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 3
+  date {
+    day: 14
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 4
+  date {
+    day: 15
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  recovered: 16
+  date {
+    day: 16
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 9
+  recovered: 11
+  date {
+    day: 17
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 1
+  recovered: 6
+  date {
+    day: 18
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 14
+  recovered: 4
+  date {
+    day: 19
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 10
+  date {
+    day: 20
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 1
+  date {
+    day: 21
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 1
+  date {
+    day: 22
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 1
+  recovered: 1
+  date {
+    day: 23
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 18
+  date {
+    day: 24
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 23
+  recovered: 4
+  date {
+    day: 25
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 13
+  recovered: 3
+  date {
+    day: 26
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 14
+  date {
+    day: 27
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 7
+  recovered: 6
+  date {
+    day: 28
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 1
+  recovered: 3
+  date {
+    day: 29
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 2
+  date {
+    day: 30
+    month: 6
+    year: 2020
+  }
+}
 short_name: "Slovakia"
 population: 5447662

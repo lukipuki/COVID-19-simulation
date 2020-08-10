@@ -87,11 +87,6 @@ _prediction_database = [
     ),
     CountryPrediction(
         prediction_event=BK_20200411,
-        country="Jordan",
-        formula=AtgFormula(8.9873, 4474.6547, 1.8184, 33),
-    ),
-    CountryPrediction(
-        prediction_event=BK_20200411,
         country="Korea",
         formula=AtgFormula(8.9001, 79719.7898, 2.5156, 171),
     ),

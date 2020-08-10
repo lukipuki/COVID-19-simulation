@@ -958,5 +958,463 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 2
+  positive: 95
+  recovered: 179
+  date {
+    day: 14
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 45
+  recovered: 90
+  date {
+    day: 15
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 89
+  recovered: 87
+  date {
+    day: 16
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 129
+  recovered: 173
+  date {
+    day: 17
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 82
+  recovered: 98
+  date {
+    day: 18
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 71
+  recovered: 143
+  date {
+    day: 19
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 110
+  recovered: 197
+  date {
+    day: 20
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 78
+  recovered: 182
+  date {
+    day: 21
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 121
+  recovered: 97
+  date {
+    day: 22
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 74
+  recovered: 261
+  date {
+    day: 23
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 27
+  recovered: 65
+  date {
+    day: 24
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 99
+  recovered: 71
+  date {
+    day: 25
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 45
+  recovered: 107
+  date {
+    day: 26
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 24
+  recovered: 97
+  date {
+    day: 27
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 42
+  recovered: 217
+  date {
+    day: 28
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 71
+  recovered: 76
+  date {
+    day: 29
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 66
+  recovered: 130
+  date {
+    day: 30
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 27
+  recovered: 58
+  date {
+    day: 31
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 26
+  recovered: 434
+  date {
+    day: 1
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 33
+  recovered: 517
+  date {
+    day: 2
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 56
+  recovered: 456
+  date {
+    day: 3
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 81
+  recovered: 329
+  date {
+    day: 4
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 68
+  recovered: 73
+  date {
+    day: 5
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 80
+  recovered: 47
+  date {
+    day: 6
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 73
+  recovered: 49
+  date {
+    day: 7
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 78
+  recovered: 44
+  date {
+    day: 8
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 135
+  recovered: 85
+  date {
+    day: 9
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 71
+  recovered: 72
+  date {
+    day: 10
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 29
+  recovered: 18
+  date {
+    day: 11
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 73
+  recovered: 35
+  date {
+    day: 12
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 82
+  recovered: 78
+  date {
+    day: 13
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 101
+  recovered: 69
+  date {
+    day: 14
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 92
+  recovered: 63
+  date {
+    day: 15
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 46
+  recovered: 109
+  date {
+    day: 16
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 66
+  recovered: 56
+  date {
+    day: 17
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 77
+  recovered: 48
+  date {
+    day: 18
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 539
+  recovered: 76
+  date {
+    day: 19
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 226
+  recovered: 106
+  date {
+    day: 20
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 138
+  recovered: 61
+  date {
+    day: 21
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 195
+  recovered: 82
+  date {
+    day: 22
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 172
+  recovered: 41
+  date {
+    day: 23
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 563
+  recovered: 61
+  date {
+    day: 24
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 431
+  recovered: 32
+  date {
+    day: 25
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 295
+  recovered: 156
+  date {
+    day: 26
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 244
+  recovered: 67
+  date {
+    day: 27
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 175
+  recovered: 17
+  date {
+    day: 28
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 4
+  positive: 238
+  recovered: 93
+  date {
+    day: 29
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 3
+  positive: 243
+  recovered: 87
+  date {
+    day: 30
+    month: 6
+    year: 2020
+  }
+}
 short_name: "Morocco"
 population: 35739580

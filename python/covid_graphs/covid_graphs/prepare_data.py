@@ -53,7 +53,8 @@ def main(country: str, short_name: str, data_dir: Path):
         data[typ] = diff(row.values.tolist())
 
     start_day = datetime.datetime(2020, 1, 22)
-    length = len(data["deaths"])
+    # Cap length at 161 days, which is June 30
+    length = min(len(data["deaths"]), 161)
     dates = [start_day + datetime.timedelta(days=i) for i in range(length)]
 
     points = []

@@ -1002,5 +1002,424 @@ stats {
     year: 2020
   }
 }
+stats {
+  dead: 217
+  positive: 849
+  recovered: 2551
+  date {
+    day: 14
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 138
+  positive: 643
+  recovered: 1409
+  date {
+    day: 15
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 104
+  positive: 515
+  recovered: 1663
+  date {
+    day: 16
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 17
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 146
+  positive: 908
+  recovered: 3930
+  date {
+    day: 18
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 69
+  positive: 431
+  date {
+    day: 19
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 110
+  positive: 518
+  date {
+    day: 20
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 52
+  positive: 482
+  date {
+    day: 21
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 688
+  positive: 1787
+  date {
+    day: 22
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 50
+  positive: 466
+  date {
+    day: 23
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 74
+  positive: 482
+  date {
+    day: 24
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: -1918
+  positive: -372
+  date {
+    day: 25
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 283
+  positive: 859
+  date {
+    day: 26
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  date {
+    day: 27
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 1647
+  date {
+    day: 28
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 658
+  date {
+    day: 29
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 4
+  positive: 664
+  date {
+    day: 30
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 251
+  date {
+    day: 31
+    month: 5
+    year: 2020
+  }
+}
+stats {
+  positive: 159
+  date {
+    day: 1
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 294
+  date {
+    day: 2
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 394
+  date {
+    day: 3
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 5
+  positive: 334
+  date {
+    day: 4
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 318
+  date {
+    day: 5
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 332
+  date {
+    day: 6
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 240
+  date {
+    day: 7
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 167
+  date {
+    day: 8
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 249
+  date {
+    day: 9
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 314
+  date {
+    day: 10
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 427
+  date {
+    day: 11
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 502
+  date {
+    day: 12
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 396
+  date {
+    day: 13
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 323
+  date {
+    day: 14
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 181
+  date {
+    day: 15
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 219
+  date {
+    day: 16
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 355
+  date {
+    day: 17
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  positive: 585
+  date {
+    day: 18
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 1179
+  positive: 307
+  date {
+    day: 19
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 7
+  positive: 363
+  date {
+    day: 20
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 334
+  date {
+    day: 21
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 232
+  date {
+    day: 22
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 1
+  positive: 248
+  date {
+    day: 23
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 334
+  date {
+    day: 24
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 3
+  positive: 400
+  date {
+    day: 25
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 8
+  positive: 419
+  date {
+    day: 26
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 3
+  positive: 564
+  date {
+    day: 27
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 2
+  positive: 301
+  date {
+    day: 28
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 3
+  positive: 200
+  date {
+    day: 29
+    month: 6
+    year: 2020
+  }
+}
+stats {
+  dead: 9
+  positive: 301
+  date {
+    day: 30
+    month: 6
+    year: 2020
+  }
+}
 short_name: "Spain"
 population: 46354321

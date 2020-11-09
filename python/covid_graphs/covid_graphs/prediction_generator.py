@@ -26,10 +26,14 @@ def create_fitted_formulas(
 
 @click.command(help="COVID-19 country predictions calculation")
 @click.argument(
-    "filename", required=True, type=click_pathlib.Path(exists=True),
+    "filename",
+    required=True,
+    type=click_pathlib.Path(exists=True),
 )
 @click.argument(
-    "output_dir", required=True, type=click_pathlib.Path(),
+    "output_dir",
+    required=True,
+    type=click_pathlib.Path(),
 )
 def generate_predictions(filename: Path, output_dir: Path) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)

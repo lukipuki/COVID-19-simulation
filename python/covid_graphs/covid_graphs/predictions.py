@@ -51,22 +51,34 @@ BK_20200411 = PredictionEvent(
 _prediction_database = [
     # BK_20200329
     CountryPrediction(
-        prediction_event=BK_20200329, country="Italy", formula=AtgFormula(7.8, 4417, 6.23, 200),
+        prediction_event=BK_20200329,
+        country="Italy",
+        formula=AtgFormula(7.8, 4417, 6.23, 200),
     ),
     CountryPrediction(
-        prediction_event=BK_20200329, country="USA", formula=AtgFormula(10.2, 72329, 6.23, 200),
+        prediction_event=BK_20200329,
+        country="USA",
+        formula=AtgFormula(10.2, 72329, 6.23, 200),
     ),
     CountryPrediction(
-        prediction_event=BK_20200329, country="Spain", formula=AtgFormula(6.4, 3665, 6.23, 200),
+        prediction_event=BK_20200329,
+        country="Spain",
+        formula=AtgFormula(6.4, 3665, 6.23, 200),
     ),
     CountryPrediction(
-        prediction_event=BK_20200329, country="Germany", formula=AtgFormula(6.7, 3773, 6.23, 200),
+        prediction_event=BK_20200329,
+        country="Germany",
+        formula=AtgFormula(6.7, 3773, 6.23, 200),
     ),
     CountryPrediction(
-        prediction_event=BK_20200329, country="France", formula=AtgFormula(6.5, 1961, 6.23, 200),
+        prediction_event=BK_20200329,
+        country="France",
+        formula=AtgFormula(6.5, 1961, 6.23, 200),
     ),
     CountryPrediction(
-        prediction_event=BK_20200329, country="Iran", formula=AtgFormula(8.7, 2569, 6.23, 200),
+        prediction_event=BK_20200329,
+        country="Iran",
+        formula=AtgFormula(8.7, 2569, 6.23, 200),
     ),
     # BK_20200411
     CountryPrediction(
@@ -121,7 +133,9 @@ _prediction_database = [
         formula=AtgFormula(13.3726, 46881.7586, 2.376, 104),
     ),
     CountryPrediction(
-        prediction_event=BK_20200411, country="NZ", formula=AtgFormula(6.401, 1.89e03, 3.7006, 16),
+        prediction_event=BK_20200411,
+        country="NZ",
+        formula=AtgFormula(6.401, 1.89e03, 3.7006, 16),
     ),
     CountryPrediction(
         prediction_event=BK_20200411,

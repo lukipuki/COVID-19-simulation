@@ -12,10 +12,17 @@ from .pb.country_data_pb2 import CountryData, DailyStats
 
 @click.command(help="COVID-19 data downloader, writes into current directory")
 @click.argument(
-    "country", required=True, type=str,
+    "country",
+    required=True,
+    type=str,
 )
 @click.option(
-    "-s", "--short_name", type=str, required=True, default=None, help="Short name of the country",
+    "-s",
+    "--short_name",
+    type=str,
+    required=True,
+    default=None,
+    help="Short name of the country",
 )
 @click.option("--start", type=click.DateTime(formats=["%Y-%m-%d"]), default="2020-01-22")
 @click.option(

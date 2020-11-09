@@ -141,7 +141,10 @@ class DashboardFactory:
                 dcc.Dropdown(
                     id="prediction-event",
                     options=[
-                        dict(label=event.create_label(), value=event.name,)
+                        dict(
+                            label=event.create_label(),
+                            value=event.name,
+                        )
                         for event in self._dropdown_prediction_events
                     ],
                     value=self._dropdown_initial_value.name,

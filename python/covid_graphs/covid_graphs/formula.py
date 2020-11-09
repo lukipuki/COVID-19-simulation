@@ -100,7 +100,9 @@ class AtgFormula(Formula):
         start_idx = np.argmax(country_report.cumulative_active >= self.min_case_count)
         start_date = country_report.dates[start_idx - 1]
         display_at_least_until = _get_display_at_least_until(
-            tg=self.tg, exp=self.exponent, start_date=start_date,
+            tg=self.tg,
+            exp=self.exponent,
+            start_date=start_date,
         )
 
         def formula(x: float):
@@ -156,7 +158,9 @@ class FittedFormula(Formula):
 
     def get_trace_generator(self, country_report: CountryReport) -> TraceGenerator:
         display_at_least_until = _get_display_at_least_until(
-            tg=self.fit.tg, exp=self.fit.exp, start_date=self.start_date,
+            tg=self.fit.tg,
+            exp=self.fit.exp,
+            start_date=self.start_date,
         )
         label = _create_atg_label("Daily prediction", tg=self.fit.tg, alpha=self.fit.exp)
         return TraceGenerator(
@@ -182,7 +186,10 @@ def fit_country_data(country_report: CountryReport, last_data_date: datetime.dat
     # The choice of date zero is in theory arbitrary.
     date_zero = country_report.dates[0]
     xs = [(date - date_zero).days for date in country_report.dates[: until_idx + 1]]
-    fit = fit_atg_model.fit_atg_model(xs=xs, ys=country_report.cumulative_active[: until_idx + 1],)
+    fit = fit_atg_model.fit_atg_model(
+        xs=xs,
+        ys=country_report.cumulative_active[: until_idx + 1],
+    )
     whole_day_offset = np.floor(fit.t0)
 
     # Move the fitted model by 'whole_day_offset', so that '0 <= fit.t0 < 1'.

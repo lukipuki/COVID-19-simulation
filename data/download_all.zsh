@@ -65,6 +65,6 @@ do
   else
     short_name=$short_names["${country}"]
   fi
-  covid_graphs.prepare_data ${(p)country} --short_name ${short_name}
+  covid_graphs.prepare_data ${(p)country} --short_name ${short_name} --end 2020-06-30
   covid_graphs.generate_predictions ${short_name}.data predictions
 done

@@ -57,7 +57,9 @@ class CountryGraph:
     """Constructs a graph for a given country"""
 
     def __init__(
-        self, report: CountryReport, country_predictions: List[CountryPrediction],
+        self,
+        report: CountryReport,
+        country_predictions: List[CountryPrediction],
     ):
         self.short_name = report.short_name
         self.long_name = report.long_name
@@ -284,9 +286,16 @@ class CountryGraph:
 
         layout = Layout(
             title=dict(text=f"Active cases in {self.long_name}", x=0.5, xanchor="center", y=1),
-            xaxis=dict(autorange=True, fixedrange=True, showgrid=False,),
+            xaxis=dict(
+                autorange=True,
+                fixedrange=True,
+                showgrid=False,
+            ),
             yaxis=dict(
-                tickformat=",.0f", gridcolor="LightGray", fixedrange=True, zerolinecolor="Gray",
+                tickformat=",.0f",
+                gridcolor="LightGray",
+                fixedrange=True,
+                zerolinecolor="Gray",
             ),
             height=700,
             margin=dict(r=40),
@@ -316,10 +325,14 @@ class CountryGraph:
 
 @click.command(help="COVID-19 visualization of active cases")
 @click.argument(
-    "country_data_file", required=True, type=click_pathlib.Path(exists=True),
+    "country_data_file",
+    required=True,
+    type=click_pathlib.Path(exists=True),
 )
 @click.argument(
-    "prediction_dir", required=True, type=click_pathlib.Path(exists=True),
+    "prediction_dir",
+    required=True,
+    type=click_pathlib.Path(exists=True),
 )
 def show_country_plot(country_data_file: Path, prediction_dir: Path):
     country_report = create_report(country_data_file)

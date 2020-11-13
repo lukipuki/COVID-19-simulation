@@ -12,10 +12,21 @@ from .pb.country_data_pb2 import CountryData, DailyStats
 
 @click.command(help="COVID-19 data downloader, writes into current directory")
 @click.argument(
-    "country", required=True, type=str,
+    "country",
+    required=True,
+    type=str,
 )
 @click.option(
-    "-s", "--short_name", type=str, required=True, default=None, help="Short name of the country",
+    "-s",
+    "--short_name",
+    type=str,
+    required=True,
+    default=None,
+    help="Short name of the country",
+)
+@click.option("--start", type=click.DateTime(formats=["%Y-%m-%d"]), default="2020-01-22")
+@click.option(
+    "--end", type=click.DateTime(formats=["%Y-%m-%d"]), default=str(datetime.date.today())
 )
 @click.option(
     "-d",
@@ -25,7 +36,13 @@ from .pb.country_data_pb2 import CountryData, DailyStats
     type=click_pathlib.Path(exists=True),
     help="Directory with the population JSON",
 )
-def main(country: str, short_name: str, data_dir: Path):
+def main(
+    country: str,
+    short_name: str,
+    start: datetime.datetime,
+    end: datetime.datetime,
+    data_dir: Path,
+):
     with (data_dir / "country-populations.json").open() as stream:
         population = {}
         for data in json.load(stream):
@@ -53,9 +70,8 @@ def main(country: str, short_name: str, data_dir: Path):
         data[typ] = diff(row.values.tolist())
 
     start_day = datetime.datetime(2020, 1, 22)
-    # Cap length at 161 days, which is June 30
-    length = min(len(data["deaths"]), 161)
-    dates = [start_day + datetime.timedelta(days=i) for i in range(length)]
+    length = len(data["deaths"])
+    dates = [(start_day + datetime.timedelta(days=i)).date() for i in range(length)]
 
     points = []
     country_data = CountryData()
@@ -63,6 +79,8 @@ def main(country: str, short_name: str, data_dir: Path):
     country_data.short_name = short_name
     country_data.population = population[country]
     for c, r, d, t in zip(data["confirmed"], data["recovered"], data["deaths"], dates):
+        if t < start.date() or t > end.date():
+            continue
         points.append({"positive": c, "recovered": r, "dead": d, "date": t.strftime("%Y-%m-%d")})
         stats = DailyStats()
         stats.positive = c

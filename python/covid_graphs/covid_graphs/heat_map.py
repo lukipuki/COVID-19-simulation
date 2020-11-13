@@ -132,7 +132,9 @@ def create_heat_map_dashboard(simulation_pb2_file: Path, growth_type: GrowthType
 
 @click.command(help="COVID-19 simulation heat map for Slovakia")
 @click.argument(
-    "simulation_protofile", required=True, type=click_pathlib.Path(exists=True),
+    "simulation_protofile",
+    required=True,
+    type=click_pathlib.Path(exists=True),
 )
 def show_heat_map(simulation_protofile):
     # TODO(lukas): This can be exponential growth, but if the file fails to parse there's no way of

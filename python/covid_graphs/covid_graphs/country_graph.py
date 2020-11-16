@@ -39,15 +39,17 @@ class GraphAxisType(Enum):
 def _get_display_range(
     report: CountryReport, trace_generators: Iterable[TraceGenerator]
 ) -> Tuple[datetime.date, datetime.date]:
-    start_date = min(trace_generator.start_date for trace_generator in trace_generators)
+    start_date = min(
+        [trace_generator.start_date for trace_generator in trace_generators] + [report.dates[0]]
+    )
 
     last_report_date = report.dates[-1]
     report_length = last_report_date - start_date + datetime.timedelta(days=1)
     report_extension = report_length * EXTENSION_RATIO
 
     display_until = max(
-        max(trace_generator.display_at_least_until for trace_generator in trace_generators),
-        last_report_date + report_extension,
+        [trace_generator.display_at_least_until for trace_generator in trace_generators]
+        + [last_report_date + report_extension]
     )
 
     return start_date, display_until
@@ -97,8 +99,8 @@ class CountryGraph:
         self.date_title = None
 
         self.max_value = max(
-            max(self.cropped_cumulative_active),
-            max(trace.max_value for trace in self.trace_by_event.values()),
+            [trace.max_value for trace in self.trace_by_event.values()]
+            + [self.cropped_cumulative_active.max()]
         )
         self.log_yrange = [
             math.log10(max(1, self.cropped_cumulative_active.min())) - 0.3,
@@ -281,7 +283,7 @@ class CountryGraph:
         )
 
         sliders = []
-        if graph_type == GraphType.Slider:
+        if graph_type == GraphType.Slider and len(self.trace_by_event) > 0:
             sliders.append(self._create_slider(traces, list(self.trace_by_event.keys())))
 
         layout = Layout(

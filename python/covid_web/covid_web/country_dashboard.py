@@ -270,7 +270,7 @@ class DashboardFactory:
 
 def _get_header_content(title: str, dashboard_type: DashboardType) -> List[Component]:
     about = ""
-    with open(CURRENT_DIR / "about.md", "r") as about_file:
+    with open(CURRENT_DIR / "about.md", "r", encoding="utf-8") as about_file:
         about = about_file.read()
 
     if dashboard_type == DashboardType.SingleCountryAllPredictions:

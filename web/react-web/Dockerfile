@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:16-alpine
 
 ADD package.json package-lock.json /app-source/
 WORKDIR /app-source/

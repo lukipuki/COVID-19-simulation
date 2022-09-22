@@ -1,4 +1,4 @@
-FROM ubuntu:19.10
+FROM docker.io/library/ubuntu:20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN echo 'APT::Get::Assume-Yes "true";' >> /etc/apt/apt.conf

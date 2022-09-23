@@ -13,7 +13,7 @@ setup(
         "numpy==1.21.5",
         "pandas==0.25.3",
         "plotly==4.14.3",
-        "protobuf==3.17.3",
+        "protobuf==3.18.3",
         "pymc3==3.11.5",
         "pytest",
         "scipy==1.7.3",
